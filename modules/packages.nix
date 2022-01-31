@@ -15,6 +15,7 @@
     unzip
     usbutils
 
+    git
     git-crypt
     gnupg
 

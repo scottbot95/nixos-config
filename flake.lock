@@ -58,43 +58,10 @@
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
-        "wpilib": "wpilib"
+        "wpilib-installer": "wpilib-installer"
       }
     },
-    "utils": {
-      "locked": {
-        "lastModified": 1642700792,
-        "narHash": "sha256-XqHrk7hFb+zBvRg6Ghl+AZDq03ov6OshJLiSWOoX5es=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "846b2ae0fc4cc943637d3d1def4454213e203cba",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "wpilib": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "utils": "utils",
-        "wpilib": "wpilib_2"
-      },
-      "locked": {
-        "narHash": "sha256-+k+5zVHcrE4PNycna/WiwJrVs0K7zGpnZB9YxdDVZT4=",
-        "path": "/nix/store/yrddbi9vx6pygjcj10mah7sank34jg7j-source/modules/wpilib",
-        "type": "path"
-      },
-      "original": {
-        "path": "/nix/store/yrddbi9vx6pygjcj10mah7sank34jg7j-source/modules/wpilib",
-        "type": "path"
-      }
-    },
-    "wpilib_2": {
+    "wpilib-installer": {
       "flake": false,
       "locked": {
         "narHash": "sha256-I/YB7vUHINF4LffIOfw2hmPAB4eR8txpcpImiHS7GnY=",

@@ -12,13 +12,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    wpilib = {
-      url = "./modules/wpilib";
-      inputs.nixpkgs.follows = "nixpkgs";
+    # wpilib = {
+    #   url = "./modules/wpilib";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+
+    wpilib-installer = {
+      url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.2.1/WPILib_Linux-2022.2.1.tar.gz";
+      flake = false;
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, wpilib, ...}: {
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, wpilib-installer, ...}: {
     nixosConfigurations = let
       base = rec {
         system = "x86_64-linux";
@@ -30,7 +35,11 @@
             home-manager.useUserPackages = true;
             home-manager.users.scott = import ./modules/home.nix;
             home-manager.extraSpecialArgs = {
-              wpilib = wpilib.outputs.packages.${system};
+              wpilib = (import ./modules/wpilib) {
+                inherit wpilib-installer;
+                pkgs = (import nixpkgs) { inherit system; };
+                version = "2022.2.1";
+              };
             };
           }
         ];

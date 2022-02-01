@@ -1,7 +1,9 @@
 { pkgs, ... }:
-  { name, vsix, vscodeExtUniqueId }:
+  { name, vsix, vscodeExtUniqueId, version ? "" }:
     pkgs.stdenv.mkDerivation {
-      inherit name;
+      ## TODO these could theoretically be extract from the vsix somehow
+      pname = name;
+      inherit version;
 
       dontPatchELF = true;
       dontStrip = true;

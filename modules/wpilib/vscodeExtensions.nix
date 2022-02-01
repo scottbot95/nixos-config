@@ -5,12 +5,14 @@ let
 in (with pkgs.vscode-extensions; [
   redhat.java
 ]) ++ utils.extensionsFromVscodeMarketplace [
-  {
-    name = "vscodeintellicode";
-    publisher = "visualstudioexptteam";
-    version = "1.2.16";
-    sha256 = "rIzUyr5y+DxfXDxj23QbFo9TbWljl2GtsbzaaqJwGrk=";
-  }
+  # FIXME This extension tries to store stuff in ${extensionPath}/cache
+  #       which is actually is the /nix/store so is read-only
+  # {
+  #   name = "vscodeintellicode";
+  #   publisher = "visualstudioexptteam";
+  #   version = "1.2.16";
+  #   sha256 = "rIzUyr5y+DxfXDxj23QbFo9TbWljl2GtsbzaaqJwGrk=";
+  # }
   {
     name = "vscode-java-debug";
     publisher = "vscjava";
@@ -35,9 +37,10 @@ in (with pkgs.vscode-extensions; [
     version = "0.19.0";
     sha256 = "TOxDcqyjybilIt4+H3An5i+YcrjbOOLulMy+LDu296Q=";
   }
-]
-# ] ++ [(mkExtensionFromVsix {
-#   name = "wpilib-vscode";
-#   vsix = ./.;
-#   vscodeExtUniqueId = "wpilibsuite.vscode-wpilib";
-# })]
+] 
+++ [(mkExtensionFromVsix {
+  name = "wpilib-vscode";
+  version = "2022.2.1";
+  vsix = "${wpilib}/2022/vsCodeExtensions/WPILib.vsix";
+  vscodeExtUniqueId = "wpilibsuite.vscode-wpilib";
+})]

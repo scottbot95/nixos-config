@@ -1,9 +1,7 @@
 { config, pkgs, wpilib, ... }:
-# { config, pkgs, ...}:
 {
   home.file = {
     wpilib.source = wpilib.sdk;
-    # wpilib.recursive = true;
   };
 
   home.packages = with pkgs; [
@@ -23,7 +21,7 @@
 
     shellAliases = {
       nixrt = "doas nixos-rebuild test --flake ~/nixos-config";
-      nixrb = "doas nixos-rebuild build --flake ~/nixos-config";
+      nixrb = "nixos-rebuild build --flake ~/nixos-config";
       nixrs = "doas nixos-rebuild switch --flake ~/nixos-config";
     };
   };
@@ -40,16 +38,10 @@
     enable = true;
     extensions = (with pkgs.vscode-extensions; [
       bbenoist.nix
-    ]); # ++ wpilib-extensions;
-    # ++ [(pkgs.vscode-utils.buildVscodeExtension {
-    #   name = "vscode-wpilib-2022.2.1";
-    #   src = "${wpilib}/vsCodeExtensions/WPILib.vsix";
-    #   vscodeExtUniqueId = "wpilibsuite.vscode-wpilib-2022.2.1";
-    # })]
+    ]) ++ wpilib.extensions;
   };
 
   programs.chromium = {
     enable = true;
   };
 }
-

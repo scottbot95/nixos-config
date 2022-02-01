@@ -25,22 +25,19 @@
 
   outputs = { self, nixpkgs, home-manager, nixos-hardware, wpilib-installer, ...}: {
     nixosConfigurations = let
+      wpilib-overlay = final: prev: {
+        wpilib.installer = wpilib-installer;
+      };
       base = rec {
         system = "x86_64-linux";
         modules = [
+          ({...}: { nixpkgs.overlays = [ wpilib-overlay ]; })
           # Put shared modules here
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.scott = import ./modules/home.nix;
-            home-manager.extraSpecialArgs = {
-              wpilib = (import ./modules/wpilib) {
-                inherit wpilib-installer;
-                pkgs = (import nixpkgs) { inherit system; };
-                version = "2022.2.1";
-              };
-            };
           }
         ];
       };

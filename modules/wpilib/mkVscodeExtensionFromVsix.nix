@@ -2,7 +2,7 @@
   { name, vsix, vscodeExtUniqueId, version ? "" }:
     pkgs.stdenv.mkDerivation {
       ## TODO these could theoretically be extract from the vsix somehow
-      pname = name;
+      pname = "vscode-extension-${name}";
       inherit version;
 
       dontPatchELF = true;

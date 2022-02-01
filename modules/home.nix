@@ -1,8 +1,8 @@
-{ config, pkgs, wpilib, ... }:
+{ config, pkgs, ... }:
 {
-  home.file = {
-    wpilib.source = wpilib.sdk;
-  };
+  imports = [
+    ./wpilib
+  ];
 
   home.packages = with pkgs; [
     thefuck # needed for zsh plugin
@@ -36,9 +36,14 @@
 
   programs.vscode = {
     enable = true;
-    extensions = (with pkgs.vscode-extensions; [
+    extensions = with pkgs.vscode-extensions; [
       bbenoist.nix
-    ]) ++ wpilib.extensions;
+    ];
+  };
+
+  programs.wpilib = {
+    enable = true;
+    version = "2022.2.1";
   };
 
   programs.chromium = {

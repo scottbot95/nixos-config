@@ -3,13 +3,11 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../../modules/packages.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ] ++ import ../../modules/module-list.nix;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -48,6 +46,7 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.displayManager.gdm.wayland = false;
   services.xserver.desktopManager.gnome.enable = true;
+  # services.xserver.displayManager.setupCommands = "${pkgs.guake}/bin/guake";
   
 
   # Configure keymap in X11
@@ -99,6 +98,12 @@
     ''; 
   };
 
+  # systemd.user.services.guake = {
+  #   script = "${pkgs.guake}/bin/guake";
+  #   wantedBy = [ "graphical-session.target" ];
+  #   partOf = [ "graphical-session.target" ];
+  # };
+
   # Virutal box setup
   # virtualisation.virtualbox.host.enable = true;
   # virtualisation.virtualbox.host.enableExtensionPack = true;
@@ -137,11 +142,6 @@
     }];
   };
 
-  # FIXME fingerprint stuff is broken
-  # fingerprint reader: login and unlock with fingerprint (if you add one with `fprintd-enroll`)
-  # services.fprintd.enable = true;
-  # security.pam.services.login.fprintAuth = true;
-  security.pam.services.xscreensaver.fprintAuth = true;
-  # similarly for other PAM providers
+  services.python-validity.enable = true;
 }
 

@@ -2,7 +2,7 @@
 let
   cfg = config.services.python-validity;
   open-fprintd = pkgs.open-fprintd;
-  python-validity = pkgs.callPackage ../../pkgs/python-validity.nix { };
+  python-validity = pkgs.python-validity;
 in with lib; {
   
   options.services.python-validity = {

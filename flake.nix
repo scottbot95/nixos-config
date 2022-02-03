@@ -55,25 +55,6 @@
           ./systems/marvin/configuration.nix
         ];
       };
-
-      graphicalLiveIso = nixpkgs.lib.nixosSystem {
-        inherit (base) system;
-        modules = [
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-plasma5.nix"
-          ({pkgs, ... }: with pkgs; {
-            services.pcscd.enable = true;
-            services.udev.packages = [ yubikey-personalization ];
-
-            environment.systemPackages = [
-              gnupg pinentry-curses pinentry-qt paperkey wget
-            ];
-
-            programs.ssh.startAgent = false;
-            programs.gnupg.agent.enable = true;
-            programs.gnupg.agent.enableSSHSupport = true;
-          })
-        ];
-      };
     };
   };
 }

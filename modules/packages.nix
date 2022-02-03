@@ -17,7 +17,6 @@
 
     git
     git-crypt
-    gnupg
 
     wget
     vim

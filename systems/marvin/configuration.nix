@@ -143,5 +143,12 @@
   };
 
   services.python-validity.enable = true;
+  
+  services.printing = {
+    enable = true;
+    drivers = [ pkgs.brlaser ];
+  };
+
+  hardware.opengl.enable = true;
 }
 

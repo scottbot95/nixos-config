@@ -29,7 +29,12 @@
   programs.git = {
     enable = true;
     userName = "Scott Techau";
-    userEmail = "scotttechau@gmail.com";
+    userEmail = "scott.techau@gmail.com";
+
+    signing = {
+      key = "A954416D9ADA8144";
+      signByDefault = true;
+    };
 
     extraConfig = { github.user = "scottbot95"; };
   };

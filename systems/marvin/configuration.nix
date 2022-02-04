@@ -143,6 +143,11 @@
     drivers = [ pkgs.brlaser ];
   };
 
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+  };
+
   hardware.opengl.enable = true;
 }
 

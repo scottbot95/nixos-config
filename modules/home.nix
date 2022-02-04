@@ -43,6 +43,7 @@
     enable = true;
     extensions = with pkgs.vscode-extensions; [
       bbenoist.nix
+      eamodio.gitlens
     ];
   };
 

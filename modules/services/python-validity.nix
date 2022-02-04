@@ -1,8 +1,8 @@
 { lib, config, pkgs, ... }:
 let
   cfg = config.services.python-validity;
-  open-fprintd = pkgs.open-fprintd;
-  python-validity = pkgs.python-validity;
+  open-fprintd = pkgs.callPackage ../../pkgs/open-fprintd.nix { };
+  python-validity = pkgs.callPackage ../../pkgs/python-validity.nix { };
 in with lib; {
   
   options.services.python-validity = {

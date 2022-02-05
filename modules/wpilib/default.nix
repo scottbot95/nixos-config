@@ -2,7 +2,8 @@
 with lib;
 let
   cfg = config.programs.wpilib;
-in {
+in
+{
   options.programs.wpilib = {
     enable = mkEnableOption "wpilib";
 
@@ -14,40 +15,42 @@ in {
   };
 
   config = mkIf cfg.enable
-    (let
-      year = builtins.head (builtins.splitVersion cfg.version);
-      installDir = "$out/${year}";
-      sdk = pkgs.stdenv.mkDerivation {
-        inherit (cfg) version;
-        pname = "wpilib-sdk";
+    (
+      let
+        year = builtins.head (builtins.splitVersion cfg.version);
+        installDir = "$out/${year}";
+        sdk = pkgs.stdenv.mkDerivation {
+          inherit (cfg) version;
+          pname = "wpilib-sdk";
 
-        src = pkgs.wpilib.installer;
-        
-        dontPatchELF = true;
-        dontStrip = true;
-        noDumpEnvVars = true; # useful for debugging but uneccessary
+          src = pkgs.wpilib.installer;
 
-        unpackPhase = ''
-          tar xf $src/WPILib_Linux-${cfg.version}-artifacts.tar.gz
-        '';
+          dontPatchELF = true;
+          dontStrip = true;
+          noDumpEnvVars = true; # useful for debugging but uneccessary
 
-        installPhase = ''
-          mkdir -p ${installDir}
-          mv ./* ${installDir}
-        '';
-      };
-      extensions = (import ./vscodeExtensions.nix) {
-        inherit pkgs;
+          unpackPhase = ''
+            tar xf $src/WPILib_Linux-${cfg.version}-artifacts.tar.gz
+          '';
 
-        wpilib = sdk;
-      };
-    in {
-      home.file.wpilib.source = sdk;
+          installPhase = ''
+            mkdir -p ${installDir}
+            mv ./* ${installDir}
+          '';
+        };
+        extensions = (import ./vscodeExtensions.nix) {
+          inherit pkgs;
 
-      programs.vscode = {
-        enable = true;
-        extensions = extensions;
-      };
-    }
-  );
+          wpilib = sdk;
+        };
+      in
+      {
+        home.file.wpilib.source = sdk;
+
+        programs.vscode = {
+          enable = true;
+          extensions = extensions;
+        };
+      }
+    );
 }

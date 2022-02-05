@@ -1,8 +1,9 @@
-{ pkgs, wpilib, ...}:
+{ pkgs, wpilib, ... }:
 let
   utils = pkgs.vscode-utils;
   mkExtensionFromVsix = import ./mkVscodeExtensionFromVsix.nix { inherit pkgs; };
-in (with pkgs.vscode-extensions; [
+in
+(with pkgs.vscode-extensions; [
   redhat.java
 ]) ++ utils.extensionsFromVscodeMarketplace [
   # FIXME This extension tries to store stuff in ${extensionPath}/cache
@@ -37,10 +38,12 @@ in (with pkgs.vscode-extensions; [
     version = "0.19.0";
     sha256 = "TOxDcqyjybilIt4+H3An5i+YcrjbOOLulMy+LDu296Q=";
   }
-] 
-++ [(mkExtensionFromVsix {
-  name = "wpilib-vscode";
-  version = "2022.2.1";
-  vsix = "${wpilib}/2022/vsCodeExtensions/WPILib.vsix";
-  vscodeExtUniqueId = "wpilibsuite.vscode-wpilib";
-})]
+]
+++ [
+  (mkExtensionFromVsix {
+    name = "wpilib-vscode";
+    version = "2022.2.1";
+    vsix = "${wpilib}/2022/vsCodeExtensions/WPILib.vsix";
+    vscodeExtUniqueId = "wpilibsuite.vscode-wpilib";
+  })
+]

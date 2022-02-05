@@ -1,33 +1,33 @@
 { pkgs, ... }:
-  { name, vsix, vscodeExtUniqueId, version ? "" }:
-    pkgs.stdenv.mkDerivation {
-      ## TODO these could theoretically be extract from the vsix somehow
-      pname = "vscode-extension-${name}";
-      inherit version;
+{ name, vsix, vscodeExtUniqueId, version ? "" }:
+pkgs.stdenv.mkDerivation {
+  ## TODO these could theoretically be extract from the vsix somehow
+  pname = "vscode-extension-${name}";
+  inherit version;
 
-      dontPatchELF = true;
-      dontStrip = true;
+  dontPatchELF = true;
+  dontStrip = true;
 
-      src = vsix;
+  src = vsix;
 
-      nativeBuildInputs = with pkgs; [ unzip ];
+  nativeBuildInputs = with pkgs; [ unzip ];
 
-      installPrefix = "share/vscode/extensions/${vscodeExtUniqueId}";
+  installPrefix = "share/vscode/extensions/${vscodeExtUniqueId}";
 
-      unpackPhase = ''
-        runHook preUnpack
+  unpackPhase = ''
+    runHook preUnpack
 
-        unzip ${vsix}
+    unzip ${vsix}
 
-        runHook postUnpack
-      '';
-      
-      installPhase = ''
-        runHook preInstall
+    runHook postUnpack
+  '';
 
-        mkdir -p "$out/$installPrefix"
-        find ./extension -mindepth 1 -maxdepth 1 | xargs -d'\n' mv -t "$out/$installPrefix/"
+  installPhase = ''
+    runHook preInstall
 
-        runHook postInstall
-      '';
-    }  
+    mkdir -p "$out/$installPrefix"
+    find ./extension -mindepth 1 -maxdepth 1 | xargs -d'\n' mv -t "$out/$installPrefix/"
+
+    runHook postInstall
+  '';
+}  

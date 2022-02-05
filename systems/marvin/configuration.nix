@@ -47,7 +47,7 @@
   services.xserver.displayManager.gdm.wayland = false;
   services.xserver.desktopManager.gnome.enable = true;
   # services.xserver.displayManager.setupCommands = "${pkgs.guake}/bin/guake";
-  
+
 
   # Configure keymap in X11
   # services.xserver.layout = "us";
@@ -71,7 +71,7 @@
     group = "scott";
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
   };
-  users.groups.scott = {};
+  users.groups.scott = { };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -92,7 +92,7 @@
     package = pkgs.nixUnstable;
     extraOptions = ''
       experimental-features = nix-command flakes
-    ''; 
+    '';
   };
 
   # systemd.user.services.guake = {
@@ -137,7 +137,7 @@
   };
 
   services.python-validity.enable = true;
-  
+
   services.printing = {
     enable = true;
     drivers = [ pkgs.brlaser ];

@@ -12,6 +12,7 @@
 
     guake
     htop
+    nixpkgs-fmt
     unzip
     usbutils
 

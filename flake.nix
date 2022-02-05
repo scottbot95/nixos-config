@@ -20,13 +20,21 @@
 
   outputs = { self, nixpkgs, home-manager, nixos-hardware, wpilib-installer, ...}@inputs: {
     nixosConfigurations = let
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
       wpilib-overlay = final: prev: {
         wpilib.installer = wpilib-installer;
       };
-      base = rec {
+      validity-overlay = final: prev: {
+        open-fprintd = pkgs.callPackage ./pkgs/open-fprintd.nix {};
+        python-validity = pkgs.callPackage ./pkgs/python-validity.nix {};
+      };
+      base = {
         system = "x86_64-linux";
         modules = [
-          ({...}: { nixpkgs.overlays = [ wpilib-overlay ]; })
+          ({...}: { nixpkgs.overlays = [ 
+            wpilib-overlay
+            validity-overlay
+          ]; })
           # Put shared modules here
           home-manager.nixosModules.home-manager
           {

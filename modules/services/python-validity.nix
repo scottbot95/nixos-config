@@ -1,8 +1,6 @@
 { lib, config, pkgs, ... }:
 let
   cfg = config.services.python-validity;
-  open-fprintd = pkgs.callPackage ../../pkgs/open-fprintd.nix { };
-  python-validity = pkgs.callPackage ../../pkgs/python-validity.nix { };
 in with lib; {
   
   options.services.python-validity = {
@@ -14,7 +12,7 @@ in with lib; {
     environment.systemPackages = with pkgs; [ fprintd ];
 
     systemd = {
-      packages = [ open-fprintd python-validity ];
+      packages = with pkgs; [ open-fprintd python-validity ];
       services.python3-validity.wantedBy = [ "default.target" ];
 
       # Dirty hack to fix https://github.com/uunicorn/python-validity/issues/106
@@ -31,7 +29,7 @@ in with lib; {
       };
     };
 
-    services.dbus.packages = [ open-fprintd python-validity ];
+    services.dbus.packages = with pkgs; [ open-fprintd python-validity ];
 
     security.pam.services = {
       doas.fprintAuth = true;

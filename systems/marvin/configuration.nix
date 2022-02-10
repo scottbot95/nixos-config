@@ -41,6 +41,10 @@
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
+  fonts.fonts = with pkgs; [
+    fira-code 
+    fira-code-symbols
+  ];
 
   # Enable the GNOME 3 Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
@@ -136,8 +140,13 @@
     }];
   };
 
-  services.python-validity.enable = true;
-
+  # services.python-validity.enable = true;
+  security.pam.services = {
+    doas.fprintAuth = true;
+    login.fprintAuth = true;
+    xscreensaver.fprintAuth = true;
+  };
+  
   services.printing = {
     enable = true;
     drivers = [ pkgs.brlaser ];
@@ -149,5 +158,12 @@
   };
 
   hardware.opengl.enable = true;
+
+  # Hack pls remove :)
+  # networking.firewall.allowedTCPPorts = [ 
+  #   1250
+  #   1735
+  #   1740
+  # ];
 }
 

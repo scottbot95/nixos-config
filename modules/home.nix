@@ -45,6 +45,12 @@
       jnoortheen.nix-ide
       eamodio.gitlens
     ];
+    userSettings = {
+      "editor.tabSize" =  2;
+      "editor.fontFamily" = "Fira Code";
+      "editor.fontLigatures" = true;
+      "nix.enableLanguageServer" =  true;
+    };
   };
 
   programs.wpilib = {

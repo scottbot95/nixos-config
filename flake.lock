@@ -39,11 +39,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1643805626,
-        "narHash": "sha256-AXLDVMG+UaAGsGSpOtQHPIKB+IZ0KSd9WS77aanGzgc=",
+        "lastModified": 1644420267,
+        "narHash": "sha256-rFJuctggkjM412OC6OGPdXogFp7czGDW05ueWqpJbj8=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "554d2d8aa25b6e583575459c297ec23750adb6cb",
+        "rev": "98bb5b77c8c6666824a4c13d23befa1e07210ef1",
         "type": "github"
       },
       "original": {
@@ -64,13 +64,13 @@
     "wpilib-installer": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-I/YB7vUHINF4LffIOfw2hmPAB4eR8txpcpImiHS7GnY=",
+        "narHash": "sha256-1RshfHR8rJ+SK1vpsEhdcgIIh5xqA2SRyBySif2U1N4=",
         "type": "tarball",
-        "url": "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.2.1/WPILib_Linux-2022.2.1.tar.gz"
+        "url": "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz"
       },
       "original": {
         "type": "tarball",
-        "url": "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.2.1/WPILib_Linux-2022.2.1.tar.gz"
+        "url": "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz"
       }
     }
   },

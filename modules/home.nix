@@ -55,7 +55,7 @@
 
   programs.wpilib = {
     enable = true;
-    version = "2022.2.1";
+    version = "2022.3.1";
   };
 
   programs.chromium = {

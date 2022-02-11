@@ -1,4 +1,4 @@
-{ pkgs, wpilib, ... }:
+{ pkgs, wpilib, version, ... }:
 let
   utils = pkgs.vscode-utils;
   mkExtensionFromVsix = import ./mkVscodeExtensionFromVsix.nix { inherit pkgs; };
@@ -7,7 +7,7 @@ in
   redhat.java
 ]) ++ utils.extensionsFromVscodeMarketplace [
   # FIXME This extension tries to store stuff in ${extensionPath}/cache
-  #       which is actually is the /nix/store so is read-only
+  #       which is actually in the /nix/store so is read-only
   # {
   #   name = "vscodeintellicode";
   #   publisher = "visualstudioexptteam";
@@ -41,8 +41,9 @@ in
 ]
 ++ [
   (mkExtensionFromVsix {
+    inherit version;
     name = "wpilib-vscode";
-    version = "2022.2.1";
+
     vsix = "${wpilib}/2022/vsCodeExtensions/WPILib.vsix";
     vscodeExtUniqueId = "wpilibsuite.vscode-wpilib";
   })

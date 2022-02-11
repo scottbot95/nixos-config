@@ -13,7 +13,7 @@
     };
 
     wpilib-installer = {
-      url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.2.1/WPILib_Linux-2022.2.1.tar.gz";
+      url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz";
       flake = false;
     };
   };

@@ -38,8 +38,8 @@ in
             mv ./* ${installDir}
           '';
         };
-        extensions = (import ./vscodeExtensions.nix) {
-          inherit pkgs;
+        extensions = pkgs.callPackage ./vscodeExtensions.nix {
+          inherit (cfg) version;
 
           wpilib = sdk;
         };
@@ -47,6 +47,7 @@ in
       {
         home.file.wpilib.source = sdk;
 
+        # TODO make this it's own clean install of VSCode
         programs.vscode = {
           enable = true;
           extensions = extensions;

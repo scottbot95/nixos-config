@@ -1,6 +1,6 @@
-{ lib, fetchFromGitHub, python38Packages }:
+{ lib, fetchFromGitHub, python3 }:
 
-python38Packages.buildPythonPackage rec {
+python3.pkgs.buildPythonPackage rec {
   pname = "python-validity";
   version = "0.12";
 
@@ -11,9 +11,9 @@ python38Packages.buildPythonPackage rec {
     sha256 = "sha256-s0o99CRW9gwxCv3AMKrtXh8mrblVAA9r9IIPgy6fv4U=";
   };
 
-  buildInputs = with python38Packages; [ cryptography pyyaml pyusb ];
+  buildInputs = with python3.pkgs; [ cryptography pyyaml pyusb ];
 
-  propagatedBuildInputs = with python38Packages; [
+  propagatedBuildInputs = with python3.pkgs; [
     dbus-python
     pygobject3
     cryptography
@@ -26,7 +26,7 @@ python38Packages.buildPythonPackage rec {
       $out/lib/systemd/system/python3-validity.service
     substituteInPlace $out/lib/python-validity/dbus-service \
       --replace /usr/share/python-validity/backoff /tmp/backoff
-    substituteInPlace $out/lib/python3.8/site-packages/validitysensor/sensor.py \
+    substituteInPlace $out/${python3.sitePackages}/validitysensor/sensor.py \
       --replace /usr/share/python-validity/calib-data.bin /tmp/calib-data.bin
     substituteInPlace $out/lib/systemd/system/python3-validity.service \
       --replace /usr/lib/python-validity "$out/lib/python-validity"

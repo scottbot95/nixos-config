@@ -61,4 +61,16 @@
   programs.chromium = {
     enable = true;
   };
+
+  systemd.user.services.guake = {
+    Unit = {
+      Description = "Run guake terminal";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.guake}/bin/guake";
+    };
+  };
 }

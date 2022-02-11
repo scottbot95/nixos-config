@@ -99,12 +99,6 @@
     '';
   };
 
-  # systemd.user.services.guake = {
-  #   script = "${pkgs.guake}/bin/guake";
-  #   wantedBy = [ "graphical-session.target" ];
-  #   partOf = [ "graphical-session.target" ];
-  # };
-
   # Virutal box setup
   # virtualisation.virtualbox.host.enable = true;
   # virtualisation.virtualbox.host.enableExtensionPack = true;

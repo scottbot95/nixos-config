@@ -104,6 +104,10 @@
   # virtualisation.virtualbox.host.enableExtensionPack = true;
   # users.extraGroups.vboxusers.members = [ "scott" ];
 
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+  };
 
   # List services that you want to enable:
 

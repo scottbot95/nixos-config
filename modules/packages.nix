@@ -3,7 +3,8 @@
   nixpkgs = {
     config.allowUnfree = true;
     config.packageOverrides = pkgs: {
-      # override packages here, or add new
+      python-validity = pkgs.callPackage ../pkgs/python-validity.nix { };
+      open-fprintd = pkgs.callPackage ../pkgs/open-fprintd.nix { };
     };
   };
 

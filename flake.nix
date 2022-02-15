@@ -25,17 +25,12 @@
         wpilib-overlay = final: prev: {
           wpilib.installer = wpilib-installer;
         };
-        validity-overlay = final: prev: {
-          open-fprintd = pkgs.callPackage ./pkgs/open-fprintd.nix { };
-          python-validity = pkgs.callPackage ./pkgs/python-validity.nix { };
-        };
         base = {
           system = "x86_64-linux";
           modules = [
             ({ ... }: {
               nixpkgs.overlays = [
                 wpilib-overlay
-                validity-overlay
               ];
             })
             # Put shared modules here

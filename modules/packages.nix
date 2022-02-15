@@ -9,6 +9,8 @@
 
   environment.systemPackages = with pkgs; [
     firefox
+    anydesk
+    idea.idea-ultimate
 
     guake
     htop
@@ -18,6 +20,8 @@
 
     git
     git-crypt
+
+    arp-scan
 
     wget
     vim

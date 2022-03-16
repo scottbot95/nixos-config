@@ -1,8 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, extraImports, ... }:
 {
   imports = [
-    ./wpilib
-  ];
+    # ./wpilib
+  ] ++ extraImports;
 
   home.packages = with pkgs; [
     thefuck # needed for zsh plugin
@@ -44,6 +44,7 @@
     extensions = with pkgs.vscode-extensions; [
       jnoortheen.nix-ide
       eamodio.gitlens
+      ms-vscode-remote.remote-ssh
     ];
     userSettings = {
       "editor.tabSize" = 2;
@@ -56,12 +57,13 @@
         "**/.settings" = true;
         "**/.factorypath" = true;
       };
+      "remote.SSH.logLevel" =  "trace";
     };
   };
 
   programs.wpilib = {
     enable = true;
-    version = "2022.3.1";
+    configureVsCode = true;
   };
 
   programs.chromium = {

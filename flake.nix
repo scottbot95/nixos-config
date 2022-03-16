@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+    enzimeNixpkgs.url = "github:Enzime/nixpkgs/vsce/remote-ssh-fix-patching-node";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
@@ -12,25 +13,41 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    wpilib-installer = {
-      url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz";
-      flake = false;
-    };
+    # wpilib-installer = {
+    #   url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz";
+    #   flake = false;
+    # };
+
+    wpilib.url = "/home/scott/workspace/wpilib-flake";
+    wpilib.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, wpilib-installer, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }@inputs: {
     nixosConfigurations =
       let
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        system = "x86_64-linux";
+        pkgs = nixpkgs.legacyPackages.${system};
         wpilib-overlay = final: prev: {
-          wpilib.installer = wpilib-installer;
+          # wpilib = {
+          #   # inherit (inputs.wpilib.packages.${system}) roborio-toolchain;
+          #   # installer = inputs.wpilib-installer;
+          # };
+          wpilib = inputs.wpilib.packages.${system};
+        };
+        enzime-overlay = final: prev: {
+          vscode-extensions = prev.vscode-extensions // {
+            ms-vscode-remote = prev.vscode-extensions.ms-vscode-remote // {
+              inherit (inputs.enzimeNixpkgs.legacyPackages.${system}.vscode-extensions.ms-vscode-remote) remote-ssh;
+            };
+          };
         };
         base = {
-          system = "x86_64-linux";
+          inherit system;
           modules = [
             ({ ... }: {
               nixpkgs.overlays = [
                 wpilib-overlay
+                enzime-overlay
               ];
             })
             # Put shared modules here
@@ -39,6 +56,9 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.scott = import ./modules/home.nix;
+              home-manager.extraSpecialArgs = {
+                extraImports = [ inputs.wpilib.nixosModules.${system}.wpilib ];
+              };
             }
           ];
         };

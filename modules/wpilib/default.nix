@@ -19,25 +19,7 @@ in
       let
         year = builtins.head (builtins.splitVersion cfg.version);
         installDir = "$out/${year}";
-        sdk = pkgs.stdenv.mkDerivation {
-          inherit (cfg) version;
-          pname = "wpilib-sdk";
-
-          src = pkgs.wpilib.installer;
-
-          dontPatchELF = true;
-          dontStrip = true;
-          noDumpEnvVars = true; # useful for debugging but uneccessary
-
-          unpackPhase = ''
-            tar xf $src/WPILib_Linux-${cfg.version}-artifacts.tar.gz
-          '';
-
-          installPhase = ''
-            mkdir -p ${installDir}
-            mv ./* ${installDir}
-          '';
-        };
+        sdk = pkgs.wpilib.sdk;
         extensions = pkgs.callPackage ./vscodeExtensions.nix {
           inherit (cfg) version;
 

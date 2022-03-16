@@ -12,12 +12,14 @@
     firefox
     anydesk
     idea.idea-ultimate
+    discord
 
     guake
     htop
     nixpkgs-fmt
     unzip
     usbutils
+    python3
 
     git
     git-crypt

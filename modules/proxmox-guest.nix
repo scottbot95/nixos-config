@@ -21,6 +21,8 @@
 
   services.qemuGuest.enable = true;
 
+  services.cloud-init.network.enable = true;
+
   proxmox = {
     qemuConf.agent = true;
     qemuExtraConf = {

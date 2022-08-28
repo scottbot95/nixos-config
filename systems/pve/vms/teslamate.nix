@@ -23,4 +23,10 @@
   ];
 
   system.stateVersion = "22.05";
+
+  proxmox.qemuConf = {
+    cores = 2;
+    memory = 4098;
+    name = "teslamate";
+  };
 }

@@ -13,16 +13,21 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # wpilib-installer = {
     #   url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz";
     #   flake = false;
     # };
 
-    wpilib.url = "/home/scott/workspace/wpilib-flake";
-    wpilib.inputs.nixpkgs.follows = "nixpkgs";
+    # wpilib.url = "/home/scott/workspace/wpilib-flake";
+    # wpilib.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, nixos-generators, ... }@inputs: {
     nixosConfigurations =
       let
         system = "x86_64-linux";
@@ -83,5 +88,14 @@
           ];
         };
       };
+    packages.x86_64-linux = {
+      teslamate = nixos-generators.nixosGenerate {
+        system = "x86_64-linux";
+        modules = [
+          ./systems/pve/vms/teslamate.nix
+        ];
+        format = "proxmox";
+      };
+    };
   };
 }

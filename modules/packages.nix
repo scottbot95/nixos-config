@@ -11,8 +11,9 @@
   environment.systemPackages = with pkgs; [
     firefox
     anydesk
-    idea.idea-ultimate
+    jetbrains.idea-ultimate
     discord
+    # yubikey-manager-qt
 
     guake
     htop

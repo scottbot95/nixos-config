@@ -44,7 +44,7 @@
     extensions = with pkgs.vscode-extensions; [
       jnoortheen.nix-ide
       eamodio.gitlens
-      ms-vscode-remote.remote-ssh
+#      ms-vscode-remote.remote-ssh
     ];
     userSettings = {
       "editor.tabSize" = 2;

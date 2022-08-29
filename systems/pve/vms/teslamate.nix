@@ -27,7 +27,7 @@ in {
 
   proxmox.qemuConf = {
     cores = 2;
-    memory = 4098;
+    memory = 4096;
     name = "teslamate";
   };
 
@@ -37,17 +37,27 @@ in {
     oci-containers.containers = {
       teslamate = {
         image = "teslamate/teslamate:latest";
-        autoStart = true;
+        # autoStart = true;
         environment = {
           ENCRYPTION_KEY = "my-super-secrety-encryption-key";
           DATABASE_USER = "teslamate";
           DATABASE_PASS = teslamate_db_pass;
           DATABASE_NAME = "teslamate";
-          DATABASE_HOST = "localhost";
-          MQTT_HOST = "localhost";
+          DATABASE_HOST = "database";
+          MQTT_HOST = "mosquitto";
         };
         ports = [ "4000:4000" ];
         extraOptions = [ "--cap-drop=all" ];
+      };
+      database = {
+        image = "postgres:14";
+        autoStart = true;
+        environment = {
+          POSTGRES_USER = "teslamate";
+          POSTGRES_PASSWORD = teslamate_db_pass;
+          POSTGRES_DB = "teslamate";
+        };
+        volumes = [ "teslamate-db:/var/lib/postgresql/data" ];
       };
       grafana = {
         image = "teslamate/grafana:latest";
@@ -56,7 +66,7 @@ in {
           DATABASE_USER = "teslamate";
           DATABASE_PASS = teslamate_db_pass;
           DATABASE_NAME = "teslamate";
-          DATABASE_HOST = "teslamate";
+          DATABASE_HOST = "database";
         };
         ports = [ "3000:3000" ];
         volumes = [ "teslamate-grafana-data:/var/lib/grafana" ];
@@ -65,7 +75,7 @@ in {
         image = "eclipse-mosquitto:2";
         autoStart = true;
         cmd = [ "mosquitto" "-c" "/mosquitto-no-auth.conf" ];
-        ports = [ "127.0.0.1:1883:1883" ];
+        # ports = [ "127.0.0.1:1883:1883" ];
         volumes = [
           "mosquitto-conf:/mosquitto/config"
           "mosquitto-data:/mosquitto/data"
@@ -75,21 +85,21 @@ in {
   };
 
   # Postgres DB
-  services.postgresql = {
-    enable = true;
-    package = pkgs.postgresql_14;
-    authentication = pkgs.lib.mkOverride 10 ''
-      local all all trust
-      host all all 127.0.0.1/32 trust
-      host all all ::1/128 trust
-    '';
-    initialScript = pkgs.writeText "teslamate-initScript" ''
-      CREATE DATABASE teslamte;
-      CREATE USER telsamate with encrypted password '${teslamate_db_pass}';
-      GRANT ALL PRIVILEGES ON DATABASE teslamate TO teslamate;
-      ALERT USER telsamate WITH SUPERUSER;
-    '';
-  };
+  # services.postgresql = {
+  #   enable = true;
+  #   package = pkgs.postgresql_14;
+  #   authentication = pkgs.lib.mkOverride 10 ''
+  #     local all all trust
+  #     host all all 127.0.0.1/32 trust
+  #     host all all ::1/128 trust
+  #   '';
+  #   initialScript = pkgs.writeText "teslamate-initScript" ''
+  #     CREATE DATABASE teslamate;
+  #     CREATE USER teslamate WITH ENCRYPTED PASSWORD '${teslamate_db_pass}';
+  #     GRANT ALL PRIVILEGES ON DATABASE teslamate TO teslamate;
+  #     ALTER USER teslamate WITH SUPERUSER;
+  #   '';
+  # };
 
   # # Grafana
   # services.grafana = {

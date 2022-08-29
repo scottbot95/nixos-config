@@ -31,6 +31,27 @@ in {
     name = "teslamate";
   };
 
+  # Create the docker network
+  systemd.services.init-teslamate-network = {
+    description = "Create the network bridge for teslamate containers";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig.Type = "oneshot";
+    script = let
+      podmanCli = "${pkgs.podman}/bin/podman";
+    in ''
+      # Put a true at the end to prevent getting non-zero return code, which will
+      # crash the whole service.
+      check=$(${podmanCli} network ls | grep "teslamate-br" || true)
+      if [ -z "$check" ]; then
+        ${podmanCli} network create teslamate-br
+      else
+        echo "teslamate-br already exists in podman"
+      fi
+    '';
+  };
+
   virtualisation = {
     podman.enable = true;
     oci-containers.backend = "podman";
@@ -47,7 +68,7 @@ in {
           MQTT_HOST = "mosquitto";
         };
         ports = [ "4000:4000" ];
-        extraOptions = [ "--cap-drop=all" ];
+        extraOptions = [ "--cap-drop=all" "--network=teslamate-br" ];
       };
       database = {
         image = "postgres:14";
@@ -58,6 +79,7 @@ in {
           POSTGRES_DB = "teslamate";
         };
         volumes = [ "teslamate-db:/var/lib/postgresql/data" ];
+        extraOptions = [ "--network=teslamate-br" ];
       };
       grafana = {
         image = "teslamate/grafana:latest";
@@ -70,6 +92,7 @@ in {
         };
         ports = [ "3000:3000" ];
         volumes = [ "teslamate-grafana-data:/var/lib/grafana" ];
+        extraOptions = [ "--network=teslamate-br" ];
       };
       mosquitto = {
         image = "eclipse-mosquitto:2";
@@ -80,6 +103,7 @@ in {
           "mosquitto-conf:/mosquitto/config"
           "mosquitto-data:/mosquitto/data"
         ];
+        extraOptions = [ "--network=teslamate-br" ];
       };
     };
   };

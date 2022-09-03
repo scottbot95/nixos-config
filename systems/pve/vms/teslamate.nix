@@ -2,6 +2,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
   podName = "teslamate_pod";
+  containerServices = builtins.map (name: "podman-${name}.service") (builtins.attrNames containers);
   containers = {
       teslamate = {
         image = "teslamate/teslamate:latest";
@@ -80,10 +81,18 @@ in {
 
   system.stateVersion = "22.05";
 
+  # Create a target to start/stop all teslamate services
+  systemd.targets.teslamate = {
+    description = "Teslamate target";
+    wantedBy = [ "multi-user.target" ];
+    requiredBy = containerServices ++ [ "podman-create-pod-teslamate.service" ];
+    wants = containerServices;
+  };
+
   # Create the docker network
   systemd.services.podman-create-pod-teslamate = {
     description = "Create the pod for teslamate containers";
-    wantedBy = builtins.map (name: "podman-${name}.service") (builtins.attrNames containers);
+    wantedBy = containerServices;
 
     serviceConfig.Type = "oneshot";
     script = let

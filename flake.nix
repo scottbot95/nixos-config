@@ -3,6 +3,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     enzimeNixpkgs.url = "github:Enzime/nixpkgs/vsce/remote-ssh-fix-patching-node";
 
+    flake-utils.url = "github:numtide/flake-utils";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,6 +20,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixops-proxmox = {
+      url = "github:scottbot95/nixops-proxmox";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
     # wpilib-installer = {
     #   url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz";
     #   flake = false;
@@ -27,7 +35,7 @@
     # wpilib.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, nixos-generators, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }@inputs: {
     nixosConfigurations =
       let
         system = "x86_64-linux";
@@ -88,8 +96,18 @@
           ];
         };
       };
+    nixopsConfigurations.default = {
+      inherit nixpkgs;
+      network = {
+        description = "Scott's Homelab NixOps Networks";
+        storage.legacy = {};
+        enableRollback = true;
+      };
+
+      teslamate = import ./systems/pve/vms/teslamate.nix;
+    };
     packages.x86_64-linux = {
-      pve-minimal-iso = nixos-generators.nixosGenerate {
+      pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
         system = "x86_64-linux";
         modules = [
           ./systems/pve/minimal-installer.nix
@@ -97,5 +115,16 @@
         format = "install-iso";
       };
     };
-  };
+  } // (inputs.flake-utils.lib.eachDefaultSystem
+    (system:
+      let 
+        pkgs = nixpkgs.legacyPackages.${system};
+        input-pkgs = builtins.mapAttrs (name: input: input.packages.${system}.default) inputs;
+      in {
+        devShells.default = import ./shell.nix {
+          inherit pkgs;
+          inputs = input-pkgs;
+        };
+      }
+    ));
 }

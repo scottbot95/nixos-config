@@ -1,61 +1,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
   teslamate_db_pass = "teslamate";
-in {
-  imports = [
-    ../../../modules/proxmox-guest.nix
-  ];
-
-  networking.hostName = "teslamate";
-  networking.networkmanager.enable = true;
-  time.timeZone = "America/Los_Angeles";
-  i18n.defaultLocale = "en_US.utf8";
-
-  users.mutableUsers = true;
-  users.users.scott = {
-    isNormalUser = true;
-    description = "Scott";
-    extraGroups = ["networkmanager" "wheel" ];
-    initialPassword = "password";
-  };
-
-  environment.systemPackages = with pkgs; [
-    vim
-  ];
-
-  system.stateVersion = "22.05";
-
-  proxmox.qemuConf = {
-    cores = 2;
-    memory = 4096;
-    name = "teslamate";
-  };
-
-  # Create the docker network
-  systemd.services.init-teslamate-network = {
-    description = "Create the network bridge for teslamate containers";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-
-    serviceConfig.Type = "oneshot";
-    script = let
-      podmanCli = "${pkgs.podman}/bin/podman";
-    in ''
-      # Put a true at the end to prevent getting non-zero return code, which will
-      # crash the whole service.
-      check=$(${podmanCli} network ls | grep "teslamate-br" || true)
-      if [ -z "$check" ]; then
-        ${podmanCli} network create teslamate-br
-      else
-        echo "teslamate-br already exists in podman"
-      fi
-    '';
-  };
-
-  virtualisation = {
-    podman.enable = true;
-    oci-containers.backend = "podman";
-    oci-containers.containers = {
+  containers = {
       teslamate = {
         image = "teslamate/teslamate:latest";
         # autoStart = true;
@@ -67,8 +13,8 @@ in {
           DATABASE_HOST = "database";
           MQTT_HOST = "mosquitto";
         };
-        ports = [ "4000:4000" ];
-        extraOptions = [ "--cap-drop=all" "--network=teslamate-br" ];
+        # ports = [ "4000:4000" ];
+        extraOptions = [ "--cap-drop=all" "--pod=teslamate" ];
       };
       database = {
         image = "postgres:14";
@@ -79,7 +25,7 @@ in {
           POSTGRES_DB = "teslamate";
         };
         volumes = [ "teslamate-db:/var/lib/postgresql/data" ];
-        extraOptions = [ "--network=teslamate-br" ];
+        extraOptions = [ "--pod=teslamate" ];
       };
       grafana = {
         image = "teslamate/grafana:latest";
@@ -90,9 +36,9 @@ in {
           DATABASE_NAME = "teslamate";
           DATABASE_HOST = "database";
         };
-        ports = [ "3000:3000" ];
+        # ports = [ "3000:3000" ];
         volumes = [ "teslamate-grafana-data:/var/lib/grafana" ];
-        extraOptions = [ "--network=teslamate-br" ];
+        extraOptions = [ "--pod=teslamate" ];
       };
       mosquitto = {
         image = "eclipse-mosquitto:2";
@@ -103,9 +49,53 @@ in {
           "mosquitto-conf:/mosquitto/config"
           "mosquitto-data:/mosquitto/data"
         ];
-        extraOptions = [ "--network=teslamate-br" ];
+        extraOptions = [ "--pod=teslamate" ];
       };
     };
+in {
+  imports = [
+    ../../../modules/proxmox-guest.nix
+  ];
+
+  networking.hostName = "teslamate";
+  time.timeZone = "America/Los_Angeles";
+  i18n.defaultLocale = "en_US.utf8";
+
+  deployment.proxmox = {
+    cores = 2;
+    memory = 4096;
+    startOnBoot = true;
+    disks = [{
+      volume = "nvme0";
+      size = "100G";
+      enableSSDEmulation = true;
+      enableDiscard = true;
+    }];
+  };
+
+  environment.systemPackages = with pkgs; [
+    vim
+  ];
+
+  system.stateVersion = "22.05";
+
+  # Create the docker network
+  systemd.services.podman-create-pod-teslamate = {
+    description = "Create the pod for teslamate containers";
+    wantedBy = builtins.map (name: "podman-${name}.service") (builtins.attrNames containers);
+
+    serviceConfig.Type = "oneshot";
+    script = let
+      podmanCli = "${pkgs.podman}/bin/podman";
+    in ''
+      ${podmanCli} pod exists teslamate || ${podmanCli} pod create --name teslamate -p 4000:4000 -p 3000:3000
+    '';
+  };
+
+  virtualisation = {
+    podman.enable = true;
+    oci-containers.backend = "podman";
+    oci-containers.containers = containers;
   };
 
   # Postgres DB

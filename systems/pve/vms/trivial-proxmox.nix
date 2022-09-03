@@ -25,7 +25,7 @@ in {
     };
     "/boot" = {
       device = "/dev/sda3";
-      fsType = "fat32";
+      fsType = "vfat";
     };
   };
   swapDevices = [
@@ -56,9 +56,4 @@ in {
   '';
   deployment.proxmox.memory = 2048;
   deployment.proxmox.cores = 2;
-
-  users.users.scott = {
-    isNormalUser = true;
-    initialPassword = "password";
-  };
 }

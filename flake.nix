@@ -89,12 +89,12 @@
         };
       };
     packages.x86_64-linux = {
-      teslamate = nixos-generators.nixosGenerate {
+      pve-minimal-iso = nixos-generators.nixosGenerate {
         system = "x86_64-linux";
         modules = [
-          ./systems/pve/vms/teslamate.nix
+          ./systems/pve/minimal-installer.nix
         ];
-        format = "proxmox";
+        format = "install-iso";
       };
     };
   };

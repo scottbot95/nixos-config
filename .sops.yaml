@@ -1,0 +1,8 @@
+keys:
+        - &admin_scott age15hzqzdp289m868stvw6937hdzt3qqt0hz5uj4tqt7et5yne0s5eq7dhmgn
+         
+
+creation_rules:
+        - key_groups:
+                - age:
+                        - *admin_scott

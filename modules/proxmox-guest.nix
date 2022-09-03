@@ -1,33 +1,75 @@
 { config, lib, pkgs, modulesPath, ... }:
-{
+let
+  secrets = (lib.importJSON ../secrets/homelab.json).proxmox;
+in {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
   ];
+  deployment.targetEnv = "proxmox";
+  deployment.proxmox = {
+    serverUrl = "192.168.4.54:8006";
+    username = secrets.user;
+    tokenName = secrets.token_name;
+    tokenValue = secrets.token_value;
+    uefi = {
+      enable = true;
+      volume = "nvme0";
+    };
+    network = [
+      ({bridge = "vmbr1"; })
+    ];
+    installISO = "local:iso/nixos-22.05.20220320.9bc841f-x86_64-linux.isonixos.iso";
+    usePrivateIPAddress = true;
+    partitions = ''
+      set -x
+      set -e
+      wipefs -f /dev/sda
 
-  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
-  boot.extraModulePackages = [ ];
+      parted --script /dev/sda -- mklabel gpt
+      parted --script /dev/sda -- mkpart primary 512MB -2GiB 
+      parted --script /dev/sda -- mkpart primary linux-swap -2GiB 100% 
+      parted --script /dev/sda -- mkpart ESP fat32 1MB 512MB
+      parted --script /dev/sda -- set 3 esp on
 
-  # TODO setup file systems here?
-  
-  swapDevices = [ ];
+      sleep 0.5
 
-  boot.loader.grub = {
-    enable = true;
-    version = 2;
-    device = "/dev/sda";
+      mkfs.ext4 -L nixroot /dev/sda1
+      mkswap -L swap /dev/sda2
+      swapon /dev/sda2
+      mkfs.fat -F 32 -n NIXBOOT /dev/sda3
+
+      mount /dev/disk/by-label/nixroot /mnt
+
+      mkdir -p /mnt/boot
+      mount /dev/disk/by-label/NIXBOOT /mnt/boot
+    '';
   };
 
-  services.qemuGuest.enable = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
 
-  services.cloud-init.network.enable = true;
-
-  proxmox = {
-    qemuConf.agent = true;
-    qemuExtraConf = {
-      numa = 1;
-      onboot = 1;
+  fileSystems = {
+    "/" = {
+      device = "/dev/sda1";
+      fsType = "ext4";
+    };
+    "/boot" = {
+      device = "/dev/sda3";
+      fsType = "vfat";
     };
   };
+  swapDevices = [
+    { device = "/dev/sda2"; }
+  ];
+
+  services.qemuGuest.enable = true;
+  services.cloud-init.network.enable = true;
+
+  services.openssh = {
+    enable = true;
+  };
+
+  # Turn of extra docs
+  documentation.nixos.enable = false;
 }

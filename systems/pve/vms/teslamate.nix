@@ -1,44 +1,45 @@
+{ secrets }:
 { config, lib, pkgs, modulesPath, ... }:
 let
-  teslamate_db_pass = "teslamate";
+  podName = "teslamate_pod";
   containers = {
       teslamate = {
         image = "teslamate/teslamate:latest";
         # autoStart = true;
         environment = {
-          ENCRYPTION_KEY = "my-super-secrety-encryption-key";
-          DATABASE_USER = "teslamate";
-          DATABASE_PASS = teslamate_db_pass;
+          ENCRYPTION_KEY = secrets.database.encryption_key;
+          DATABASE_USER = secrets.database.user;
+          DATABASE_PASS = secrets.database.password;
           DATABASE_NAME = "teslamate";
           DATABASE_HOST = "database";
           MQTT_HOST = "mosquitto";
         };
         # ports = [ "4000:4000" ];
-        extraOptions = [ "--cap-drop=all" "--pod=teslamate" ];
+        extraOptions = [ "--cap-drop=all" "--pod=${podName}" ];
       };
       database = {
         image = "postgres:14";
         autoStart = true;
         environment = {
-          POSTGRES_USER = "teslamate";
-          POSTGRES_PASSWORD = teslamate_db_pass;
+          POSTGRES_USER = secrets.database.user;
+          POSTGRES_PASSWORD = secrets.database.password;
           POSTGRES_DB = "teslamate";
         };
         volumes = [ "teslamate-db:/var/lib/postgresql/data" ];
-        extraOptions = [ "--pod=teslamate" ];
+        extraOptions = [ "--pod=${podName}" ];
       };
       grafana = {
         image = "teslamate/grafana:latest";
         autoStart = true;
         environment = {
-          DATABASE_USER = "teslamate";
-          DATABASE_PASS = teslamate_db_pass;
+          DATABASE_USER = secrets.database.user;
+          DATABASE_PASS = secrets.database.password;
           DATABASE_NAME = "teslamate";
           DATABASE_HOST = "database";
         };
         # ports = [ "3000:3000" ];
         volumes = [ "teslamate-grafana-data:/var/lib/grafana" ];
-        extraOptions = [ "--pod=teslamate" ];
+        extraOptions = [ "--pod=${podName}" ];
       };
       mosquitto = {
         image = "eclipse-mosquitto:2";
@@ -49,7 +50,7 @@ let
           "mosquitto-conf:/mosquitto/config"
           "mosquitto-data:/mosquitto/data"
         ];
-        extraOptions = [ "--pod=teslamate" ];
+        extraOptions = [ "--pod=${podName}" ];
       };
     };
 in {
@@ -88,7 +89,7 @@ in {
     script = let
       podmanCli = "${pkgs.podman}/bin/podman";
     in ''
-      ${podmanCli} pod exists teslamate || ${podmanCli} pod create --name teslamate -p 4000:4000 -p 3000:3000
+      ${podmanCli} pod exists ${podName} || ${podmanCli} pod create --name ${podName} -p 4000:4000 -p 3000:3000
     '';
   };
 

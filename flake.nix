@@ -26,6 +26,8 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
+    sops-nix.url = "github:Mic92/sops-nix";
+
     # wpilib-installer = {
     #   url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz";
     #   flake = false;
@@ -35,7 +37,7 @@
     # wpilib.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, ... }@inputs: {
     nixosConfigurations =
       let
         system = "x86_64-linux";
@@ -96,7 +98,9 @@
           ];
         };
       };
-    nixopsConfigurations.default = {
+    nixopsConfigurations.default = let
+      secrets = nixpkgs.lib.importJSON ./secrets/homelab.json;
+    in {
       inherit nixpkgs;
       network = {
         description = "Scott's Homelab NixOps Networks";
@@ -104,7 +108,7 @@
         enableRollback = true;
       };
 
-      teslamate = import ./systems/pve/vms/teslamate.nix;
+      teslamate = import ./systems/pve/vms/teslamate.nix { secrets = secrets.services.teslamate; };
     };
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {

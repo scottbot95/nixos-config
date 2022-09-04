@@ -98,9 +98,7 @@
           ];
         };
       };
-    nixopsConfigurations.default = let
-      secrets = nixpkgs.lib.importJSON ./secrets/homelab.json;
-    in {
+    nixopsConfigurations.default = {
       inherit nixpkgs;
       network = {
         description = "Scott's Homelab NixOps Networks";
@@ -108,7 +106,7 @@
         enableRollback = true;
       };
 
-      teslamate = import ./systems/pve/vms/teslamate.nix { secrets = secrets.services.teslamate; };
+      teslamate = import ./systems/pve/vms/teslamate.nix { inherit sops-nix; };
     };
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {

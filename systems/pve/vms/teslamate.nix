@@ -1,4 +1,4 @@
-{ secrets }:
+{ sops-nix }:
 { config, lib, pkgs, modulesPath, ... }:
 let
   podName = "teslamate_pod";
@@ -6,15 +6,13 @@ let
   containers = {
       teslamate = {
         image = "teslamate/teslamate:latest";
-        # autoStart = true;
+        autoStart = true;
         environment = {
-          ENCRYPTION_KEY = secrets.database.encryption_key;
-          DATABASE_USER = secrets.database.user;
-          DATABASE_PASS = secrets.database.password;
           DATABASE_NAME = "teslamate";
           DATABASE_HOST = "database";
           MQTT_HOST = "mosquitto";
         };
+        environmentFiles = [ /run/secrets/.env ];
         # ports = [ "4000:4000" ];
         extraOptions = [ "--cap-drop=all" "--pod=${podName}" ];
       };
@@ -22,10 +20,9 @@ let
         image = "postgres:14";
         autoStart = true;
         environment = {
-          POSTGRES_USER = secrets.database.user;
-          POSTGRES_PASSWORD = secrets.database.password;
           POSTGRES_DB = "teslamate";
         };
+        environmentFiles = [ /run/secrets/.env ];
         volumes = [ "teslamate-db:/var/lib/postgresql/data" ];
         extraOptions = [ "--pod=${podName}" ];
       };
@@ -33,11 +30,10 @@ let
         image = "teslamate/grafana:latest";
         autoStart = true;
         environment = {
-          DATABASE_USER = secrets.database.user;
-          DATABASE_PASS = secrets.database.password;
           DATABASE_NAME = "teslamate";
           DATABASE_HOST = "database";
         };
+        environmentFiles = [ /run/secrets/.env ];
         # ports = [ "3000:3000" ];
         volumes = [ "teslamate-grafana-data:/var/lib/grafana" ];
         extraOptions = [ "--pod=${podName}" ];
@@ -56,8 +52,13 @@ let
     };
 in {
   imports = [
-    ../../../modules/proxmox-guest.nix
+    ../../../modules/profiles/proxmox-guest.nix
+    (import ../../../modules/profiles/sops.nix { inherit sops-nix; })
   ];
+
+  sops.secrets."services/teslamate/database/user" = {};
+  sops.secrets."services/teslamate/database/password" = {};
+  sops.secrets."services/teslamate/encryption_key" = {};
 
   networking.hostName = "teslamate";
   time.timeZone = "America/Los_Angeles";
@@ -80,6 +81,24 @@ in {
   ];
 
   system.stateVersion = "22.05";
+
+  systemd.services.sops-make-env = {
+    description = "Collect sops secrets into an env file";
+    wantedBy = [ "teslamate.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+user=$(cat /run/secrets/services/teslamate/database/user)
+password=$(cat /run/secrets/services/teslamate/database/password)
+encryption_key=$(cat /run/secrets/services/teslamate/encryption_key)
+cat << EOF > /run/secrets/.env
+DATABASE_USER=$user
+POSTGRES_USER=$user
+DATABASE_PASS=$password
+POSTGRES_PASSWORD=$password
+ENCRYPTION_KEY=$encryption_key
+EOF
+    '';
+  };
 
   # Create a target to start/stop all teslamate services
   systemd.targets.teslamate = {

@@ -1,6 +1,6 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
-  secrets = (lib.importJSON ../secrets/homelab.json).proxmox;
+  secrets = (lib.importJSON ../../secrets/proxmox.json);
 in {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
@@ -8,9 +8,9 @@ in {
   deployment.targetEnv = "proxmox";
   deployment.proxmox = {
     serverUrl = "192.168.4.54:8006";
-    username = secrets.user;
-    tokenName = secrets.token_name;
-    tokenValue = secrets.token_value;
+    username = secrets.credentials.user;
+    tokenName = secrets.credentials.token_name;
+    tokenValue = secrets.credentials.token_value;
     uefi = {
       enable = true;
       volume = "nvme0";

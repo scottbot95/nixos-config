@@ -77,11 +77,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1662176665,
-        "narHash": "sha256-I7mI/JA7d+oG8UJjccp/5cp+paHyL1VTykxl9aXniVU=",
+        "lastModified": 1662259840,
+        "narHash": "sha256-KIfU6auim36jbmCDI1+G2IYz937iQmQ5tr1t0CYgmYM=",
         "owner": "scottbot95",
         "repo": "nixops-proxmox",
-        "rev": "480eee5b1276ab9319be293b5bb80e558488d547",
+        "rev": "dbf4071cda01f78dd359caff97fea6c0314973ad",
         "type": "github"
       },
       "original": {

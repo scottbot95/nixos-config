@@ -64,6 +64,15 @@ in {
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.utf8";
 
+  services.avahi = {
+    enable = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+    };
+  };
+
   deployment.proxmox = {
     cores = 2;
     memory = 4096;
@@ -127,46 +136,23 @@ EOF
     oci-containers.containers = containers;
   };
 
-  # Postgres DB
-  # services.postgresql = {
-  #   enable = true;
-  #   package = pkgs.postgresql_14;
-  #   authentication = pkgs.lib.mkOverride 10 ''
-  #     local all all trust
-  #     host all all 127.0.0.1/32 trust
-  #     host all all ::1/128 trust
-  #   '';
-  #   initialScript = pkgs.writeText "teslamate-initScript" ''
-  #     CREATE DATABASE teslamate;
-  #     CREATE USER teslamate WITH ENCRYPTED PASSWORD '${teslamate_db_pass}';
-  #     GRANT ALL PRIVILEGES ON DATABASE teslamate TO teslamate;
-  #     ALTER USER teslamate WITH SUPERUSER;
-  #   '';
-  # };
-
-  # # Grafana
-  # services.grafana = {
-  #   enable = true;
-  #   # Remove if manual plugins must be installed
-  #   declarativePlugins = with pkgs.grafanaPlugins; let
-  #     pr0ps-trackmap-panel = grafanaPlugin rec {
-  #       pname = "pr0ps-trackmap-panel";
-  #       version = "2.1.2";
-  #       zipHash = "sha256-KMEM0ZrGCp3PA22bSyG+q/IgKWCkWRKX9NyS3g3kkds=";
-  #     };
-  #     natel-plotly-panel = grafanaPlugin rec {
-  #       pname = "natel-plotly-panel";
-  #       version = "0.0.7";
-  #       zipHash = "sha256-gYqzO0KhQhtWH05E8M0ZzRpWdn05UgRbgEKk2li9Rw4=";
-  #     };
-  #   in [
-  #     pr0ps-trackmap-panel
-  #     natel-plotly-panel
-  #   ];
-  # };
-
-  # # Mosquitto
-  # services.mosquitto = {
-  #   enable = true;
-  # }
+  services.nginx = {
+    enable = true;
+    package = pkgs.nginxQuic;
+    recommendedProxySettings = true;
+    virtualHosts."${config.networking.hostName}" = {
+      http3 = true;
+      locations = {
+        # "/grafana" = {
+        #   proxyPass = "http://127.0.0.1:3000";
+        #   proxyWebsockets = true;
+        # };
+        "/" = {
+          proxyPass = "http://127.0.0.1:4000";
+          proxyWebsockets = true;
+        };
+      };
+    };
+  };
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
 }

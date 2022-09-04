@@ -64,6 +64,8 @@ in {
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.utf8";
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   services.avahi = {
     enable = true;
     publish = {

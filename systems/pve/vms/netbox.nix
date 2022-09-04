@@ -8,6 +8,12 @@ in {
     (import ../../../modules/profiles/sops.nix { inherit sops-nix; })
   ];
 
+  sops.secrets."services/netbox/secret_key" = {
+    mode = "0440";
+    owner = config.users.users.netbox.name;
+    group = config.users.users.netbox.group;
+  };
+
   deployment.proxmox = {
     cores = 2;
     memory = 4096;
@@ -22,28 +28,39 @@ in {
 
   networking.hostName = "netbox";
   time.timeZone = "America/Los_Angeles";
-  i18n.defaultLocale = "en_US.utf8";
 
-  services.postgresql = {
+  networking.firewall = {
     enable = true;
-    package = pkgs.postgresql_14;
-    authentication = pkgs.lib.mkOverride 10 ''
-      local all all trust
-      host all all 127.0.0.1/32 trust
-      host all all ::1/128 trust
-    '';
-    ensureUsers = [{
-      name = "netbox";
-      ensurePermissions = {
-        "DATABASE netbox" = "ALL PRIVILEGES";
-      };
-    }];
-    ensureDatabases = [ "netbox" ];
+    allowedTCPPorts = [ 80 443 ];
   };
 
-  services.redis = {
-    servers.netbox = {
-      enable = true;
+  services.netbox = {
+    enable = true;
+    secretKeyFile = "/run/secrets/services/netbox/secret_key";
+  };
+
+  # Let netbox user read keys
+  users.users.netbox.extraGroups = [ config.users.groups.keys.name ];
+
+  # Grant nginx access to netbox data dir
+  users.users.nginx.extraGroups = [ config.users.groups.netbox.name ];
+
+  services.nginx = {
+    enable = true;
+    package = pkgs.nginxQuic;
+    recommendedProxySettings = true;
+    virtualHosts."netbox.homelab" = {
+      http3 = true;
+      listenAddresses = [ "0.0.0.0" ];
+
+      locations."/static/" = {
+        alias = "/var/lib/netbox/static/";
+      };
+
+      locations."/" = {
+        proxyPass = "http://${config.services.netbox.listenAddress}:${builtins.toString config.services.netbox.port}";
+        proxyWebsockets = true; # TODO do we actually need this?
+      };
     };
   };
 }

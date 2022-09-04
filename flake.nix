@@ -107,6 +107,7 @@
       };
 
       teslamate = import ./systems/pve/vms/teslamate.nix { inherit sops-nix; };
+      netbox = import ./systems/pve/vms/netbox.nix { inherit sops-nix; };
     };
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {

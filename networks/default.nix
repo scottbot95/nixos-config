@@ -1,0 +1,23 @@
+{ nixpkgs, extraArgs, subDirs, pkgs, lib, ... }:
+let
+  defaults = {
+    # inherit nixpkgs;
+    _module.args = extraArgs;
+  };
+  networkList = builtins.map
+    (name: 
+      let
+        # TODO if I were using scopes right, I think we shouldn't need extraArgs here
+        networkConfig = builtins.removeAttrs (pkgs.callPackage ./${name} (extraArgs // { inherit extraArgs; })) [ "override" "overrideDerivation" ];
+      in {
+        inherit name;
+        value = networkConfig // {
+          inherit nixpkgs;
+          defaults = defaults // (networkConfig.defaults or {});
+        };
+      })
+    (subDirs ./.);
+  networks = builtins.listToAttrs networkList;
+in networks // {
+  default = networks.homelab;
+}

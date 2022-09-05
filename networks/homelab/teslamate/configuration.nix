@@ -1,4 +1,4 @@
-{ sops-nix }:
+{ flake-self, sops-nix, ... }@extraArgs:
 { config, lib, pkgs, modulesPath, ... }:
 let
   podName = "teslamate_pod";
@@ -50,10 +50,10 @@ let
         extraOptions = [ "--pod=${podName}" ];
       };
     };
-in {
+in lib.traceVal {
   imports = [
-    ../../../modules/profiles/proxmox-guest.nix
-    (import ../../../modules/profiles/sops.nix { inherit sops-nix; })
+    /${flake-self.root}/modules/profiles/proxmox-guest.nix
+    (import /${flake-self.root}/modules/profiles/sops.nix extraArgs)
   ];
 
   sops.secrets."services/teslamate/database/user" = {};

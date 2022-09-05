@@ -1,5 +1,5 @@
-{sops-nix}:
-{config, ... }:
+{ sops-nix, ...}:
+{ config, ... }:
 {
     imports = [ sops-nix.nixosModules.sops ];
 

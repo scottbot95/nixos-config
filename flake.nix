@@ -37,7 +37,20 @@
     # wpilib.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, ... }@inputs: 
+  let 
+    extraArgs = { 
+      flake-self = {
+        root = ./.;
+      } // self;
+      subDirs = path:
+        let
+          contents = builtins.readDir path;
+        in builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
+    } // (builtins.removeAttrs inputs [ "self" ]);
+    callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
+  in {
+    inherit extraArgs;
     nixosConfigurations =
       let
         system = "x86_64-linux";
@@ -98,17 +111,9 @@
           ];
         };
       };
-    nixopsConfigurations.default = {
-      inherit nixpkgs;
-      network = {
-        description = "Scott's Homelab NixOps Networks";
-        storage.legacy = {};
-        enableRollback = true;
-      };
+      
+    nixopsConfigurations = builtins.removeAttrs (callPackage ./networks {}) ["override"  "overrideDerivation"];
 
-      teslamate = import ./systems/pve/vms/teslamate.nix { inherit sops-nix; };
-      netbox = import ./systems/pve/vms/netbox.nix { inherit sops-nix; };
-    };
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
         system = "x86_64-linux";

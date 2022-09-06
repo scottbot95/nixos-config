@@ -40,14 +40,13 @@
   outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, ... }@inputs: 
   let 
     extraArgs = { 
-      flake-self = {
-        root = ./.;
-      } // self;
+      root = ./.;
+      inputs = builtins.removeAttrs inputs [ "self" ];
       subDirs = path:
         let
           contents = builtins.readDir path;
         in builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
-    } // (builtins.removeAttrs inputs [ "self" ]);
+    };
     callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
   in {
     inherit extraArgs;

@@ -1,8 +1,8 @@
-{ flake-self, sops-nix, ... }@extraArgs:
+{ root, inputs, ... }@extraArgs:
 { config, lib, pkgs, ... }: {
   imports = [
-    /${flake-self.root}/modules/profiles/proxmox-guest.nix
-    (import /${flake-self.root}/modules/profiles/sops.nix extraArgs)
+    /${root}/modules/profiles/proxmox-guest.nix
+    (import /${root}/modules/profiles/sops.nix extraArgs)
   ];
 
   sops.secrets."services/netbox/secret_key" = {

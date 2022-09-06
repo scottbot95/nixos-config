@@ -1,4 +1,4 @@
-{ nixpkgs, extraArgs, subDirs, pkgs, lib, ... }:
+{ inputs, extraArgs, subDirs, pkgs, lib, ... }:
 let
   defaults = {
     # inherit nixpkgs;
@@ -12,7 +12,7 @@ let
       in {
         inherit name;
         value = networkConfig // {
-          inherit nixpkgs;
+          inherit (inputs) nixpkgs;
           defaults = defaults // (networkConfig.defaults or {});
         };
       })

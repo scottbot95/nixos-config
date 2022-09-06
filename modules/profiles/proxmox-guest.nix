@@ -3,8 +3,9 @@ let
   secrets = (lib.importJSON ../../secrets/proxmox.json);
 in {
   imports = [
-    (modulesPath + "/profiles/qemu-guest.nix")
+     "${modulesPath}/profiles/qemu-guest.nix"
   ];
+  deployment.hasFastConnection = true;
   deployment.targetEnv = "proxmox";
   deployment.proxmox = {
     serverUrl = "192.168.4.54:8006";

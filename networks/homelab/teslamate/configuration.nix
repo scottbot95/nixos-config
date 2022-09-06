@@ -51,10 +51,10 @@ let
       };
     };
 in {
-  imports = [
-    /${root}/modules/profiles/proxmox-guest.nix
-    (import /${root}/modules/profiles/sops.nix extraArgs)
-  ];
+  scott = {
+    sops.enable = true;
+    proxmoxGuest.enable = true;
+  };
 
   sops.secrets."services/teslamate/database/user" = {};
   sops.secrets."services/teslamate/database/password" = {};

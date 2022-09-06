@@ -1,9 +1,9 @@
 { root, inputs, ... }@extraArgs:
 { config, lib, pkgs, ... }: {
-  imports = [
-    /${root}/modules/profiles/proxmox-guest.nix
-    (import /${root}/modules/profiles/sops.nix extraArgs)
-  ];
+  scott = {
+    sops.enable = true;
+    proxmoxGuest.enable = true;
+  };
 
   sops.secrets."services/netbox/secret_key" = {
     mode = "0440";

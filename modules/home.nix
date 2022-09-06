@@ -1,4 +1,4 @@
-{ config, pkgs, extraImports, ... }:
+{ config, pkgs, extraImports ? [], ... }:
 {
   imports = [
     # ./wpilib

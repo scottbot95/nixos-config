@@ -1,7 +1,8 @@
-{ inputs, extraArgs, subDirs, pkgs, lib, ... }:
+{ inputs, extraArgs, subDirs, pkgs, lib, nixosModules, ... }:
 let
   defaults = {
     # inherit nixpkgs;
+    imports = builtins.attrValues nixosModules;
     _module.args = extraArgs;
   };
   networkList = builtins.map

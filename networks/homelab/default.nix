@@ -14,4 +14,8 @@ in machines // {
     storage.legacy = {};
     enableRollback = true;
   };
+
+  defaults = {
+    scott.proxmoxGuest.enable = true;
+  };
 }

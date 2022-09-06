@@ -28,39 +28,34 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
-    # wpilib-installer = {
-    #   url = "https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Linux-2022.3.1.tar.gz";
-    #   flake = false;
-    # };
-
-    # wpilib.url = "/home/scott/workspace/wpilib-flake";
-    # wpilib.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, ... }@inputs: 
   let 
+    subDirs = path:
+      let
+        contents = builtins.readDir path;
+      in builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
     extraArgs = { 
+      inherit subDirs;
       root = ./.;
       inputs = builtins.removeAttrs inputs [ "self" ];
-      subDirs = path:
-        let
-          contents = builtins.readDir path;
-        in builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
     };
     callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
   in {
-    inherit extraArgs;
+    # Output all modules in ./modules to flake. Module must be in individual
+    # subdirectories and contain a default.nix which contains a function that returns a standard
+    # NixOS module (!!! this means default.nix should return a function that returns a function)
+    # FIXME Should find a way to inject inputs so we don't need wrapper function
+    nixosModules = let
+      validModules = builtins.filter 
+        (d: builtins.pathExists ./modules/${d}/default.nix)
+        (subDirs ./modules);
+    in (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m} extraArgs; }) validModules));
     nixosConfigurations =
       let
         system = "x86_64-linux";
         pkgs = nixpkgs.legacyPackages.${system};
-        wpilib-overlay = final: prev: {
-          # wpilib = {
-          #   # inherit (inputs.wpilib.packages.${system}) roborio-toolchain;
-          #   # installer = inputs.wpilib-installer;
-          # };
-          wpilib = inputs.wpilib.packages.${system};
-        };
         enzime-overlay = final: prev: {
           vscode-extensions = prev.vscode-extensions // {
             ms-vscode-remote = prev.vscode-extensions.ms-vscode-remote // {
@@ -73,7 +68,6 @@
           modules = [
             ({ ... }: {
               nixpkgs.overlays = [
-                wpilib-overlay
                 enzime-overlay
               ];
             })
@@ -83,9 +77,6 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.scott = import ./modules/home.nix;
-              home-manager.extraSpecialArgs = {
-                extraImports = [ inputs.wpilib.nixosModules.${system}.wpilib ];
-              };
             }
           ];
         };
@@ -111,7 +102,7 @@
         };
       };
       
-    nixopsConfigurations = builtins.removeAttrs (callPackage ./networks {}) ["override"  "overrideDerivation"];
+    nixopsConfigurations = builtins.removeAttrs (callPackage ./networks {inherit (self) nixosModules;}) ["override"  "overrideDerivation"];
 
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {

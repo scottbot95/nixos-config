@@ -8,7 +8,9 @@ let
       })
       (subDirs ./.)
   );
-in machines // {
+  nameserver = machineName: (pkgs.callPackage ./nameserver.nix extraArgs);
+in
+machines // {
   network = {
     description = "Scott's Homelab NixOps Networks";
     storage.legacy = {};
@@ -18,4 +20,6 @@ in machines // {
   defaults = {
     scott.proxmoxGuest.enable = true;
   };
+
+  ns1 = nameserver "ns1";
 }

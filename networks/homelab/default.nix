@@ -22,4 +22,5 @@ machines // {
   };
 
   ns1 = nameserver "ns1";
+  localns = nameserver "localns";
 }

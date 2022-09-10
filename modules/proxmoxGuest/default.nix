@@ -2,7 +2,7 @@
 { root, config, lib, pkgs, modulesPath, ... }:
 let
   cfg = config.scott.proxmoxGuest;
-  secrets = (lib.importJSON /${root}/secrets/proxmox.json);
+  proxmoxCfg = (lib.importJSON /${root}/secrets/proxmox.json);
 in with lib; {
   imports = [
      "${modulesPath}/profiles/qemu-guest.nix"
@@ -16,15 +16,14 @@ in with lib; {
     deployment.hasFastConnection = true;
     deployment.targetEnv = "proxmox";
     deployment.proxmox = {
-      serverUrl = "192.168.4.54:8006";
-      username = secrets.credentials.user;
-      tokenName = secrets.credentials.token_name;
-      tokenValue = secrets.credentials.token_value;
+      inherit (proxmoxCfg.credentials) username tokenName tokenValue;
+      serverUrl = "pve.faultymuse.com:8006";
+
       uefi = {
         enable = true;
         volume = "nvme0";
       };
-      network = [
+      network = mkDefault [
         ({bridge = "vmbr1"; })
       ];
       installISO = "local:iso/nixos-22.05.20220320.9bc841f-x86_64-linux.isonixos.iso";

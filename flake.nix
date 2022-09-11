@@ -81,8 +81,19 @@
             }
           ];
         };
+
+        machinesList = [ ./systems/raspberrytau ]; # TODO auto include everything
+        machines = builtins.listToAttrs (builtins.map (m: {
+          name = builtins.baseNameOf m;
+          value = nixpkgs.lib.nixosSystem {
+            modules = [ m ];
+            specialArgs = {
+              inherit inputs;
+            };
+          };
+        }) machinesList);
       in
-      {
+      machines // {
         marvinIso = nixpkgs.lib.nixosSystem {
           inherit (base) system;
           modules = [

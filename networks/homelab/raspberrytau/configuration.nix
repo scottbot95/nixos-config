@@ -1,6 +1,7 @@
 {config, pkgs, lib, ... }:
 {
-    scott.proxmoxGuest.enable = lib.mkForce false;
+    scott.technitium.enable = true;
+    scott.proxmoxGuest.enable = false;
     deployment.targetHost = "192.168.4.12";
     nixpkgs.crossSystem = {
         system = "aarch64-linux";
@@ -29,6 +30,7 @@
 
     services.openssh.enable = true;
 
+    # FIXME Doesn't work cuz cross-compile with nixops :( Probably solvable
     # services.hardware.argonone.enable = true;
 
     users = {

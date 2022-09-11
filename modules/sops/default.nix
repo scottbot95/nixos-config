@@ -1,9 +1,9 @@
-{ inputs, ...}:
 { root, config, lib, ... }:
 let
   cfg = config.scott.sops;
 in with lib; {
-    imports = [ inputs.sops-nix.nixosModules.sops ];
+    # TODO shoould be able to have import here but nixops doesn't let us add specialArgs
+    # imports = [ inputs.sops-nix.nixosModules.sops ];
 
     options.scott.sops = {
       enable = mkEnableOption "Enable SOPS secrets";

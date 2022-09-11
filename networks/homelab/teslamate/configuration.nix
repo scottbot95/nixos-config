@@ -1,4 +1,3 @@
-{ root, inputs, ... }@extraArgs:
 { config, lib, pkgs, modulesPath, ... }:
 let
   podName = "teslamate_pod";

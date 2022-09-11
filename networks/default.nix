@@ -1,8 +1,9 @@
 { inputs, extraArgs, subDirs, pkgs, lib, nixosModules, ... }:
 let
   defaults = {
-    # inherit nixpkgs;
-    imports = builtins.attrValues nixosModules;
+    # TODO the sops import should theoreticlly be possible in the sops module but is not possible
+    # due to nixops
+    imports = builtins.attrValues nixosModules ++ [ inputs.sops-nix.nixosModules.sops ];
     _module.args = extraArgs;
   };
   networkList = builtins.map

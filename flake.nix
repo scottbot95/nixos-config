@@ -51,7 +51,8 @@
       validModules = builtins.filter 
         (d: builtins.pathExists ./modules/${d}/default.nix)
         (subDirs ./modules);
-    in (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m} extraArgs; }) validModules));
+    in (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m}; }) validModules));
+    
     nixosConfigurations =
       let
         system = "x86_64-linux";

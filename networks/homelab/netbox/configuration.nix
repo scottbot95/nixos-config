@@ -1,4 +1,3 @@
-{ root, inputs, ... }@extraArgs:
 { config, lib, pkgs, ... }: {
   scott = {
     sops.enable = true;

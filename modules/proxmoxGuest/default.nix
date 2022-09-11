@@ -1,4 +1,3 @@
-{ ... }:
 { root, config, lib, pkgs, modulesPath, ... }:
 let
   cfg = config.scott.proxmoxGuest;

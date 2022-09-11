@@ -1,14 +1,14 @@
-{ pkgs, subDirs, lib, extraArgs, ... }:
+{ pkgs, subDirs, lib,  ... }:
 let
   machines = builtins.listToAttrs (
     builtins.map 
       (name: {
         inherit name;
-        value = pkgs.callPackage ./${name}/configuration.nix extraArgs;
+        value = import ./${name}/configuration.nix;
       })
       (subDirs ./.)
   );
-  nameserver = machineName: (pkgs.callPackage ./nameserver.nix extraArgs);
+  nameserver = machineName: (import ./nameserver.nix);
 in
 machines // {
   network = {
@@ -18,9 +18,9 @@ machines // {
   };
 
   defaults = {
-    scott.proxmoxGuest.enable = true;
+    scott.proxmoxGuest.enable = lib.mkDefault true;
   };
 
-  ns1 = nameserver "ns1";
-  localns = nameserver "localns";
+  ns1 = nameserver "";
+  localns = nameserver "";
 }

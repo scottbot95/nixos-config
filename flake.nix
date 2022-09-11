@@ -12,7 +12,6 @@
 
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixos-generators = {
@@ -86,7 +85,7 @@
         machines = builtins.listToAttrs (builtins.map (m: {
           name = builtins.baseNameOf m;
           value = nixpkgs.lib.nixosSystem {
-            modules = [ m ];
+            modules = [ (m + "/configuration.nix") ];
             specialArgs = {
               inherit inputs;
             };

@@ -1,10 +1,22 @@
 { config, inputs, pkgs, lib, ... }:
 {
-  scott.technitium.enable = true;
+  scott ={
+    technitium = {
+      enable = true;
+      domain = "ns1.lan.faultymuse.com";
+      dhcp = true;
+    };
+  };
 
-  imports = [
-    inputs.nixos-hardware.nixosModules.raspberrypi-4
+  imports = with inputs; [
+    nixos-hardware.nixosModules.raspberry-pi-4
+    vscode-server.nixosModule
   ];
+
+  nixpkgs.hostPlatform = {
+    config = "aarch64-unknown-linux-gnu";
+    system = "aarch64-linux";
+  };
 
   fileSystems = {
     "/" = {
@@ -15,14 +27,24 @@
   };
 
   networking = {
+    hostName = "raspberrytau";
     wireless = {
-      enable = true;
-      networks."DefinitelyNotAFBISurveillanceVan".psk = "twowordsalluppercase";
+      enable = false;
+      networks."DefinitelyNotAFBISurveillanceVan".psk = null;
       interfaces = [ "wlan0" ];
     };
+    interfaces.eth0 = {
+      ipv4.addresses = [{
+        address = "192.168.4.2";
+        prefixLength = 24;
+      }];
+    };
+    defaultGateway = "192.168.4.1";
   };
 
-  environment.systemPackages = with pkgs; [ vim ];
+  environment.systemPackages = with pkgs; [ vim git ];
+
+  services.vscode-server.enable = true;
 
   services.openssh.enable = true;
 

@@ -27,6 +27,7 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
+    vscode-server.url = "github:msteen/nixos-vscode-server";
   };
 
   outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, ... }@inputs: 
@@ -85,10 +86,11 @@
         machines = builtins.listToAttrs (builtins.map (m: {
           name = builtins.baseNameOf m;
           value = nixpkgs.lib.nixosSystem {
-            modules = [ (m + "/configuration.nix") ];
-            specialArgs = {
-              inherit inputs;
-            };
+            modules = (builtins.attrValues self.nixosModules) ++ [
+              (m + "/configuration.nix") 
+              inputs.sops-nix.nixosModules.sops
+            ];
+            specialArgs = extraArgs;
           };
         }) machinesList);
       in

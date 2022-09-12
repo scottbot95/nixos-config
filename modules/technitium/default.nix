@@ -5,7 +5,17 @@ in
 with lib; {
   options.scott.technitium = {
     enable = mkEnableOption "Technitium DNS Server";
-    
+    domain = mkOption {
+      type = types.str;
+      description = "Domain name of the technitium server itself.";
+      example = "ns1.lan.faultymuse.com";
+    };
+    # TODO can we configure DHCP server through nix?
+    dhcp = mkOption {
+      type = types.bool;
+      description = "Open firewall port for DHCP";
+      default = false;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -17,15 +27,10 @@ with lib; {
           image = "technitium/dns-server:8.1.4";
           autoStart = true;
           environment = {
-            DNS_SERVER_DOMAIN = "hyper-dev.faultymuse.com";
+            DNS_SERVER_DOMAIN = cfg.domain;
           };
-          ports = [
-            "5380:5380/tcp"
-            "53:53/udp"
-            "53:53/tcp"
-          ];
           volumes = [
-            "/etc/technitium/config:/etc/dns/config"
+            "/etc/technitium:/etc/dns/config"
           ];
           extraOptions = [
             "--network=host"
@@ -33,5 +38,12 @@ with lib; {
         };
       };
     };
+    
+    system.activationScripts = {
+      createTechnitiumConfig.text = "mkdir -p /etc/technitium";
+    };
+
+    networking.firewall.allowedTCPPorts = [ 53 5380 ];
+    networking.firewall.allowedUDPPorts = [ 53 ] ++ (if cfg.dhcp then [ 67 ] else []);
   };
 }

@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let 
-  cfg = config.scott.nameserver;
+  cfg = config.scott.powerdns;
   pdnsSrc = pkgs.fetchFromGitHub {
     owner = "PowerDNS";
     repo = "pdns";
@@ -10,7 +10,7 @@ let
   schemaScript = "${pdnsSrc}/modules/gmysqlbackend/schema.mysql.sql";
 in 
 with lib; {
-  options.scott.nameserver = {
+  options.scott.powerdns = {
     enable = mkEnableOption "Nameserver profile";
     saltFile = mkOption {
       type = types.path;

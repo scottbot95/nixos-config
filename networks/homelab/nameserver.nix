@@ -5,7 +5,7 @@ in
   scott = {
     sops.enable = true;
     proxmoxGuest.enable = true;
-    nameserver = {
+    powerdns = {
       enable = true;
       saltFile = "/run/secrets/services/pdns/salt";
       secretKeyFile = "/run/secrets/services/pdns/secret_key";

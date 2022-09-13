@@ -87,7 +87,7 @@
       User = config.users.users.git-updater.name;
       Group = config.users.groups.git-updater.name;
     };
-    path = with pkgs; [ git nixos-rebuild ];
+    path = with pkgs; [ git nixos-rebuild sudo ];
     script = ''
       git fetch
       old=$(git rev-parse @)

@@ -52,11 +52,6 @@
 
   users = {
     mutableUsers = false;
-    users.guest = {
-      isNormalUser = true;
-      password = "guest";
-      extraGroups = [ "wheel" ];
-    };
     users.git-updater = {
       isSystemUser = true;
       group = "git-updater";

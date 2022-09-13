@@ -60,11 +60,16 @@
     users.git-updater = {
       isSystemUser = true;
       group = "git-updater";
+      extraGroups = [ "wheel" ];
     };
     groups.git-updater = [
-      config.users.user.git-updater.name
+      config.users.users.git-updater.name
     ];
   };
+  
+  # users.users.root.openssh.authorizedKeys.keys = [
+  #   "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF52J7UurrJejQxIU1ag7KvScya9GfQTa08e3a1gnqRd scott.techau@gmail.com"
+  # ];
 
   systemd.timers.git-updater = {
     wantedBy = [ "timers.target" ];
@@ -88,7 +93,7 @@
       if [ $old != $new ]; then
         git rebase --autostash
         echo "Updated git from $old to $new. Deploying change..."
-        nixos-rebuild switch --flake .#${config.networking.hostName}
+        sudo nixos-rebuild switch --flake .#${config.networking.hostName}
       fi
     '';
   };

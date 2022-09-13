@@ -57,6 +57,13 @@
       password = "guest";
       extraGroups = [ "wheel" ];
     };
+    users.git-updater = {
+      isSystemUser = true;
+      group = "git-updater";
+    };
+    groups.git-updater = [
+      config.users.user.git-updater.name
+    ];
   };
 
   systemd.timers.git-updater = {
@@ -70,6 +77,8 @@
     serviceConfig = {
       Type = "oneshot";
       WorkingDirectory = "/etc/nixos";
+      User = config.users.users.git-updater.name;
+      Group = config.users.groups.git-updater.group;
     };
     path = with pkgs; [ git nixos-rebuild ];
     script = ''

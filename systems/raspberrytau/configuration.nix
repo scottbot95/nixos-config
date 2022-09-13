@@ -61,30 +61,28 @@
 
   systemd.timers.git-updater = {
     wantedBy = [ "timers.target" ];
+    partOf = [ "git-updater.service" ];
     # Wait 60 between runs
     timerConfig.OnUnitInactiveSec = 60;
   };
-  systemd.services.git-updater = 
-    let
-      git = "${pkgs.git}/bin/git";
-      rebuild = "${pkgs.nixos-rebuild}/bin/nixos-rebuild";
-    in 
-    {
-      serviceConfig = {
-        Type = "oneshot";
-        WorkingDirectory = "/etc/nixos";
-      };
-      script = ''
-        ${git} fetch
-        old=$(${git} rev-parse @)
-        new=$(${git} rev-parse @{u})
-        if [ $old != $new ]; then
-          ${git} rebase --autostash
-          echo "Updated git from $old to $new. Deploying change..."
-          ${rebuild} switch --flake .#${config.networking.hostName}
-        fi
-      '';
+  systemd.services.git-updater = {
+    description = "Pull git config from github and apply it";
+    serviceConfig = {
+      Type = "oneshot";
+      WorkingDirectory = "/etc/nixos";
     };
+    path = with pkgs; [ git nixos-rebuild ];
+    script = ''
+      git fetch
+      old=$(git rev-parse @)
+      new=$(git rev-parse @{u})
+      if [ $old != $new ]; then
+        git rebase --autostash
+        echo "Updated git from $old to $new. Deploying change..."
+        nixos-rebuild switch --flake .#${config.networking.hostName}
+      fi
+    '';
+  };
 
   # Enable GPU acceleration
   hardware.raspberry-pi."4".fkms-3d.enable = true;

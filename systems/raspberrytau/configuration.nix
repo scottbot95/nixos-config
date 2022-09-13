@@ -62,14 +62,16 @@
       group = "git-updater";
       extraGroups = [ "wheel" ];
     };
-    groups.git-updater = [
-      config.users.users.git-updater.name
-    ];
+    groups.git-updater ={ 
+      members = [
+        config.users.users.git-updater.name
+      ];
+    };
   };
   
-  # users.users.root.openssh.authorizedKeys.keys = [
-  #   "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF52J7UurrJejQxIU1ag7KvScya9GfQTa08e3a1gnqRd scott.techau@gmail.com"
-  # ];
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF52J7UurrJejQxIU1ag7KvScya9GfQTa08e3a1gnqRd scott.techau@gmail.com"
+  ];
 
   systemd.timers.git-updater = {
     wantedBy = [ "timers.target" ];
@@ -83,7 +85,7 @@
       Type = "oneshot";
       WorkingDirectory = "/etc/nixos";
       User = config.users.users.git-updater.name;
-      Group = config.users.groups.git-updater.group;
+      Group = config.users.groups.git-updater.name;
     };
     path = with pkgs; [ git nixos-rebuild ];
     script = ''

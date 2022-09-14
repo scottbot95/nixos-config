@@ -9,8 +9,10 @@
   };
 
   imports = with inputs; [
-    nixos-hardware.nixosModules.raspberry-pi-4
-    vscode-server.nixosModule
+    "${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/raspberry-pi/4"
+    # nixos-hardware.nixosModules.raspberry-pi-4
+    # vscode-server.nixosModule
+    (fetchTarball "https://github.com/msteen/nixos-vscode-server/tarball/master")
   ];
 
   nixpkgs.hostPlatform = {

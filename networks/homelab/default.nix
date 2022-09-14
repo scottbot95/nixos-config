@@ -8,7 +8,7 @@ let
       })
       (subDirs ./.)
   );
-  nameserver = machineName: (import ./nameserver.nix);
+  nameserver = import ./nameserver.nix;
 in
 machines // {
   network = {
@@ -20,7 +20,4 @@ machines // {
   defaults = {
     scott.proxmoxGuest.enable = lib.mkDefault true;
   };
-
-  ns1 = nameserver "";
-  localns = nameserver "";
 }

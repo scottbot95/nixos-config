@@ -1,7 +1,8 @@
-{ root, config, lib, pkgs, modulesPath, ... }@args:
+{ root, config, options, lib, pkgs, modulesPath, ... }:
 let
   cfg = config.scott.proxmoxGuest;
   proxmoxCfg = (lib.importJSON /${root}/secrets/proxmox.json);
+  isNixops = (builtins.hasAttr "deployment" options);
 in with lib; {
   imports = [
      "${modulesPath}/profiles/qemu-guest.nix"
@@ -12,10 +13,9 @@ in with lib; {
   };
 
   config = 
-    if (args.deploymentName or null) == null then
+    if !isNixops then # Only apply if we're in nixops
       {}
-    else 
-      (mkIf cfg.enable {
+    else (mkIf cfg.enable {
         deployment.hasFastConnection = true;
         deployment.targetEnv = "proxmox";
         deployment.proxmox = {

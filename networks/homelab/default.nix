@@ -8,7 +8,6 @@ let
       })
       (subDirs ./.)
   );
-  nameserver = import ./nameserver.nix;
 in
 machines // {
   network = {

@@ -9,7 +9,11 @@ in with lib; {
   ];
 
   options.scott.proxmoxGuest = {
-    enable = mkEnableOption "Enable Proxmox Guest profile";
+    enable = mkOption {
+      type = types.bool;
+      default = config.deployment.targetEnv == "proxmox";
+      description = mdDoc "Whether to enable Proxmox Guest Profile";
+    };
   };
 
   config = 

@@ -82,7 +82,7 @@
           ];
         };
 
-        machinesList = [ ./systems/raspberrytau ]; # TODO auto include everything
+        machinesList = [ ]; # TODO auto include /machines dir
         machines = builtins.listToAttrs (builtins.map (m: {
           name = builtins.baseNameOf m;
           value = nixpkgs.lib.nixosSystem {

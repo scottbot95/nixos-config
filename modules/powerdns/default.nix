@@ -20,6 +20,7 @@ with lib; {
       type = types.path;
       description = "Secret key used for creating session cookies";
     };
+    slave = mkEnableOption "PowerDNS slave mode";
   };
 
   config = mkIf cfg.enable {
@@ -67,6 +68,7 @@ with lib; {
         gmysql-host=localhost
         api=yes
         api-key=FIXME-fake-key
+        slave=${if cfg.slave then "yes" else "no"}
       '';
     };
 

@@ -67,7 +67,7 @@ with lib; {
         gmysql-user=pdns
         gmysql-host=localhost
         api=yes
-        api-key=FIXME-fake-key
+        api-key=$scrypt$ln=10,p=1,r=8$uMjhlsyn76+lG+MEipLAwg==$4enb+ZPxmWhcQFRc7c71nQX+F9Y+BFNAbiUAF9bSHrM=
         slave=${if cfg.slave then "yes" else "no"}
       '';
     };

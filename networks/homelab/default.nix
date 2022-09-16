@@ -12,7 +12,13 @@ in
 machines // {
   network = {
     description = "Scott's Homelab NixOps Networks";
-    storage.legacy = {};
+    # storage.legacy = {};
+    storage.hercules-ci = {
+      stateName = "homelab.nixops";
+    };
+    lock.hercules-ci = {
+      stateName = "homelab.nixops";
+    };
     enableRollback = true;
   };
 

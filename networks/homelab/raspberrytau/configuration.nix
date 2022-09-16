@@ -18,10 +18,15 @@
     "${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/raspberry-pi/4"
   ];
 
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF52J7UurrJejQxIU1ag7KvScya9GfQTa08e3a1gnqRd scott.techau@gmail.com"
+  ];
+
   nixpkgs.hostPlatform = {
     config = "aarch64-unknown-linux-gnu";
     system = "aarch64-linux";
   };
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   fileSystems = {
     "/" = {

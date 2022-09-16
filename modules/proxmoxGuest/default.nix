@@ -31,7 +31,7 @@ in with lib; {
             volume = "nvme0";
           };
           network = mkDefault [
-            ({bridge = "vmbr1"; })
+            ({bridge = "vmbr0"; })
           ];
           installISO = "local:iso/nixos-22.05.20220320.9bc841f-x86_64-linux.isonixos.iso";
           usePrivateIPAddress = true;

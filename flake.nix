@@ -122,6 +122,8 @@
       
     nixopsConfigurations = builtins.removeAttrs (callPackage ./networks {inherit (self) nixosModules;}) ["override"  "overrideDerivation"];
 
+    herculesCI = import ./herculesCI.nix { inherit inputs; };
+
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
         system = "x86_64-linux";

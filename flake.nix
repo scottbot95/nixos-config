@@ -135,11 +135,9 @@
     (system:
       let 
         pkgs = nixpkgs.legacyPackages.${system};
-        input-pkgs = builtins.mapAttrs (name: input: input.packages.${system}.default) inputs;
       in {
         devShells.default = import ./shell.nix {
-          inherit pkgs;
-          inputs = input-pkgs;
+          inherit pkgs system inputs;
         };
       }
     ));

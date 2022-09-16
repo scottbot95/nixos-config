@@ -3,7 +3,10 @@ let
   defaults = {
     # TODO the sops import should theoreticlly be possible in the sops module but is not possible
     # due to nixops
-    imports = builtins.attrValues nixosModules ++ [ inputs.sops-nix.nixosModules.sops ];
+    imports = builtins.attrValues nixosModules ++ (with inputs; [ 
+      sops-nix.nixosModules.sops
+      hercules-ci.nixosModules.agent-profile
+    ]);
     _module.args = extraArgs;
   };
   networkList = builtins.map

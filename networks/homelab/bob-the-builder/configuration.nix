@@ -1,8 +1,8 @@
 {config, lib, pkgs, ...}:
 {
   deployment.proxmox = {
-    cores = 8;
-    memory = 4096;
+    cores = 16;
+    memory = 8192;
     startOnBoot = true;
     disks = [{
       volume = "nvme0";
@@ -18,6 +18,8 @@
 
   scott.hercules-ci.agent = {
     enable = true;
-    concurrentTasks = 8;
+    concurrentTasks = 16;
   };
+
+  system.stateVersion = "22.05";
 }

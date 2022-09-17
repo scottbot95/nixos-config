@@ -23,5 +23,6 @@ machines // {
 
   defaults = {
     scott.proxmoxGuest.enable = lib.mkDefault true;
+    system.stateVersion = lib.mkDefault "22.11";
   };
 }

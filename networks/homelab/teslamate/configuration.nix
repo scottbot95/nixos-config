@@ -65,15 +65,6 @@ in {
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  services.avahi = {
-    enable = true;
-    publish = {
-      enable = true;
-      addresses = true;
-      workstation = true;
-    };
-  };
-
   deployment.proxmox = {
     cores = 2;
     memory = 4096;
@@ -141,7 +132,7 @@ EOF
     enable = true;
     package = pkgs.nginxQuic;
     recommendedProxySettings = true;
-    virtualHosts."${config.networking.hostName}" = {
+    virtualHosts."${config.networking.hostName}.lan.faultymuse.com" = {
       http3 = true;
       locations = {
         # "/grafana" = {
@@ -155,5 +146,5 @@ EOF
       };
     };
   };
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  networking.firewall.allowedTCPPorts = [ 80 443 3000 ];
 }

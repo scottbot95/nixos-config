@@ -5,7 +5,7 @@ let
     # due to nixops
     imports = builtins.attrValues nixosModules ++ (with inputs; [ 
       sops-nix.nixosModules.sops
-      hercules-ci.nixosModules.agent-profile
+      hercules-ci-agent.nixosModules.agent-profile
     ]);
     _module.args = extraArgs;
   };

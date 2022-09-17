@@ -1,24 +1,32 @@
 # Intentionally not ci.nix to avoid confusion with hercules default ci.nix
-{ inputs }:
-{ ... }: 
+{ self, inputs }:
+{ branch, ... }: 
 let
-  inherit (inputs) nixpkgs flake-utils;
+  inherit (inputs) nixpkgs flake-utils hercules-ci-effects;
 in
 {
   ciSystems = [ "x86_64-linux" ];
   onPush.default = {
     outputs = { ... }: flake-utils.lib.eachSystem [ flake-utils.lib.system.x86_64-linux ] (system: 
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          overlays = [
+            hercules-ci-effects.overlay
+          ];
+        };
       in {
-        # These two attributes will appear in your job for each platform.
-        hello = pkgs.hello;
-        cow-hello = pkgs.runCommand "cow-hello" {
-          buildInputs = [ pkgs.hello pkgs.cowsay ];
-        } ''
-          hello | cowsay > $out
-        '';
-
+        effects = {
+          deploy-homelab = pkgs.effects.runIf /*(branch == "master")*/ false (
+            pkgs.effects.runNixOps2 {
+              flake = self;
+              prebuildOnlyNetworkFiles = [ "networks/prebuild-stub.nix" ];
+              # action = "dry-run";
+              extraDeployArgs = [
+                "--exclude" "bob-the-builder" "raspberrytau"
+              ];
+            }
+          );
+        };
       });
   };
 }

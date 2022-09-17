@@ -5,10 +5,12 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    hercules-ci = {
+    hercules-ci-agent = {
       url = "github:hercules-ci/hercules-ci-agent";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
@@ -122,7 +124,7 @@
       
     nixopsConfigurations = builtins.removeAttrs (callPackage ./networks {inherit (self) nixosModules;}) ["override"  "overrideDerivation"];
 
-    herculesCI = import ./herculesCI.nix { inherit inputs; };
+    herculesCI = import ./herculesCI.nix { inherit self inputs; };
 
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {

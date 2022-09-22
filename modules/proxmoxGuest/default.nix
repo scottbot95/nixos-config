@@ -12,7 +12,12 @@ in with lib; {
     enable = mkOption {
       type = types.bool;
       default = config.deployment.targetEnv == "proxmox";
-      description = mdDoc "Whether to enable Proxmox Guest Profile";
+      description = mdDoc "Proxmox Guest Profile";
+    };
+    partition = mkOption {
+      type = types.nullOr types.lines;
+      default = null;
+      description = mdDoc "Script to partition the the disks";
     };
   };
 
@@ -57,7 +62,7 @@ in with lib; {
 
             mkdir -p /mnt/boot
             mount /dev/disk/by-label/NIXBOOT /mnt/boot
-          '';
+          '' + (if cfg.partition != null then cfg.partition else "");
         };
 
         boot.loader.systemd-boot.enable = true;

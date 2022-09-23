@@ -15,8 +15,8 @@ in with lib; {
       description = mdDoc "Proxmox Guest Profile";
     };
     partition = mkOption {
-      type = types.nullOr types.lines;
-      default = null;
+      type = types.lines;
+      default = "";
       description = mdDoc "Script to partition the the disks";
     };
   };
@@ -62,7 +62,7 @@ in with lib; {
 
             mkdir -p /mnt/boot
             mount /dev/disk/by-label/NIXBOOT /mnt/boot
-          '' + (if cfg.partition != null then cfg.partition else "");
+          '' + cfg.partition;
         };
 
         boot.loader.systemd-boot.enable = true;
@@ -89,6 +89,8 @@ in with lib; {
         services.openssh = {
           enable = true;
         };
+
+        networking.domain = mkDefault "lan.faultymuse.com";
 
         # Turn of extra docs
         documentation.nixos.enable = false;

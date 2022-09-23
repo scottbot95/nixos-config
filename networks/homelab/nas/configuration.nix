@@ -81,9 +81,9 @@ in
 
   services.nfs.server.enable = true;
   services.nfs.server.exports = ''
-    /export             10.0.0.0/16(rw,fsid=0,no_subtree_check) 192.168.4.0/24(rw,fsid=0,no_subtree_check)
-    /export/data        10.0.0.0/16(rw,nohide,insecure,no_subtree_check) 192.168.4.0/24(rw,nohide,insecure,no_subtree_check)
-    /export/nix/store   10.0.0.0/16(rw,nohide,insecure,no_subtree_check) 192.168.4.0/24(rw,nohide,insecure,no_subtree_check)
+    /export       10.0.0.0/16(rw,fsid=0,no_subtree_check,no_root_squash) 192.168.4.0/24(rw,fsid=0,no_subtree_check,no_root_squash)
+    /export/data  10.0.0.0/16(rw,nohide,insecure,no_subtree_check,no_root_squash) 192.168.4.0/24(rw,nohide,insecure,no_subtree_check,no_root_squash)
+    /export/nix   10.0.0.0/16(rw,nohide,insecure,no_subtree_check,no_root_squash) 192.168.4.0/24(rw,insecure,no_subtree_check,no_root_squash)
   '';
 
   networking.firewall.allowedTCPPorts = [ 2049 ];

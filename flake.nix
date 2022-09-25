@@ -52,7 +52,7 @@
       inputs = builtins.removeAttrs inputs [ "self" ];
     };
     callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
-  in {
+  in nixpkgs.lib.recursiveUpdate {
     # Output all modules in ./modules to flake. Module must be in individual
     # subdirectories and contain a default.nix which contains a function that returns a standard
     # NixOS module (!!! this means default.nix should return a function that returns a function)
@@ -137,15 +137,33 @@
         ];
         format = "install-iso";
       };
+      # deploy-homelab-prebuilt = 
+      #   let
+      #     herculesOutputs = ((self.herculesCI {branch="master";}).onPush.default.outputs {});
+      #   in
+      #     herculesOutputs.effects.x86_64-linux.deploy-homelab.prebuilt;
     };
-  } // (inputs.flake-utils.lib.eachDefaultSystem
+  } 
+  (inputs.flake-utils.lib.eachDefaultSystem
     (system:
       let 
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
+            "steamcmd"
+            "steam-original"
+          ];
+        };
+        # pkgs = nixpkgs.legacyPackages.${system};
       in {
         devShells.default = import ./shell.nix {
           inherit pkgs system inputs;
         };
+
+        packages =
+          builtins.removeAttrs
+            (pkgs.callPackage (import ./packages) {inherit self inputs;})
+            [ "override" "overrideDerivation"];
       }
     ));
 }

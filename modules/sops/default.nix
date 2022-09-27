@@ -9,7 +9,7 @@ in with lib; {
       enable = mkEnableOption "Enable SOPS secrets";
       ageKeyFile = mkOption {
         type = types.path;
-        default = /home/scott/.config/sops/age/keys.txt;
+        default = "/home/scott/.config/sops/age/keys.txt";
         description = "Path to age key used decrypt secrets file";
       };
     };

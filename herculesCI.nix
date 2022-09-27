@@ -14,7 +14,7 @@ in
             hercules-ci-effects.overlay
           ];
         };
-        excludeMachines = [ "bob-the-builder" "ns2" "public-ns" ];
+        excludeMachines = [ "bob-the-builder" ];
       in {
         effects = {
           deploy-homelab = pkgs.effects.runIf /*(branch == "master")*/ true (

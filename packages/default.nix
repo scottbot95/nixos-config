@@ -5,7 +5,7 @@ let
     filterAttrs
       (path: type: 
         ((type == "regular") && path != "default.nix") ||
-        ((type == "directory") && (pathExists "./${path}/default.nix")))
+        ((type == "directory") && (pathExists ./${path}/default.nix)))
       (builtins.readDir ./.);
   importedPackages = 
     mapAttrs

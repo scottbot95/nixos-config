@@ -52,9 +52,9 @@ with lib; {
       script = ''
         set -x
         sleep 5 # Shouldn't need this
-        domains=$(${pkgs.mysql}/bin/mysql powerdns -e "SHOW TABLES LIKE 'domains'" | wc -l)
+        domains=$(${pkgs.mariadb}/bin/mysql powerdns -e "SHOW TABLES LIKE 'domains'" | wc -l)
         if [ "$domains" == "0" ]; then
-          ${pkgs.mysql}/bin/mysql powerdns < ${schemaScript}
+          ${pkgs.mariadb}/bin/mysql powerdns < ${schemaScript}
         fi
       '';
     };

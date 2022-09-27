@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     enzimeNixpkgs.url = "github:Enzime/nixpkgs/vsce/remote-ssh-fix-patching-node";
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -92,7 +92,7 @@
           ];
         };
 
-        machinesList = [ ]; # TODO auto include /machines dir
+        machinesList = [ ./machines/ns2 ]; # TODO auto include /machines dir
         machines = builtins.listToAttrs (builtins.map (m: {
           name = builtins.baseNameOf m;
           value = nixpkgs.lib.nixosSystem {
@@ -137,11 +137,11 @@
         ];
         format = "install-iso";
       };
-      # deploy-homelab-prebuilt = 
-      #   let
-      #     herculesOutputs = ((self.herculesCI {branch="master";}).onPush.default.outputs {});
-      #   in
-      #     herculesOutputs.effects.x86_64-linux.deploy-homelab.prebuilt;
+      deploy-homelab-prebuilt = 
+        let
+          herculesOutputs = ((self.herculesCI {branch="master";}).onPush.default.outputs {});
+        in
+          herculesOutputs.effects.x86_64-linux.deploy-homelab.prebuilt;
     };
   } 
   (inputs.flake-utils.lib.eachDefaultSystem

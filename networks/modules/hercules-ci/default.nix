@@ -17,6 +17,8 @@ with lib; {
   config = 
     (mkIf cfg.agent.enable {
 
+      nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
       services.hercules-ci-agent = {
         enable = true;
         settings.concurrentTasks = cfg.agent.concurrentTasks;

@@ -4,27 +4,30 @@
 let
   inherit (inputs) nixpkgs flake-utils hercules-ci-effects;
 in
-{
-  ciSystems = [ "x86_64-linux" ];
+rec {
+  ciSystems = with flake-utils.lib.system; [ x86_64-linux ];
   onPush.default = {
-    outputs = { ... }: flake-utils.lib.eachSystem [ flake-utils.lib.system.x86_64-linux ] (system: 
+    outputs = { ... }: flake-utils.lib.eachSystem ciSystems (system: 
       let
         pkgs = import nixpkgs {
           overlays = [
             hercules-ci-effects.overlay
           ];
         };
-        excludeMachines = [ "bob-the-builder" ];
+        excludeMachines = [ "bob-the-builder" "raspberrytau" ];
+        trimmedNetwork = 
+          nixpkgs.lib.filterAttrs
+            (name: config: 
+              !(builtins.elem name excludeMachines)
+            )
+            self.nixopsConfigurations.default;
       in {
         effects = {
           deploy-homelab = pkgs.effects.runIf /*(branch == "master")*/ true (
             pkgs.effects.runNixOps2 {
+              nixops = self.packages.${system}.nixops;
               flake = self // {
-                nixopsConfigurations.default = 
-                  let 
-                    trimmedNetwork = builtins.removeAttrs self.nixopsConfigurations.default excludeMachines;
-                  in
-                    trimmedNetwork;
+                nixopsConfigurations.default = trimmedNetwork;
               };
               prebuildOnlyNetworkFiles = [ ./networks/prebuild-stub.nix ];
               action = "dry-run";

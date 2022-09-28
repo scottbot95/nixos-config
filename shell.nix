@@ -6,7 +6,7 @@ mkShell {
     ];
     buildInputs = [
         sops
-        nixopsUnstable
+        inputs.self.packages.${system}.nixops
         inputs.nixops-proxmox.packages.${system}.default
     ];
 }

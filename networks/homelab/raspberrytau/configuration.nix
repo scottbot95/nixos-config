@@ -11,6 +11,10 @@
       domain = "ns1.lan.faultymuse.com";
       dhcp = true;
     };
+    hercules-ci.agent = {
+      enable = true;
+      concurrentTasks = 4;
+    };
   };
 
   imports = [

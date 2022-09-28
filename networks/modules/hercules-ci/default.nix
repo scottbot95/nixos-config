@@ -1,4 +1,4 @@
-{config, pkgs, lib, ...}:
+{config, pkgs, lib, inputs, ...}:
 let
   cfg = config.scott.hercules-ci;
 in
@@ -25,7 +25,8 @@ with lib; {
       # Can't use normal sops-nix because hercules is overly particular about how it's keys get deployed
       deployment.keys = 
         let
-          sops = "${pkgs.sops}/bin/sops";
+          localPkgs = import inputs.nixpkgs {};
+          sops = "${localPkgs.sops}/bin/sops";
           createBinaryCachesJsonCmd = ''
 cat << EOF
 {

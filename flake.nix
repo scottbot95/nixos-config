@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs_22_05.url = "github:NixOS/nixpkgs/nixos-22.05";
     enzimeNixpkgs.url = "github:Enzime/nixpkgs/vsce/remote-ssh-fix-patching-node";
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -11,21 +12,21 @@
     };
 
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-    hercules-ci-effects.inputs.nixpkgs.follows = "nixpkgs";
+    # hercules-ci-effects.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixos-hardware = {
-      url = "github:NixOS/nixos-hardware/master";
-    };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nixops.url = "github:NixOS/nixops";
 
     nixops-proxmox = {
       url = "github:scottbot95/nixops-proxmox";

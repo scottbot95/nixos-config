@@ -1,6 +1,7 @@
 keys:
         - &admin_scott age15hzqzdp289m868stvw6937hdzt3qqt0hz5uj4tqt7et5yne0s5eq7dhmgn
         - &server_bob_the_builder age1vq8w35wsdvh0fzshjaqly97knexs3cc4e6jqm7nqt3d07mdhxv4qwtm2qk
+        - &server_raspberrytau age1w2thuvnscl967dqhwq54mjxsym4nepna7zsljkhmdl70x82n8qpq0tnj69
          
 
 creation_rules:
@@ -8,3 +9,4 @@ creation_rules:
                 - age:
                         - *admin_scott
                         - *server_bob_the_builder
+                        - *server_raspberrytau

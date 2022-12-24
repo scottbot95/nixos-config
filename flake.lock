@@ -83,11 +83,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1674269974,
-        "narHash": "sha256-qWL2pSUA5iN9+cJYRjrCkqSjPBbHIWP6RfgXIsuJKDM=",
+        "lastModified": 1676339189,
+        "narHash": "sha256-p7o5/9xdzIAjj86ksOZx9VtTnq5D/Oi9vpN19gIefVk=",
         "owner": "scottbot95",
         "repo": "faultybox",
-        "rev": "c22281ebdfe059a74fa3e773d71f411efa73f7eb",
+        "rev": "a9a97dc9696b2417c86968ece8a66de002650df9",
         "type": "github"
       },
       "original": {
@@ -194,16 +194,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1651519540,
-        "narHash": "sha256-3k6p8VsTwwRPQjE8rrMh+o2AZACZn/eeYJ7ivdQ/Iro=",
+        "lastModified": 1670253003,
+        "narHash": "sha256-/tJIy4+FbsQyslq1ipyicZ2psOEd8dvl4OJ9lfisjd0=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "d93d56ab8c1c6aa575854a79b9d2f69d491db7d0",
+        "rev": "0e8125916b420e41bf0d23a0aa33fadd0328beb3",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
-        "ref": "release-21.11",
+        "ref": "release-22.11",
         "repo": "home-manager",
         "type": "github"
       }

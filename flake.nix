@@ -5,7 +5,7 @@
     flake-utils.url = "github:numtide/flake-utils";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-21.11";
+      url = "github:nix-community/home-manager/release-22.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -30,7 +30,16 @@
     terranix-proxmox.inputs.terranix.follows = "terranix";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, terranix, terranix-proxmox, ... }@inputs: 
+  outputs = { 
+    self,
+    nixpkgs,
+    home-manager, 
+    nixos-hardware, 
+    sops-nix,
+    terranix,
+    terranix-proxmox, 
+    ... 
+  }@inputs: 
   let 
     subDirs = path:
       let

@@ -1,7 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs_22_05.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     enzimeNixpkgs.url = "github:Enzime/nixpkgs/vsce/remote-ssh-fix-patching-node";
 
     flake-utils.url = "github:numtide/flake-utils";

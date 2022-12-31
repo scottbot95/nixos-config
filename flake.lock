@@ -289,22 +289,6 @@
         "type": "github"
       }
     },
-    "nixpkgs_22_05": {
-      "locked": {
-        "lastModified": 1664231666,
-        "narHash": "sha256-5M/40aTCNC34lSPqZIS7zlldRa7n/yNKI1SrpSGAB34=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "82379884b2e9cf1ba65f5b14bbcb9d1438abb745",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-22.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs_3": {
       "locked": {
         "lastModified": 1656753965,
@@ -323,16 +307,16 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1664281702,
-        "narHash": "sha256-haixZ4TJLu1Dciow54wrHrHvlGDVr5sW6MTeAV/ZLuI=",
+        "lastModified": 1672353432,
+        "narHash": "sha256-oZfgp/44/o2tWiylV30cR+DLyWTJ+5dhsdWZVpzs3e4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7e52b35fe98481a279d89f9c145f8076d049d2b9",
+        "rev": "913a47cd064cc06440ea84e5e0452039a85781f0",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixos-22.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -372,7 +356,6 @@
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
-        "nixpkgs_22_05": "nixpkgs_22_05",
         "sops-nix": "sops-nix",
         "vscode-server": "vscode-server"
       }

@@ -38,7 +38,7 @@ in with lib; {
           network = mkDefault [
             ({bridge = "vmbr0"; })
           ];
-          installISO = "local:iso/nixos-22.05.20220320.9bc841f-x86_64-linux.isonixos.iso";
+          installISO = "local:iso/nixos-22.11.20221229.913a47c-x86_64-linux.isonixos.iso";
           usePrivateIPAddress = true;
           partitions = ''
             set -x

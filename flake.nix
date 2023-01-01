@@ -1,7 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
-    enzimeNixpkgs.url = "github:Enzime/nixpkgs/vsce/remote-ssh-fix-patching-node";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # enzimeNixpkgs.url = "github:Enzime/nixpkgs/vsce/remote-ssh-fix-patching-node";
 
     flake-utils.url = "github:numtide/flake-utils";
 
@@ -30,7 +30,6 @@
     nixops-proxmox = {
       url = "github:scottbot95/nixops-proxmox";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
     };
 
     sops-nix.url = "github:Mic92/sops-nix";
@@ -67,21 +66,9 @@
       let
         system = "x86_64-linux";
         pkgs = nixpkgs.legacyPackages.${system};
-        enzime-overlay = final: prev: {
-          vscode-extensions = prev.vscode-extensions // {
-            ms-vscode-remote = prev.vscode-extensions.ms-vscode-remote // {
-              inherit (inputs.enzimeNixpkgs.legacyPackages.${system}.vscode-extensions.ms-vscode-remote) remote-ssh;
-            };
-          };
-        };
         base = {
           inherit system;
           modules = [
-            ({ ... }: {
-              nixpkgs.overlays = [
-                enzime-overlay
-              ];
-            })
             # Put shared modules here
             home-manager.nixosModules.home-manager
             {

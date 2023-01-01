@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "enzimeNixpkgs": {
-      "locked": {
-        "lastModified": 1648351091,
-        "narHash": "sha256-3rQ70RYFBj7SR2y5qXYWs0dbWAv03QDQQZdrgUM0XN0=",
-        "owner": "Enzime",
-        "repo": "nixpkgs",
-        "rev": "b1a0638a9bee77a94ec5057584a0cbbe5ac0c355",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Enzime",
-        "ref": "vsce/remote-ssh-fix-patching-node",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "flake-parts": {
       "inputs": {
         "nixpkgs": [
@@ -59,6 +43,21 @@
         "owner": "numtide",
         "repo": "flake-utils",
         "rev": "2ebf2558e5bf978c7fb8ea927dfaed8fefab2e28",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_3": {
+      "locked": {
+        "lastModified": 1659877975,
+        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
         "type": "github"
       },
       "original": {
@@ -184,19 +183,17 @@
     },
     "nixops-proxmox": {
       "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
+        "flake-utils": "flake-utils_3",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1664406672,
-        "narHash": "sha256-VL8YsRrrSZxP/2hUSzGWBkjOAynrKlFwv6lLHpbLc8E=",
+        "lastModified": 1672559995,
+        "narHash": "sha256-KpIMHRknqCq5ehQITAmeTODwYlwuDnSS7kZVHspFwAQ=",
         "owner": "scottbot95",
         "repo": "nixops-proxmox",
-        "rev": "a790a10896d3158504cb68685d7918a8e24d32cb",
+        "rev": "d043dc9de300d7add972a6bb1042e793bdd1e827",
         "type": "github"
       },
       "original": {
@@ -307,16 +304,16 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1672353432,
-        "narHash": "sha256-oZfgp/44/o2tWiylV30cR+DLyWTJ+5dhsdWZVpzs3e4=",
+        "lastModified": 1672350804,
+        "narHash": "sha256-jo6zkiCabUBn3ObuKXHGqqORUMH27gYDIFFfLq5P4wg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "913a47cd064cc06440ea84e5e0452039a85781f0",
+        "rev": "677ed08a50931e38382dbef01cba08a8f7eac8f6",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-22.11",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -346,7 +343,6 @@
     },
     "root": {
       "inputs": {
-        "enzimeNixpkgs": "enzimeNixpkgs",
         "flake-utils": "flake-utils",
         "hercules-ci-agent": "hercules-ci-agent",
         "hercules-ci-effects": "hercules-ci-effects",

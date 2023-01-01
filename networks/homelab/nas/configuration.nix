@@ -86,7 +86,35 @@ in
     /export/nix   10.0.0.0/16(rw,nohide,insecure,no_subtree_check,no_root_squash) 192.168.4.0/24(rw,insecure,no_subtree_check,no_root_squash)
   '';
 
-  networking.firewall.allowedTCPPorts = [ 2049 ];
+  services.samba-wsdd.enable = true; # Enable visibility for windows
+  services.samba = {
+    enable =true;
+    extraConfig = ''
+      # note: localhost is the ipv6 localhost ::1
+      hosts allow = 192.168.4. 127.0.0.1 localhost
+      hosts deny = 0.0.0.0/0
+      guest account = nobody
+      map to guest = bad user
+    '';
+    shares = {
+      data = {
+        path = "/export/data";
+        browseable = true;
+        "read only" = true;
+        "guest ok" = true;
+      };
+    };
+    openFirewall = true;
+  };
+
+  networking.firewall.allowPing = true;
+  networking.firewall.allowedTCPPorts = [
+    2049 # NFS
+    5357 # WSSD
+  ];
+  networking.firewall.allowedUDPPorts = [
+    3702 # WSSD
+  ];
 
   system.stateVersion = "22.05";
 }

@@ -2,12 +2,13 @@
 let
   otherNodes = builtins.removeAttrs nodes [ name ];
   mkProxy = ({name, port}: {
-    # forceSSL = true;
-    # enableACME = true;
+    forceSSL = true;
+    enableACME = true;
 
     # serverAliases = [ "${name}.lan.faultymuse.com" ];
 
     locations."/".proxyPass = "http://${name}.prod.faultymuse.com:${toString port}/";
+    locations."/".proxyWebsockets = true;
   });
   mkProxies = (proxies: 
     builtins.listToAttrs (
@@ -47,7 +48,6 @@ in
   };
 
   security.acme.acceptTerms = true;
-  security.acme.defaults.server = "https://acme-staging-v02.api.letsencrypt.org/directory";
   security.acme.defaults.email = "scott.techau+acme@gmail.com";
 
   # services.haproxy.enable = false;

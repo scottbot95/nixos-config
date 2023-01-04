@@ -10,8 +10,27 @@ let
   schemaScript = "${pdnsSrc}/modules/gmysqlbackend/schema.mysql.sql";
 in 
 with lib; {
+  imports = [
+    ./recursor.nix
+  ];
+
   options.scott.powerdns = {
     enable = mkEnableOption "Nameserver profile";
+    port = mkOption {
+      type = types.ints.unsigned;
+      default = 53;
+      description = mdDoc ''
+        Port number PowerDNS Authoratative server will bind to.
+      '';
+    };
+    openFirewall = mkOption {
+      type = types.bool;
+      default = false;
+      description = mdDoc ''
+        Whether to open `port` for inbound TCP and UDP traffic.
+        If disabled, will only bind to 127.0.0.1
+      '';
+    };
     saltFile = mkOption {
       type = types.path;
       description = "Salt file used for serializations";
@@ -60,9 +79,14 @@ with lib; {
     };
 
 
-    services.powerdns = {
+    services.powerdns = let
+      bind-address = if cfg.openFirewall then "0.0.0.0" else "127.0.0.1";
+    in {
       enable = true;
       extraConfig = ''
+        local-address=${bind-address}
+        local-port=${toString cfg.port}
+
         launch=gmysql
         gmysql-user=pdns
         gmysql-host=localhost
@@ -113,7 +137,9 @@ with lib; {
       };
     };
 
-    networking.firewall.allowedTCPPorts = [ 53 80 443 ];
-    networking.firewall.allowedUDPPorts = [ 53 ];
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [ cfg.port 80 443 ];
+      allowedUDPPorts = [ cfg.port ];
+    };
   };
 }

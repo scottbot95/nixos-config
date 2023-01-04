@@ -56,7 +56,7 @@
     defaultGateway = "192.168.4.1";
   };
 
-  environment.systemPackages = with pkgs; [ vim ];
+  # environment.systemPackages = with pkgs; [ vim ];
 
   services.openssh.enable = true;
 

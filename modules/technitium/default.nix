@@ -24,7 +24,7 @@ with lib; {
       oci-containers.backend = "podman";
       oci-containers.containers = {
         technitium = {
-          image = "technitium/dns-server:8.1.4";
+          image = "technitium/dns-server:10.0.1";
           autoStart = true;
           environment = {
             DNS_SERVER_DOMAIN = cfg.domain;
@@ -42,6 +42,11 @@ with lib; {
     system.activationScripts = {
       createTechnitiumConfig.text = "mkdir -p /etc/technitium";
     };
+
+    networking.nameservers = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
 
     networking.firewall.allowedTCPPorts = [ 53 5380 ];
     networking.firewall.allowedUDPPorts = [ 53 ] ++ (if cfg.dhcp then [ 67 ] else []);

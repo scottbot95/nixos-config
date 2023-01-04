@@ -6,6 +6,7 @@ let
 in with lib; {
   imports = [
      "${modulesPath}/profiles/qemu-guest.nix"
+     ./sops.nix
   ];
 
   options.scott.proxmoxGuest = {

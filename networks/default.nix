@@ -1,4 +1,12 @@
-{ inputs, extraArgs, subDirs, pkgs, lib, nixosModules, ... }:
+{ 
+  inputs,
+  extraArgs,
+  subDirs,
+  pkgs,
+  lib,
+  nixosModules,
+  ...
+}:
 let
   moduleDirs = builtins.map (d: ./modules/${d}) (subDirs ./modules);
   defaults = {

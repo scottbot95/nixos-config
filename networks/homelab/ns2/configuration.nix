@@ -32,6 +32,9 @@
       "8.8.8.8"
     ];
     defaultGateway = "10.0.5.1";
+
+    firewall.allowedTCPPorts = [ 53 80 443 ];
+    firewall.allowedUDPPorts = [ 53 ];
   };
 
   # Why do we need this???

@@ -1,4 +1,4 @@
-{config, lib, pkgs, ...}:
+{config, lib, pkgs, inputs, ...}:
 {
   deployment.proxmox = {
     cores = 16;
@@ -16,10 +16,16 @@
     }];
   };
 
-  scott.hercules-ci.agent = {
+  scott.sops.enable = false;
+
+  scott.concourse = {
     enable = true;
-    concurrentTasks = 16;
+    externalUrl = "http://bob-the-builder.lan.faultymuse.com:8080";
   };
+
+  environment.systemPackages = [ inputs.self.packages.${pkgs.system}.nixops];
+
+  networking.firewall.allowedTCPPorts = [ 8080 ];
 
   system.stateVersion = "22.05";
 }

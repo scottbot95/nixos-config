@@ -12,7 +12,7 @@
       dhcp = true;
     };
     hercules-ci.agent = {
-      enable = true;
+      enable = false;
       concurrentTasks = 4;
     };
   };

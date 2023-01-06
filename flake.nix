@@ -45,9 +45,9 @@
         contents = builtins.readDir path;
       in builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
     extraArgs = { 
-      inherit subDirs;
+      inherit subDirs inputs;
       root = ./.;
-      inputs = builtins.removeAttrs inputs [ "self" ];
+      # inputs = builtins.removeAttrs inputs [ "self" ];
     };
     callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
   in nixpkgs.lib.recursiveUpdate {
@@ -143,7 +143,8 @@
         # pkgs = nixpkgs.legacyPackages.${system};
       in {
         devShells.default = import ./shell.nix {
-          inherit pkgs system inputs;
+          inherit pkgs;
+          flake = self;
         };
 
         packages =

@@ -14,4 +14,4 @@ run:
   - -exc
   - |
     cd source
-    cachix watch-exec $CACHIX_NAME nix-shell -- --run "nixops deploy --include ((machines)) --build-only"
+    cachix watch-exec $CACHIX_NAME nix-shell -- --run "nixops ((command)) --include ((machines)) ((extra_flags))"

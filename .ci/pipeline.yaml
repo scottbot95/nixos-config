@@ -1,0 +1,109 @@
+resources:
+- name: ci-config
+  type: git
+  icon: github
+  source:
+    uri: https://github.com/scottbot95/nixos-config
+    branch: nixosUnstable
+    paths:
+    - .ci/**/*
+
+- name: flake-source
+  type: git
+  icon: github
+  source:
+    uri: https://github.com/scottbot95/nixos-config
+    branch: nixosUnstable
+
+jobs:
+- name: update-pipeline
+  plan:
+  - get: ci-config
+  - set_pipeline: homelab
+    file: ci-config/.ci/pipeline.yaml
+- name: do-some-stuff
+  plan:
+  - get: flake-source
+  - task: build-image
+    privileged: true
+    file: flake-source/.ci/tasks/build-nix.yaml
+    input_mapping: 
+      source: flake-source
+  - task: do-the-thing
+    image: image
+    config:
+      platform: linux
+      run:
+        path: printenv
+    
+- name: deploy-network
+  plan:
+  - get: flake-source
+    trigger: true
+  - task: build-image
+    privileged: true
+    file: flake-source/.ci/tasks/build-nix.yaml
+    input_mapping: 
+      source: flake-source
+  - task: build-bob
+    image: image
+    file: flake-source/.ci/tasks/nixops-cmd.yaml
+    vars:
+      cachix_token: ((cachix_token))
+      hci_token: ((hci_token))
+      machines: ((machines))
+      command: deploy
+      extra_flags: --build-only
+    input_mapping:
+      source: flake-source
+
+  # - task: build-bob
+  #   image: image
+  #   config:
+  #     platform: linux
+  #     params:
+  #       CACHIX_AUTH_TOKEN: ((cachix_token))
+  #       HERCULES_CI_API_TOKEN: ((hci_token))
+  #     inputs:
+  #     - name: flake-source
+  #     run:
+  #       path: sh
+  #       args:
+  #       - -exc
+  #       - |
+  #         cd flake-source
+  #         cachix watch-exec $CACHIX_NAME nix-shell -- --run "nixops deploy --include ((machines)) --build-only"
+
+  # - task: build-bob
+  #   config:
+  #     platform: linux
+  #     image_resource:
+  #       type: registry-image
+  #       source: { repository: "nixos/nix" }
+  #     inputs:
+  #     - name: flake-source
+  #       path: .
+  #     params:
+  #       CACHIX_NAME: scottbot95-homelab
+  #       CACHIX_AUTH_TOKEN: ((cachix_token))
+  #       NIX_CONFIG: |
+  #         extra-experimental-features = nix-command flakes
+  #         max-jobs = 4
+  #         cores = 4
+  #       HERCULES_CI_API_TOKEN: ((hci_token))
+  #     # caches:
+  #     # - path: nix-store
+  #     run:
+  #       path: sh
+  #       args:
+  #       - -exc
+  #       - |
+  #         # mkdir -p ./nix-store
+  #         # nix-store --export $(nix-store -qR $(ls -d /nix/store/*)) > out
+  #         # echo "store = $PWD/nix-store" >> /etc/nix/nix.conf
+  #         # nix-store --import < out
+  #         # cat /etc/nix/nix.conf
+  #         nix-channel --update
+  #         nix-env -iA nixpkgs.cachix nixpkgs.bash
+  #         cachix use $CACHIX_NAME
+  #         cachix watch-exec $CACHIX_NAME nix-shell -- --run "nixops deploy --include ((machines)) --build-only"

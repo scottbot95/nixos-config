@@ -1,0 +1,17 @@
+platform: linux
+params:
+  CACHIX_AUTH_TOKEN: ((cachix_token))
+  HERCULES_CI_API_TOKEN: ((hci_token))
+  NIX_CONFIG: |
+    extra-experimental-features = nix-command flakes
+    max-jobs = 4
+    cores = 4
+inputs:
+- name: source
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    cd source
+    cachix watch-exec $CACHIX_NAME nix-shell -- --run "nixops deploy --include ((machines)) --build-only"

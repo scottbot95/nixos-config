@@ -27,24 +27,12 @@ jobs:
         - flake-source/secrets/concourse.yaml
         - --output
         - secrets/concourse.yaml
+        - --age
+        - ((age_key))
   - set_pipeline: homelab
     file: flake-source/.ci/pipeline.yaml
     var_files:
     - secrets/concourse.yaml
-- name: do-some-stuff
-  plan:
-  - get: flake-source
-  - task: build-image
-    privileged: true
-    file: flake-source/.ci/tasks/build-nix.yaml
-    input_mapping: 
-      source: flake-source
-  - task: do-the-thing
-    image: image
-    config:
-      platform: linux
-      run:
-        path: printenv
     
 - name: deploy-network
   plan:
@@ -64,7 +52,7 @@ jobs:
       cachix_token: ((cachix_token))
       hci_token: ((hci_token))
       command: deploy
-      extra_flags: --include bob-the-builder --build-only
+      extra_flags: --include proxy
     input_mapping:
       source: flake-source
 

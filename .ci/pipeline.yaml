@@ -1,13 +1,4 @@
 resources:
-- name: ci-config
-  type: git
-  icon: github
-  source:
-    uri: https://github.com/scottbot95/nixos-config
-    branch: nixosUnstable
-    paths:
-    - .ci/**/*
-
 - name: flake-source
   type: git
   icon: github
@@ -18,9 +9,10 @@ resources:
 jobs:
 - name: update-pipeline
   plan:
-  - get: ci-config
+  - get: flake-source
+    trigger: true
   - set_pipeline: homelab
-    file: ci-config/.ci/pipeline.yaml
+    file: flake-source/.ci/pipeline.yaml
 - name: do-some-stuff
   plan:
   - get: flake-source
@@ -39,6 +31,8 @@ jobs:
 - name: deploy-network
   plan:
   - get: flake-source
+    passed:
+      - update-pipeline
     trigger: true
   - task: build-image
     privileged: true

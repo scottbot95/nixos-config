@@ -12,10 +12,11 @@ jobs:
   - get: flake-source
     trigger: true
   - task: decrypt-secrets
-    file: flake-source/ci/tasks/decrypt-sops.yaml
+    file: flake-source/.ci/tasks/decrypt-sops.yaml
     input_mapping:
       source: flake-source
     vars:
+      age_key: ((age_key))
       secret_file: concourse.yaml
   - set_pipeline: homelab
     file: flake-source/.ci/pipeline.yaml
@@ -33,7 +34,14 @@ jobs:
     file: flake-source/.ci/tasks/build-nix.yaml
     input_mapping: 
       source: flake-source
-  - task: build-bob
+  - task: decrypt-secrets
+    file: flake-source/.ci/tasks/decrypt-sops.yaml
+    input_mapping:
+      source: flake-source
+    vars:
+      age_key: ((age_key))
+      secret_file: proxmox.json
+  - task: deploy-proxy
     image: image
     file: flake-source/.ci/tasks/nixops-cmd.yaml
     vars:

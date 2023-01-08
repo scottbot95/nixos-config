@@ -8,10 +8,12 @@ params:
     cores = 4
 inputs:
 - name: source
+- name: secrets
 run:
   path: sh
   args:
   - -exc
   - |
+    cp -v secrets/* source/secrets/
     cd source
     cachix watch-exec $CACHIX_NAME nix-shell -- --run "nixops ((command)) ((extra_flags))"

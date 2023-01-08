@@ -17,7 +17,7 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: mozilla/sops
+          repository: mozilla/sops-alpine
       outputs:
       - name: secrets
       run:

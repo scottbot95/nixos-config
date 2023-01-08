@@ -11,8 +11,26 @@ jobs:
   plan:
   - get: flake-source
     trigger: true
+  - task: decrypt-secrets
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: mozilla/sops
+      outputs:
+      - name: secrets
+      run:
+        path: sops
+        args:
+        - --decrypt
+        - flake-source/secrets/concourse.yaml
+        - --output
+        - secrets/concourse.yaml
   - set_pipeline: homelab
     file: flake-source/.ci/pipeline.yaml
+    var_files:
+    - secrets/concourse.yaml
 - name: do-some-stuff
   plan:
   - get: flake-source
@@ -45,9 +63,8 @@ jobs:
     vars:
       cachix_token: ((cachix_token))
       hci_token: ((hci_token))
-      machines: ((machines))
       command: deploy
-      extra_flags: --build-only
+      extra_flags: --include bob-the-builder --build-only
     input_mapping:
       source: flake-source
 

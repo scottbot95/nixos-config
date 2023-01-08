@@ -1,0 +1,19 @@
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: mozilla/sops
+    tag: alpine
+inputs:
+- name: source
+outputs:
+- name: secrets
+params:
+  SOPS_AGE_KEY: ((age_key))
+run:
+  path: sops
+  args:
+  - --decrypt
+  - source/secrets/((secret_file))
+  - --output
+  - secrets/((secret_file))

@@ -12,23 +12,11 @@ jobs:
   - get: flake-source
     trigger: true
   - task: decrypt-secrets
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: mozilla/sops-alpine
-      outputs:
-      - name: secrets
-      run:
-        path: sops
-        args:
-        - --decrypt
-        - flake-source/secrets/concourse.yaml
-        - --output
-        - secrets/concourse.yaml
-        - --age
-        - ((age_key))
+    file: flake-source/ci/tasks/decrypt-sops.yaml
+    input_mapping:
+      source: flake-source
+    vars:
+      secret_file: concourse.yaml
   - set_pipeline: homelab
     file: flake-source/.ci/pipeline.yaml
     var_files:

@@ -11,9 +11,7 @@ outputs:
 params:
   SOPS_AGE_KEY: ((age_key))
 run:
-  path: sops
+  path: sh
   args:
-  - --decrypt
-  - $PWD/source/secrets/((secret_file))
-  - --output
-  - $PWD/secrets/((secret_file))
+  - -c
+  - sops --decrypt source/secrets/((secret_file)) > secrets/((secret_file))

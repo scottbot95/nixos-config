@@ -7,6 +7,31 @@ resources:
     branch: nixosUnstable
 
 jobs:
+- name: foo
+  plan:
+  - get: flake-source
+    trigger: true
+  - task: decrypt-secrets
+    file: flake-source/.ci/tasks/decrypt-sops.yaml
+    input_mapping:
+      source: flake-source
+    vars:
+      age_key: ((age_key))
+      secret_file: concourse.yaml
+  - task: print
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: alpine
+      inputs:
+      - name: secrets
+      run:
+        path: ls
+        args:
+        - secrets
+
 - name: update-pipeline
   plan:
   - get: flake-source

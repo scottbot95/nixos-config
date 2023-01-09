@@ -18,7 +18,7 @@ jobs:
     vars:
       age_key: ((age_key))
       secret_file: concourse.yaml
-  - set_pipeline: homelab
+  - set_pipeline: self
     file: flake-source/.ci/pipeline.yaml
     var_files:
     - secrets/concourse.yaml
@@ -44,14 +44,14 @@ jobs:
         vars:
           age_key: ((age_key))
           secret_file: proxmox.json
-  - task: deploy-proxy
+  - task: deploy
     image: image
     file: flake-source/.ci/tasks/nixops-cmd.yaml
     vars:
       cachix_token: ((cachix_token))
       hci_token: ((hci_token))
       command: deploy
-      extra_flags: --include proxy
+      extra_flags: --include ns2 proxy games
     input_mapping:
       source: flake-source
 

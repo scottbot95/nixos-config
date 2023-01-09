@@ -16,14 +16,21 @@
     }];
   };
 
-  scott.sops.enable = false;
-
+  scott.sops.enable = true;
+  
   scott.concourse = {
     enable = true;
     externalUrl = "http://bob-the-builder.lan.faultymuse.com:8080";
+    encryptionKey = "services/concourse/encryption_key";
+    gitHubAuth = {
+      clientId = "services/concourse/gh_client_id";
+      clientSecret = "services/concourse/gh_client_secret";
+    };
   };
 
-  environment.systemPackages = [ inputs.self.packages.${pkgs.system}.nixops];
+  sops.secrets."services/concourse/encryption_key" = {};
+  sops.secrets."services/concourse/gh_client_id" = {};
+  sops.secrets."services/concourse/gh_client_secret" = {};
 
   networking.firewall.allowedTCPPorts = [ 8080 ];
 

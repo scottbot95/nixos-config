@@ -1,22 +1,30 @@
 { config, lib, pkgs, nodes, name, ...}:
 let
   otherNodes = builtins.removeAttrs nodes [ name ];
-  mkProxy = ({name, port}: {
+  mkProxy = ({ 
+    name,
+    host ? "${name}.prod.faultymuse.com",
+    port,
+    proxyWebsockets ? true
+  }: {
     forceSSL = true;
     enableACME = true;
 
     # serverAliases = [ "${name}.lan.faultymuse.com" ];
 
-    locations."/".proxyPass = "http://${name}.prod.faultymuse.com:${toString port}/";
-    locations."/".proxyWebsockets = true;
+    locations."/" = {
+      inherit proxyWebsockets;
+      proxyPass = "http://${host}:${toString port}/";
+    };
+    
   });
   mkProxies = (proxies: 
-    builtins.listToAttrs (
-      map ({name, ...}@args: {
+    with lib; mapAttrs' 
+      (name: args: {
         name = "${name}.faultymuse.com";
-        value = mkProxy args;
-      }) proxies
-    )
+        value = mkProxy (args // { inherit name; });
+      })
+      proxies
     );
 in
 {
@@ -49,35 +57,6 @@ in
 
   security.acme.acceptTerms = true;
   security.acme.defaults.email = "scott.techau+acme@gmail.com";
-
-  # services.haproxy.enable = false;
-  # services.haproxy.config = ''
-  #   global
-  #     maxconn 4096
-  #     daemon
-    
-  #   defaults
-  #     log global
-  #     mode http
-  #     option httplog
-  #     option dontlognull
-  #     option redispatch
-  #     retries 3
-  #     maxconn 2000
-  #     timeout connect 5000
-  #     timeout client 50000
-  #     timeout server 50000
-  #     log 127.0.0.1 local0  
-  #     option httpchk 
-    
-  #   frontend stats
-  #     bind *:8404
-  #     stats enable  
-  #     stats realm Haproxy\ Statistics  
-  #     stats uri /stats
-  #     stats refresh 10s
-  #     stats admin if TRUE
-  # '';
 
   services.nginx = {
     enable = true;
@@ -120,19 +99,10 @@ in
     #   proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
     # '';
 
-    virtualHosts = mkProxies [
-      {
-        name = "games";
-        port = 8080;
-      }
-    ];
-    # virtualHosts."lb.faultymuse.com" = {
-    #   http3 = true;
-    #   listen = [{port=8080; addr="0.0.0.0";}];
-    #   locations."/nginx_status" = {
-    #     proxyPass = "http://127.0.0.1/nginx_status";
-    #   };
-    # };
+    virtualHosts = mkProxies {
+      games.port = 8080;
+      ci.host = "bob-the-builder.lan.faultymuse.com";
+    };
   };
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];

@@ -1,12 +1,9 @@
 platform: linux
 params:
-  CACHIX_AUTH_TOKEN: ((cachix_token))
-  HERCULES_CI_API_TOKEN: ((hci_token))
   NIX_CONFIG: |
     extra-experimental-features = nix-command flakes
     max-jobs = 4
     cores = 4
-  SOPS_AGE_KEY: ((age_key))
 inputs:
 - name: source
 - name: secrets
@@ -22,6 +19,6 @@ run:
 
     cp -v secrets/* source/secrets/
     cd source
-    cachix watch-exec $CACHIX_NAME nix-shell -- --run "nixops ((command)) ((extra_flags))"
+    cachix watch-exec $CACHIX_NAME nix-shell -- --run "((command)) ((args))"
 
-    nix copy --impure --to file://$PWD/nix-store .#deploy-homelab-prebuilt
+    nix copy --to file://$PWD/nix-store --all -v

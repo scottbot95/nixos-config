@@ -25,6 +25,7 @@
     gitHubAuth = {
       clientId = "services/concourse/gh_client_id";
       clientSecret = "services/concourse/gh_client_secret";
+      mainTeamUsers = [ "scottbot95" ];
     };
   };
 

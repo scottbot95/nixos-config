@@ -46,13 +46,17 @@ jobs:
           secret_file: proxmox.json
   - task: deploy
     image: image
-    file: flake-source/.ci/tasks/nixops-cmd.yaml
+    file: flake-source/.ci/tasks/run-nix.yaml
+    params:
+      CACHIX_AUTH_TOKEN: ((cachix_token))
+      HERCULES_CI_API_TOKEN: ((hci_token))
+      SOPS_AGE_KEY: ((age_key))
     vars:
       cachix_token: ((cachix_token))
       hci_token: ((hci_token))
       age_key: ((age_key)))
-      command: deploy
-      extra_flags: --include proxy games
+      command: nixops
+      args: deploy --include proxy faultybox
     input_mapping:
       source: flake-source
 

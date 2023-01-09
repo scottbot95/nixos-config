@@ -43,6 +43,11 @@ in with lib; {
             type = types.str;
             description = "Sops secret name to use as GitHub OAuth Client secret";
           };
+          mainTeamUsers = mkOption {
+            type = with types; listOf str;
+            description = "List of github users to add as main team members";
+            default = [];
+          };
         };
       }));
       default = null;
@@ -89,6 +94,10 @@ in with lib; {
         environment = let
           addLocalUser = if cfg.addLocalUser != null then {
             CONCOURSE_ADD_LOCAL_USER = "${cfg.addLocalUser.user}:${cfg.addLocalUser.password}";
+            CONCOURSE_MAIN_TEAM_LOCAL_USER = cfg.addLocalUser.user;
+          } else {};
+          ghMainTeamUsers = if cfg.gitHubAuth.mainTeamUsers != [] then {
+            CONCOURSE_MAIN_TEAM_GITHUB_USER = builtins.concatStringsSep "," cfg.gitHubAuth.mainTeamUsers;
           } else {};
         in {
           CONCOURSE_POSTGRES_HOST = "concourse-db";
@@ -96,9 +105,8 @@ in with lib; {
           CONCOURSE_POSTGRES_PASSWORD = "concourse_pass";
           CONCOURSE_POSTGRES_DATABASE = "concourse";
           CONCOURSE_EXTERNAL_URL = cfg.externalUrl;
-          CONCOURSE_MAIN_TEAM_LOCAL_USER = "admin";
           CONCOURSE_WORKER_RUNTIME = "containerd";
-        } // addLocalUser;
+        } // addLocalUser // ghMainTeamUsers;
       };
     };
   };

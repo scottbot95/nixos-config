@@ -52,7 +52,7 @@ jobs:
       hci_token: ((hci_token))
       age_key: ((age_key)))
       command: deploy
-      extra_flags: --include ns2 proxy games
+      extra_flags: --include proxy games
     input_mapping:
       source: flake-source
 

@@ -14,7 +14,7 @@ rec {
             hercules-ci-effects.overlay
           ];
         };
-        excludeMachines = [ "bob-the-builder" "raspberrytau" ];
+        excludeMachines = [ "bob-the-builder" "raspberrytau" "satisfactory" ];
         trimmedNetwork = 
           nixpkgs.lib.filterAttrs
             (name: config: 

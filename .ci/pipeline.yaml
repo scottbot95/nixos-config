@@ -50,6 +50,7 @@ jobs:
     vars:
       cachix_token: ((cachix_token))
       hci_token: ((hci_token))
+      age_key: ((age_key)))
       command: deploy
       extra_flags: --include ns2 proxy games
     input_mapping:

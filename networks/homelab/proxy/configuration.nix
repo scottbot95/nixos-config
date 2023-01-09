@@ -101,6 +101,8 @@ in
 
     virtualHosts = mkProxies {
       games.port = 8080;
+      
+      ci.port = 8080;
       ci.host = "bob-the-builder.lan.faultymuse.com";
     };
   };

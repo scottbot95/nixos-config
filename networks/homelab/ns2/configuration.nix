@@ -6,12 +6,13 @@
     slave = true;
     port = 5300;
 
-    recursor = {
+    recursor = rec {
       enable = true;
       forwardZones = {
-        "faultymuse.com" = "127.0.0.1:5300";
+        "lan.faultymuse.com" = "127.0.0.1:5300";
+        "prod.faultymuse.com" = "127.0.0.1:5300";
       };
-      allowNotifyFor = [ "faultymuse.com" ];
+      allowNotifyFor = builtins.attrNames forwardZones;
     };
   };
 

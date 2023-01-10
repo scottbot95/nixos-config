@@ -12,23 +12,25 @@ params:
 inputs:
 - name: source
 - name: secrets
-# caches:
-# - path: nix-store
+caches:
+- path: nix-store
 run:
   path: sh
   args:
   - -exc
   - |
+    nix_cache=file://$PWD/nix-store
+    
+    echo "extra-substituters = $nix_cache" | tee -a /etc/nix/nix.conf > /dev/null
+    echo 'require-sigs = false' | tee -a /etc/nix/nix.conf > /dev/null
+
     nix-channel --update
     nix-env -iA nixpkgs.cachix nixpkgs.bash
 
     cachix use $CACHIX_NAME
 
-    # echo "extra-substituters = file://$PWD/nix-store" | tee -a /etc/nix/nix.conf > /dev/null
-    # echo 'require-sigs = false' | tee -a /etc/nix/nix.conf > /dev/null
-
     cp -v secrets/* source/secrets/
     cd source
     cachix watch-exec $CACHIX_NAME nix-shell -- --run "((command)) ((args))"
 
-    # nix copy --to file://$PWD/nix-store --all -v
+    nix copy --to $nix_cache --all -v

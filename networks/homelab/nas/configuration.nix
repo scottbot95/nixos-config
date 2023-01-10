@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 let
 in
 {
@@ -77,6 +77,26 @@ in
       device = "/nix/store"; # Should we have a separate folder for this to keep it isolated?
       options = [ "bind" ];
     };
+  };
+
+  users.users.concourse-worker = {
+    isSystemUser = true;
+    group = "concourse-worker";
+    shell = pkgs.bashInteractive;
+    openssh.authorizedKeys.keys = [
+      "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAEchekP64YaFnHxPgfxfF9ZZzLbDxM1WWc0wvaTlkd+11HqzVomn3uhBQ2NxFwLK61zOgQGEvZrfLz9G9tiQhvelAEBQ9WlYAnGUZ6lc22xcBG8F+Ovn0mdqHUGb/kQFdAuS2qjFCPJshwtqi2zkzGa+APy1cRSgn+MKnViSNl2m7+zFw== worker@concourse"
+    ];
+  };
+  users.groups.concourse-worker = {};
+
+  nix.settings.trusted-users = [ 
+    "root"
+    "concourse-worker"
+  ];
+
+  services.nix-serve = {
+    enable = true;
+    openFirewall = true;
   };
 
   services.nfs.server.enable = true;

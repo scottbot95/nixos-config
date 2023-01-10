@@ -9,6 +9,7 @@ resources:
 
 jobs:
 - name: update-pipeline
+  serial: true
   plan:
   - get: flake-source
     trigger: true
@@ -25,28 +26,20 @@ jobs:
     - secrets/concourse.yaml
     
 - name: deploy-network
+  serial: true
   plan:
   - get: flake-source
     passed:
       - update-pipeline
     trigger: true
-  - in_parallel:
-      fail_fast: true
-      steps:
-      - task: build-image
-        privileged: true
-        file: flake-source/.ci/tasks/build-nix.yaml
-        input_mapping: 
-          source: flake-source
-      - task: decrypt-secrets
-        file: flake-source/.ci/tasks/decrypt-sops.yaml
-        input_mapping:
-          source: flake-source
-        vars:
-          age_key: ((age_key))
-          secret_file: proxmox.json
+  - task: decrypt-secrets
+    file: flake-source/.ci/tasks/decrypt-sops.yaml
+    input_mapping:
+      source: flake-source
+    vars:
+      age_key: ((age_key))
+      secret_file: proxmox.json
   - task: deploy
-    image: image
     file: flake-source/.ci/tasks/run-nix.yaml
     params:
       CACHIX_AUTH_TOKEN: ((cachix_token))

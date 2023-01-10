@@ -99,11 +99,16 @@ in
     #   proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
     # '';
 
-    virtualHosts = mkProxies {
+    virtualHosts = (mkProxies {
       games.port = 8080;
 
       pipelines.port = 8080;
       pipelines.host = "bob-the-builder.lan.faultymuse.com";
+    }) // {
+      "_" = {
+        default = true;
+        extraConfig = "return 444;";
+      };
     };
   };
 

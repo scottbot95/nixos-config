@@ -20,7 +20,7 @@
   
   scott.concourse = {
     enable = true;
-    externalUrl = "http://bob-the-builder.lan.faultymuse.com:8080";
+    externalUrl = "https://pipelines.faultymuse.com";
     encryptionKey = "services/concourse/encryption_key";
     gitHubAuth = {
       clientId = "services/concourse/gh_client_id";

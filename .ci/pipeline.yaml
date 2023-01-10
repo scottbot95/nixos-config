@@ -5,6 +5,7 @@ resources:
   source:
     uri: https://github.com/scottbot95/nixos-config
     branch: nixosUnstable
+  webhook_token: ((gh_webhook_token))
 
 jobs:
 - name: update-pipeline

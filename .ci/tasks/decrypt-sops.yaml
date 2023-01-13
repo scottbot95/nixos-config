@@ -13,5 +13,7 @@ params:
 run:
   path: sh
   args:
-  - -c
-  - sops --decrypt source/secrets/((secret_file)) > secrets/((secret_file))
+  - -evc
+  - |
+    sops --decrypt source/secrets/((secret_file)) > secrets/((secret_file))
+    sops --decrypt source/secrets/((secret_file)) --extract '["worker_ssh_key"]' > secrets/worker_key

@@ -16,6 +16,7 @@ mkShell {
         safeFlake.inputs.hercules-ci-agent.packages.${system}.hercules-ci-cli
     ];
     buildInputs = [
+        cachix
         sops
         fly
         safeFlake.packages.${system}.nixops

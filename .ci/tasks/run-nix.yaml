@@ -2,13 +2,16 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: nixos/nix
+    repository: nixpkgs/nix
+    tag: nixos-22.11 # latest == nixos unstable
 params:
   CACHIX_NAME: scottbot95-homelab
   NIX_CONFIG: |
     extra-experimental-features = nix-command flakes
+    extra-substituters = http://nas.lan.faultymuse.com:5000
+    require-sigs = false
     max-jobs = 4
-    cores = 4
+    cores = 8
 inputs:
 - name: source
 - name: secrets
@@ -17,20 +20,33 @@ caches:
 run:
   path: sh
   args:
-  - -exc
+  - -evc
   - |
-    nix_cache=file://$PWD/nix-store
-    
-    echo "extra-substituters = $nix_cache" | tee -a /etc/nix/nix.conf > /dev/null
-    echo 'require-sigs = false' | tee -a /etc/nix/nix.conf > /dev/null
+    # Configure SSH
+    mkdir -p /root/.ssh
+    cat<<EOT > /root/.ssh/config
+    Host nas.lan.faultymuse.com
+        User concourse-worker
+        StrictHostKeyChecking accept-new
+        IdentitiesOnly yes
+        IdentityFile /root/.ssh/worker_key
+    EOT
+    chmod 600 /root/.ssh/*
 
-    nix-channel --update
-    nix-env -iA nixpkgs.cachix nixpkgs.bash
+    cp secrets/* source/secrets/
+    cp secrets/worker_key /root/.ssh/
 
-    cachix use $CACHIX_NAME
-
-    cp -v secrets/* source/secrets/
     cd source
-    cachix watch-exec $CACHIX_NAME nix-shell -- --run "((command)) ((args))"
 
-    nix copy --to $nix_cache --all -v
+    set -x +v
+
+    nix develop -v -c sh -ex <<EOT
+      echo does this even work
+      # cachix use $CACHIX_NAME
+      # cachix watch-exec $CACHIX_NAME ((command)) -- ((args))
+    EOT
+
+    nix develop -v -c cachix use $CACHIX_NAME
+    nix develop -v -c cachix watch-exec $CACHIX_NAME ((command)) -- ((args))
+
+    nix copy --to ssh://nas.lan.faultymuse.com --all -v

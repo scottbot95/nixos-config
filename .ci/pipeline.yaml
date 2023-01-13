@@ -49,8 +49,9 @@ jobs:
       cachix_token: ((cachix_token))
       hci_token: ((hci_token))
       age_key: ((age_key)))
+      ssh_key: ((worker_ssh_key))
       command: nixops
-      args: deploy --include proxy faultybox
+      args: deploy --include proxy faultybox --build-only
     input_mapping:
       source: flake-source
 

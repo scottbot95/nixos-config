@@ -52,7 +52,7 @@ jobs:
       age_key: ((age_key)))
       ssh_key: ((worker_ssh_key))
       command: nixops
-      args: deploy --include proxy games --build-only
+      args: deploy --include proxy games
     input_mapping:
       source: flake-source
 

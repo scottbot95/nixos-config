@@ -41,6 +41,7 @@ jobs:
       secret_file: proxmox.json
   - task: deploy
     file: flake-source/.ci/tasks/run-nix.yaml
+    privileged: true # It's probably theoretically possible to avoid this...
     params:
       CACHIX_AUTH_TOKEN: ((cachix_token))
       HERCULES_CI_API_TOKEN: ((hci_token))
@@ -51,7 +52,7 @@ jobs:
       age_key: ((age_key)))
       ssh_key: ((worker_ssh_key))
       command: nixops
-      args: deploy --include proxy faultybox --build-only
+      args: deploy --include proxy games --build-only
     input_mapping:
       source: flake-source
 

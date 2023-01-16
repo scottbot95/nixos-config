@@ -16,4 +16,4 @@ run:
   - -evc
   - |
     sops --decrypt source/secrets/((secret_file)) > secrets/((secret_file))
-    sops --decrypt source/secrets/((secret_file)) --extract '["worker_ssh_key"]' > secrets/worker_key
+    chmod 600 secrets/*

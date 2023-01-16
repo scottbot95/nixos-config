@@ -20,8 +20,16 @@ caches:
 run:
   path: sh
   args:
-  - -evc
+  - -ec
   - |
+    mkdir -p /root/.ssh
+    cat <<EOT > /root/.ssh/worker_key
+    ((ssh_key))
+    EOT
+    chmod 600 /root/.ssh/worker_key
+
+    set -v
+
     # Configure SSH
     mkdir -p /root/.ssh
     cat<<EOT > /root/.ssh/config
@@ -31,22 +39,16 @@ run:
         IdentitiesOnly yes
         IdentityFile /root/.ssh/worker_key
     EOT
-    chmod 600 /root/.ssh/*
 
     cp secrets/* source/secrets/
-    cp secrets/worker_key /root/.ssh/
 
     cd source
 
     set -x +v
 
     nix develop -v -c sh -ex <<EOT
-      echo does this even work
-      # cachix use $CACHIX_NAME
-      # cachix watch-exec $CACHIX_NAME ((command)) -- ((args))
+      cachix use $CACHIX_NAME
+      cachix watch-exec $CACHIX_NAME ((command)) -- ((args))
     EOT
-
-    nix develop -v -c cachix use $CACHIX_NAME
-    nix develop -v -c cachix watch-exec $CACHIX_NAME ((command)) -- ((args))
-
+    
     nix copy --to ssh://nas.lan.faultymuse.com --all -v

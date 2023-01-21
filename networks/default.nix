@@ -10,13 +10,15 @@
 let
   moduleDirs = builtins.map (d: ./modules/${d}) (subDirs ./modules);
   defaults = {
-    # TODO the sops import should theoreticlly be possible in the sops module but is not possible
-    # due to nixops
+    # TODO these module import should theoreticlly be possible from within other modules but is not possible
+    # due to nixops not allowing for custom specialArgs to modules
+    # (only _module.args which specifically *cannot* be used for imports)
     imports = 
       (builtins.attrValues nixosModules) ++ 
       moduleDirs ++ 
       (with inputs; [ 
         sops-nix.nixosModules.sops
+        faultybox.nixosModules.faultybox
         hercules-ci-agent.nixosModules.agent-profile
       ]);
     _module.args = extraArgs;

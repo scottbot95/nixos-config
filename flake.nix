@@ -36,6 +36,9 @@
 
     vscode-server.url = "github:msteen/nixos-vscode-server";
     vscode-server.inputs.nixpkgs.follows = "nixpkgs";
+
+    faultybox.url = "github:scottbot95/faultybox";
+    faultybox.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, home-manager, nixos-hardware, sops-nix, ... }@inputs: 

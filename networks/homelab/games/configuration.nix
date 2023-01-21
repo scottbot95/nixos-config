@@ -12,5 +12,6 @@
     }];
   };
 
-  scott.faultybox.enable = true;
+  services.faultybox.enable = true;
+  services.faultybox.openFirewall = true;
 }

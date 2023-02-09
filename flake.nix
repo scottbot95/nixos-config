@@ -24,18 +24,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixops.url = "github:NixOS/nixops";
-
-    nixops-proxmox = {
-      url = "github:scottbot95/nixops-proxmox";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-
-    vscode-server.url = "github:msteen/nixos-vscode-server";
-    vscode-server.inputs.nixpkgs.follows = "nixpkgs";
 
     faultybox.url = "github:scottbot95/faultybox";
     faultybox.inputs.nixpkgs.follows = "nixpkgs";
@@ -55,9 +45,7 @@
     callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
   in nixpkgs.lib.recursiveUpdate {
     # Output all modules in ./modules to flake. Module must be in individual
-    # subdirectories and contain a default.nix which contains a function that returns a standard
-    # NixOS module (!!! this means default.nix should return a function that returns a function)
-    # FIXME Should find a way to inject inputs so we don't need wrapper function
+    # subdirectories and contain a default.nix which contains a standard NixOS module 
     nixosModules = let
       validModules = builtins.filter 
         (d: builtins.pathExists ./modules/${d}/default.nix)
@@ -114,10 +102,6 @@
         };
       };
       
-    nixopsConfigurations = builtins.removeAttrs (callPackage ./networks {inherit (self) nixosModules;}) ["override"  "overrideDerivation"];
-
-    herculesCI = import ./herculesCI.nix { inherit self inputs; };
-
     packages.x86_64-linux = {
       pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
         system = "x86_64-linux";
@@ -126,11 +110,6 @@
         ];
         format = "install-iso";
       };
-      deploy-homelab-prebuilt = 
-        let
-          herculesOutputs = ((self.herculesCI {branch="master";}).onPush.default.outputs {});
-        in
-          herculesOutputs.effects.x86_64-linux.deploy-homelab.prebuilt;
     };
   } 
   (inputs.flake-utils.lib.eachDefaultSystem

@@ -98,6 +98,10 @@
     '';
   };
 
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.users.scott = import ../../modules/home.nix;
+
   # Virutal box setup
   # virtualisation.virtualbox.host.enable = true;
   # virtualisation.virtualbox.host.enableExtensionPack = true;

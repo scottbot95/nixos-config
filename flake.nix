@@ -43,96 +43,50 @@
       # inputs = builtins.removeAttrs inputs [ "self" ];
     };
     callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
-  in nixpkgs.lib.recursiveUpdate {
-    # Output all modules in ./modules to flake. Module must be in individual
-    # subdirectories and contain a default.nix which contains a standard NixOS module 
-    nixosModules = let
-      validModules = builtins.filter 
-        (d: builtins.pathExists ./modules/${d}/default.nix)
-        (subDirs ./modules);
-    in (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m}; }) validModules));
-    
-    nixosConfigurations =
-      let
-        system = "x86_64-linux";
-        pkgs = nixpkgs.legacyPackages.${system};
-        base = {
-          inherit system;
-          modules = [
-            # Put shared modules here
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.scott = import ./modules/home.nix;
-            }
-          ];
-        };
+    machines = import ./machines inputs;
+  in nixpkgs.lib.recursiveUpdate
+    {
+      inherit (machines) nixosConfigurations terranixModules;
 
-        machinesList = [ ./machines/ns2 ]; # TODO auto include /machines dir
-        machines = builtins.listToAttrs (builtins.map (m: {
-          name = builtins.baseNameOf m;
-          value = nixpkgs.lib.nixosSystem {
-            modules = (builtins.attrValues self.nixosModules) ++ [
-              (m + "/configuration.nix") 
-              inputs.sops-nix.nixosModules.sops
-            ];
-            specialArgs = extraArgs;
-          };
-        }) machinesList);
-      in
-      machines // {
-        marvinIso = nixpkgs.lib.nixosSystem {
-          inherit (base) system;
-          modules = [
-            "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-
-            # Provide an initial copy of te NixOS channel so that we
-            # don't need to run `nix-channel --update` first.
-            "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
-          ];
-        };
-
-        marvin = nixpkgs.lib.nixosSystem {
-          inherit (base) system;
-          modules = base.modules ++ [
-            nixos-hardware.nixosModules.lenovo-thinkpad-t480
-            ./systems/marvin/configuration.nix
-          ];
-        };
-      };
+      # Output all modules in ./modules to flake. Module must be in individual
+      # subdirectories and contain a default.nix which contains a standard NixOS module 
+      nixosModules = let
+        validModules = builtins.filter 
+          (d: builtins.pathExists ./modules/${d}/default.nix)
+          (subDirs ./modules);
+      in (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m}; }) validModules));
       
-    packages.x86_64-linux = {
-      pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
-        system = "x86_64-linux";
-        modules = [
-          ./systems/pve/minimal-installer.nix
-        ];
-        format = "install-iso";
-      };
-    };
-  } 
-  (inputs.flake-utils.lib.eachDefaultSystem
-    (system:
-      let 
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
-            "steamcmd"
-            "steam-original"
+      packages.x86_64-linux = {
+        pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
+          system = "x86_64-linux";
+          modules = [
+            ./systems/pve/minimal-installer.nix
           ];
+          format = "install-iso";
         };
-        # pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        devShells.default = import ./shell.nix {
-          inherit pkgs;
-          flake = self;
-        };
+      };
+    } 
+    (inputs.flake-utils.lib.eachDefaultSystem
+      (system:
+        let 
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
+              "steamcmd"
+              "steam-original"
+            ];
+          };
+          # pkgs = nixpkgs.legacyPackages.${system};
+        in {
+          devShells.default = import ./shell.nix {
+            inherit pkgs;
+            flake = self;
+          };
 
-        packages =
-          builtins.removeAttrs
-            (pkgs.callPackage (import ./packages) {inherit self inputs;})
-            [ "override" "overrideDerivation"];
-      }
-    ));
+          packages =
+            builtins.removeAttrs
+              (pkgs.callPackage (import ./packages) {inherit self inputs;})
+              [ "override" "overrideDerivation"];
+        }
+      ));
 }

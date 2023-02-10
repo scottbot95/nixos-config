@@ -1,7 +1,9 @@
 { root, config, options, lib, pkgs, modulesPath, ... }:
 let
   cfg = config.scott.proxmoxGuest;
-  proxmoxCfg = (lib.importJSON /${root}/secrets/proxmox.json);
+  # proxmoxCfg = (lib.importJSON /${root}/secrets/proxmox.json);
+  secretCommand = secret: 
+    ''${pkgs.sops}/bin/sops --extract '["${secret}"]' -d ${../../../secrets/proxmox.json}'';
   isNixops = (builtins.hasAttr "deployment" options);
 in with lib; {
   imports = [
@@ -29,8 +31,10 @@ in with lib; {
         deployment.hasFastConnection = true;
         deployment.targetEnv = "proxmox";
         deployment.proxmox = {
-          inherit (proxmoxCfg.credentials) username tokenName tokenValue;
           serverUrl = "pve.faultymuse.com:8006";
+          username.command = secretCommand "username";
+          tokenName.command = secretCommand "tokenName";
+          tokenValue.command = secretCommand "tokenValue";
 
           uefi = {
             enable = true;
@@ -39,7 +43,7 @@ in with lib; {
           network = mkDefault [
             ({bridge = "vmbr0"; })
           ];
-          installISO = "local:iso/nixos-22.11.20221229.913a47c-x86_64-linux.isonixos.iso";
+          installISO = "local:iso/nixos-23.05.20221229.677ed08-x86_64-linux.isonixos.iso";
           usePrivateIPAddress = true;
           partitions = ''
             set -x

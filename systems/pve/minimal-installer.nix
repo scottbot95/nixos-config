@@ -7,5 +7,5 @@
 
     services.qemuGuest.enable = true;
     services.cloud-init.enable = true;
-    services.cloud-init.network.enable = true;
+    # services.cloud-init.network.enable = true;
 }

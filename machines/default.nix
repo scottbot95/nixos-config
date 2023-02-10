@@ -2,12 +2,17 @@
 with builtins;
 with nixpkgs.lib;
 let
+  flakeModules = builtins.attrValues self.nixosModules;
   dirs = filterAttrs (_: type: type == "directory" ) (readDir ./.);
-  nixosConfigurations = mapAttrs (name: _: nixosSystem (import ./${name} inputs)) dirs;
+  dirsWithFile = file: filterAttrs (dir: _: pathExists ./${dir}/${file}) dirs;
+  nixosConfigurations = mapAttrs (name: _: nixosSystem {
+    modules = flakeModules ++ [ ./${name}/configuration.nix ];
+    specialArgs = inputs;
+  }) (dirsWithFile "configuration.nix");
   terranixModules = 
     mapAttrs
       (name: _: import ./${name}/terraform.nix)
-      (filterAttrs (dir: _: pathExists ./${dir}/terraform.nix) dirs);
+      (dirsWithFile "terraform.nix");
 in {
   inherit nixosConfigurations terranixModules;
 }

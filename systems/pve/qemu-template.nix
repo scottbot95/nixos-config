@@ -3,7 +3,7 @@ let
 in {
   imports = [ 
     "${modulesPath}/profiles/qemu-guest.nix"
-    ../../profiles/proxmox-guest 
+    ../../modules/profiles/proxmox-guest 
   ];
   
   proxmox.qemuConf = {

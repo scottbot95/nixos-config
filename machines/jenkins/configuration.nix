@@ -1,7 +1,7 @@
 { config, lib, pkgs, ...}: {
 
   imports = [
-    ../../profiles/proxmox-guest
+    ../../modules/profiles/proxmox-guest
   ];
 
   fileSystems."/" = {

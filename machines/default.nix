@@ -2,7 +2,7 @@
 with builtins;
 with nixpkgs.lib;
 let
-  flakeModules = builtins.attrValues self.nixosModules;
+  flakeModules = builtins.attrValues inputs.self.nixosModules;
   dirs = filterAttrs (_: type: type == "directory" ) (readDir ./.);
   dirsWithFile = file: filterAttrs (dir: _: pathExists ./${dir}/${file}) dirs;
   nixosConfigurations = mapAttrs (name: _: nixosSystem {

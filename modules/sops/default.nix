@@ -1,4 +1,4 @@
-{ root, config, lib, pkgs, ... }:
+{ config, lib, pkgs, sops-nix, ... }:
 with lib;
 let
   cfg = config.scott.sops;
@@ -51,9 +51,6 @@ let
     };
   });
 in {
-    # TODO shoould be able to have import here but nixops doesn't let us add specialArgs
-    # imports = [ inputs.sops-nix.nixosModules.sops ];
-
     options.scott.sops = {
       enable = mkEnableOption "Enable SOPS secrets";
       ageKeyFile = mkOption {
@@ -69,8 +66,11 @@ in {
       };
     };
 
+    imports = [
+      sops-nix.nixosModules.sops
+    ];
+
     config = mkIf cfg.enable {
-        sops.defaultSopsFile = /${root}/secrets/homelab.yaml;
         sops.age.keyFile = cfg.ageKeyFile;
 
         systemd.services = mapAttrs'

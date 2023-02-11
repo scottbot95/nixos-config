@@ -4,14 +4,6 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    hercules-ci-agent = {
-      url = "github:hercules-ci/hercules-ci-agent";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-    # hercules-ci-effects.inputs.nixpkgs.follows = "nixpkgs";
-
     home-manager = {
       url = "github:nix-community/home-manager/release-21.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -70,6 +62,11 @@
             ./systems/pve/minimal-installer.nix
           ];
           format = "install-iso";
+        };
+        pve-qemu-template = inputs.nixos-generators.nixosGenerate {
+          system = "x86_64-linux";
+          format = "proxmox";
+          modules = [ ./systems/pve/qemu-template.nix ];
         };
       };
     } 

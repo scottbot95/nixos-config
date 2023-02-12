@@ -1,6 +1,10 @@
+# FIXME ns2 doesn't work at all. Should probably figure this out at some point...
 {config, ...}: 
 {
-  imports = [ ../nameserver.nix ];
+  imports = [ 
+    ../../modules/profiles/nameserver
+    ../../modules/profiles/proxmox-guest
+  ];
 
   scott.powerdns = {
     slave = true;
@@ -15,11 +19,6 @@
       allowNotifyFor = builtins.attrNames forwardZones;
     };
   };
-
-  deployment.proxmox.network = [{
-    bridge = "vmbr0";
-    tag = 5;
-  }];
 
   networking = {
     interfaces.ens18 = {
@@ -37,7 +36,4 @@
     firewall.allowedTCPPorts = [ 53 80 443 ];
     firewall.allowedUDPPorts = [ 53 ];
   };
-
-  # Why do we need this???
-  systemd.oomd.enable = false;
 }

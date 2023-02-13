@@ -28,21 +28,9 @@ let
     );
 in
 {
-  deployment.proxmox = {
-    cores = 4;
-    memory = 2048;
-    startOnBoot = true;
-    disks = [{
-      volume = "nvme0";
-      size = "20G";
-      enableSSDEmulation = true;
-      enableDiscard = true;
-    }];
-    network = [{
-      bridge = "vmbr0";
-      tag = 20;
-    }];
-  };
+  imports = [
+    ../../modules/profiles/proxmox-guest
+  ];
 
   networking = {
     interfaces.ens18 = {
@@ -101,9 +89,7 @@ in
 
     virtualHosts = (mkProxies {
       games.port = 8080;
-
-      pipelines.port = 8080;
-      pipelines.host = "bob-the-builder.lan.faultymuse.com";
+      games.host = "faultybox.prod.faultymuse.com";
     }) // {
       "_" = {
         default = true;

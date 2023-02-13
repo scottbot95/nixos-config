@@ -445,14 +445,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1676091444,
-        "narHash": "sha256-r7q5VsgTXlqcK3KN6+V6lVyy5hwQ4Ro8ecWrdvY84Hc=",
-        "path": "/mnt/c/Users/scott/workspace/terranix-proxmox",
-        "type": "path"
+        "lastModified": 1676237168,
+        "narHash": "sha256-Pl1qlnc3bJA1nUJBY/3T6sPhRERW8qirWM7VhlTZ8fs=",
+        "owner": "scottbot95",
+        "repo": "terranix-proxmox",
+        "rev": "ae7541116bc9d68fad8594ede3411dd3ec620218",
+        "type": "github"
       },
       "original": {
-        "path": "/mnt/c/Users/scott/workspace/terranix-proxmox",
-        "type": "path"
+        "owner": "scottbot95",
+        "repo": "terranix-proxmox",
+        "type": "github"
       }
     }
   },

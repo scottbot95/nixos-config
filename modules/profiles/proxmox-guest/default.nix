@@ -18,7 +18,10 @@
       fsType = "vfat";
     };
     swapDevices = [
-      { device = "/var/swapfile"; }
+      { 
+        device = "/var/swapfile";
+        size = 2048;
+      }
     ];
 
     boot.loader.systemd-boot.enable = true;

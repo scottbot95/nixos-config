@@ -25,7 +25,7 @@
     terranix.url = "github:terranix/terranix";
     terranix.inputs.nixpkgs.follows = "nixpkgs";
 
-    terranix-proxmox.url = "path:///mnt/c/Users/scott/workspace/terranix-proxmox";
+    terranix-proxmox.url = "github:scottbot95/terranix-proxmox";
     terranix-proxmox.inputs.nixpkgs.follows = "nixpkgs";
     terranix-proxmox.inputs.terranix.follows = "terranix";
   };

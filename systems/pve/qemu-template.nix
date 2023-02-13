@@ -5,7 +5,7 @@ in {
     "${modulesPath}/profiles/qemu-guest.nix"
     ../../modules/profiles/proxmox-guest 
   ];
-  
+
   proxmox.qemuConf = {
     cores = 4;
     memory = 4096;

@@ -3,9 +3,7 @@
   imports = [
     ../../modules/profiles/proxmox-guest
   ];
-
-  networking.hostName = "jenkins";
-
+  
   scott.sops.enable = true;
   scott.sops.ageKeyFile = "/var/keys/age";
   

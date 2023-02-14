@@ -5,13 +5,7 @@ let
 in {
   proxmox.qemu.${hostname} = {
     inherit enable;
-    agent = true;
-    target_node = "pve";
-    flake = toString ../..;
-    clone = "nixos-23.05.20230127.8a828fc";
-    full_clone = true;
-    bios = "ovmf";
-    os_type = "cloud-init";
+    onboot = false;
     cores = 8;
     memory = 8192;
 

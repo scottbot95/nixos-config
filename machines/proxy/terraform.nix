@@ -4,17 +4,9 @@ let
 in {
   proxmox.qemu.${hostname} = {
     enable = true;
-    agent = true;
     vmid = 300;
-    target_node = "pve";
-    flake = toString ../..;
-    clone = "nixos-23.05.20230127.8a828fc";
-    full_clone = true;
-    bios = "ovmf";
-    os_type = "cloud-init";
     cores = 4;
     memory = 4096;
-    onboot = true;
     startup = "order=3";
 
     network = [{

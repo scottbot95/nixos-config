@@ -125,7 +125,7 @@
               (pkgs.callPackage (import ./packages) {inherit self inputs;})
               [ "override" "overrideDerivation"]) //
             {
-              terraformConfiguration = terranixConfig;
+              terraformConfig = terranixConfig;
               prebuild = 
                 let
                   machines = pkgs.lib.filterAttrs 

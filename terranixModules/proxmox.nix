@@ -10,5 +10,16 @@ in {
       token_secret = extractSecret "pm_api.token_secret";
       log_level = "debug";
     };
+
+    defaults.qemu = {
+      agent = true;
+      target_node = "pve";
+      flake = toString ./.;
+      clone = "nixos-23.05.20230127.8a828fc";
+      full_clone = true;
+      bios = "ovmf";
+      os_type = "cloud-init";
+      onboot = true;
+    };
   };
 }

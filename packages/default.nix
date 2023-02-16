@@ -11,7 +11,15 @@ let
     mapAttrs
       (path: _: pkgs.callPackage (import ./${path}) { inherit self inputs; })
       packagesToImport;
-  platformPackages = filterAttrs (_: p: elem pkgs.system p.meta.platforms) importedPackages;
+  platformPackages = 
+    filterAttrs 
+      (_: p:  
+        if p ? meta && p.meta ? platforms then
+          elem pkgs.system p.meta.platforms
+        else
+          true # Just allow building on everything if no platform meta section
+      )
+      importedPackages;
 in
 mapAttrs'
   (path: p: nameValuePair (elemAt (builtins.split ".nix" path) 0) p)

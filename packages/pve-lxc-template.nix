@@ -8,6 +8,10 @@ let
       "${modulesPath}/virtualisation/proxmox-lxc.nix"
     ];
 
+    environment.systemPackages = with pkgs; [
+      jq
+    ];
+
     users.users.root.initialPassword = "";
 
     system.stateVersion = "23.05";

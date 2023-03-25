@@ -17,10 +17,9 @@ in {
     }];
 
     disk = [{
-      type = "scsi";
+      type = "virtio";
       storage = "nvme0";
       size = "20G";
-      ssd = true;
       discard = true;
     }];
   };

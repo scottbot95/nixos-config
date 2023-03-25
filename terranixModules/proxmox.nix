@@ -2,14 +2,14 @@
 let
   extractSecret = secret: "\${data.sops_file.secrets.data[\"${secret}\"]}";
 in {
+  # provider.proxmox.pm_proxy_server = "http://127.0.0.1:8080";
+
   proxmox = {
     show_deploy_ouptut = false;
     provider = {
       endpoint = "https://pve.faultymuse.com:8006/api2/json";
-      # token_id = extractSecret "pm_api.token_id";
-      # token_secret = extractSecret "pm_api.token_secret";
-      user = extractSecret "pm_api.user";
-      password = extractSecret "pm_api.pass";
+      token_id = extractSecret "pm_api.token_id";
+      token_secret = extractSecret "pm_api.token_secret";
       log_level = "debug";
     };
 
@@ -17,7 +17,7 @@ in {
       agent = true;
       target_node = "pve";
       flake = toString ../.;
-      clone = "nixos-23.05.20230127.8a828fc";
+      clone = "nixos-23.05.20230217.958dbd6";
       full_clone = true;
       bios = "ovmf";
       os_type = "cloud-init";
@@ -30,6 +30,9 @@ in {
       flake = toString ../.;
       domain = "lan.faultymuse.com";
       unprivileged = true;
+
+      # TTY doesn't work with NixOS for some reason on latest version of proxmox
+      cmode = "console";
 
       ssh_public_keys = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICnt0c1V/ZZFW5J3HGqqxDwr6zoq5ouB5uB7IFXxZqdB cardno:18_978_827";
 

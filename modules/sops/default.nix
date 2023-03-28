@@ -80,6 +80,7 @@ in {
 
               wantedBy = [ "multi-user.target" ];
               requiredBy = envFile.requiredBy;
+              before = envFile.requiredBy;
 
               restartIfChanged = true;
 

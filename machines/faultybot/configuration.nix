@@ -25,5 +25,11 @@ in
   services.faultybot.enable = true;
   services.faultybot.envfile = "/run/secrets/faultybot.env";
 
+  services.SystemdJournal2Gelf = {
+    enable = true;
+    graylogServer = "graylog.lan.faultymuse.com:12201";
+    extraOptions = "-u faultybot";
+  };
+
   system.stateVersion = "23.05";
 }

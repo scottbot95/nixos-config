@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, self, ...}:
 let
   rootPasswordSha2_name = "services/graylog/root_sha";
   passwordSecret_name = "services/graylog/password_secret";
@@ -9,6 +9,7 @@ let
       hash = "sha256-WPD5StVBb/hK+kP/1wkQQBKRQma/uaP+8ULeIFUBL1U=";
     };
   });
+  graylog = self.packages.${pkgs.system}.graylog;
 in
 {
   imports = [
@@ -17,7 +18,7 @@ in
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     # "mongodb"
-    "elasticsearch"
+    # "elasticsearch"
   ];
 
   sops.secrets.${rootPasswordSha2_name} = {};
@@ -30,7 +31,7 @@ in
       GRAYLOG_ROOT_PASSWORD_SHA2 = rootPasswordSha2_name;
       GRAYLOG_PASSWORD_SECRET = passwordSecret_name;
     };
-    # requiredBy = [ "graylog.service" ];
+    requiredBy = [ "graylog.service" ];
   };
 
 
@@ -47,30 +48,25 @@ in
     ];
   };
 
-  # services.opensearch = {
-  #   enable = true;
-  #   package = opensearch-2_5;
-  #   settings ={ 
-  #     "cluster.name" = "graylog";
-  #     # "plugins.security.disabled" = true;
-  #     "action.auto_create_index" = false;
-  #   };
-  #   extraJavaOptions = [
-  #     "-Xms4096m"
-  #     "-Xmx4096m"
-  #   ];
-  # };
+  systemd.services.podman-mongo.preStart = "mkdir -p /var/db/mongodb";
 
-  services.elasticsearch = {
+  services.opensearch = {
     enable = true;
-    cluster_name = "graylog";
-    # extraConf = ''
-    #   action.auto_create_index: false
-    # '';
+    package = opensearch-2_5;
+    settings ={ 
+      "cluster.name" = "graylog";
+      # "plugins.security.disabled" = true;
+      "action.auto_create_index" = false;
+    };
+    extraJavaOptions = [
+      "-Xms4096m"
+      "-Xmx4096m"
+    ];
   };
 
   services.graylog = {
     enable = true;
+    package = graylog;
     rootPasswordSha2 = ""; # leave blank to read from env var
     passwordSecret = "";
     elasticsearchHosts = [ "http://localhost:9200" ];
@@ -81,7 +77,8 @@ in
   };
 
   systemd.services.graylog = {
-    requires = [ "podman-mongo.service" "elasticsearch.service" ];
+    requires = [ "podman-mongo.service" "opensearch.service" ];
+    after = [ "podman-mongo.service" "opensearch.service" ];
     serviceConfig = {
       EnvironmentFile = "-/run/secrets/graylog.env";
     };

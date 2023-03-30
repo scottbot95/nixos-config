@@ -34,6 +34,10 @@
       enable = true;
     };
 
+    services.SystemdJournal2Gelf = {
+      graylogServer = "graylog.lan.faultymuse.com:12201";
+    };
+
     networking.domain = lib.mkDefault "lan.faultymuse.com";
 
     # Turn of extra docs to reduce image size

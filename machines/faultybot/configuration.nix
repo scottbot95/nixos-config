@@ -27,7 +27,6 @@ in
 
   services.SystemdJournal2Gelf = {
     enable = true;
-    graylogServer = "graylog.lan.faultymuse.com:12201";
     extraOptions = "-u faultybot";
   };
 

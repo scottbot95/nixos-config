@@ -38,9 +38,13 @@ in
   # services.mongodb.enable = true;
   # services.mongodb.package = pkgs.mongodb-5_0;
 
+  # mongodb doesn't build on nix for some reason so we have to use the a container
   virtualisation.oci-containers.containers.mongo = {
     image = "mongo:6.0";
     ports = ["127.0.0.1:27017:27017"];
+    volumes = [
+      "/var/db/mongodb:/data/db"
+    ];
   };
 
   # services.opensearch = {

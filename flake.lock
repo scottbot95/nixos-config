@@ -123,11 +123,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1679867532,
-        "narHash": "sha256-jmPqh/xdcRCbuKpt0l06fFhqevSg7IW6Km3xUZK6JdY=",
+        "lastModified": 1680228489,
+        "narHash": "sha256-IX8ashjIGion7ruyZbxWCI9SUi3+x9iEbX1rjDAI+tU=",
         "owner": "scottbot95",
         "repo": "faultybot",
-        "rev": "d1891a0f43c81d1d9e2f70aeaa0ce342605913ae",
+        "rev": "7c4ce54d124a9a9047fd4143c0487427f23b74ff",
         "type": "github"
       },
       "original": {
@@ -141,9 +141,7 @@
         "advisory-db": "advisory-db_2",
         "crane": "crane_2",
         "flake-utils": "flake-utils_4",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": "nixpkgs",
         "rust-overlay": "rust-overlay_4"
       },
       "locked": {
@@ -373,16 +371,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1676721149,
-        "narHash": "sha256-mN2EpTGxxVNnFZLoLWRwh6f7UWhXy4qE+wO2CZyrXps=",
+        "lastModified": 1673947312,
+        "narHash": "sha256-xx/2nRwRy3bXrtry6TtydKpJpqHahjuDB5sFkQ/XNDE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5f4e07deb7c44f27d498f8df9c5f34750acf52d2",
+        "rev": "2d38b664b4400335086a713a0036aafaa002c003",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -403,6 +401,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1676721149,
+        "narHash": "sha256-mN2EpTGxxVNnFZLoLWRwh6f7UWhXy4qE+wO2CZyrXps=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "5f4e07deb7c44f27d498f8df9c5f34750acf52d2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "faultybot": "faultybot",
@@ -411,7 +425,7 @@
         "home-manager": "home-manager",
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "sops-nix": "sops-nix",
         "terranix": "terranix",
         "terranix-proxmox": "terranix-proxmox"
@@ -609,14 +623,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1676884101,
-        "narHash": "sha256-+mzzE4QG0J1/HVBKC5OOqcVgTBOlCAQ8fHq1ikB7kCs=",
-        "path": "/home/scott/workplace/terranix-proxmox",
-        "type": "path"
+        "lastModified": 1680312310,
+        "narHash": "sha256-7xAEw+6juUyqxIK891bGLuA78Rk3NnHP/qjDJF9CIWo=",
+        "owner": "scottbot95",
+        "repo": "terranix-proxmox",
+        "rev": "51ea728bad1f8c48ee144ce066e911a0cfc60b45",
+        "type": "github"
       },
       "original": {
-        "path": "/home/scott/workplace/terranix-proxmox",
-        "type": "path"
+        "owner": "scottbot95",
+        "repo": "terranix-proxmox",
+        "type": "github"
       }
     },
     "utils": {

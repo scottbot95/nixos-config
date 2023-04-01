@@ -5,6 +5,7 @@ in {
   proxmox.qemu.${hostname} = {
     enable = true;
     vmid = 200;
+    domain = "lan.faultymuse.com";
     cores = 8;
     memory = 8192;
     startup = "order=2";

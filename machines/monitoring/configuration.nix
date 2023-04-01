@@ -1,10 +1,35 @@
 { config, lib, faultybot, ... }:
 let
+  /*
+  pve-exporter:
+    user: monitoring@pve
+    token_name: pve-exporter
+    token_value: 87e38c6b-6d8f-402c-9c84-49a128ba5d8b
+    verify_ssl: false
+   */
+  PVE_USER = "pve_exporter/user";
+  PVE_TOKEN_NAME = "pve_exporter/token_name";
+  PVE_TOKEN_VALUE = "pve_exporter/token_value";
+  PVE_VERIFY_SSL = "pve_exporter/verify_ssl";
 in
 {
   imports = [
     ../../modules/profiles/proxmox-guest
   ];
+
+  sops.secrets.${PVE_USER} = {};
+  sops.secrets.${PVE_TOKEN_NAME} = {};
+  sops.secrets.${PVE_TOKEN_VALUE} = {};
+  sops.secrets.${PVE_VERIFY_SSL} = {};
+
+  scott.sops.enable = true;
+  scott.sops.ageKeyFile = "/var/keys/age";
+  scott.sops.envFiles.pve-exporter = {
+    vars = {
+      inherit PVE_USER PVE_TOKEN_NAME PVE_TOKEN_VALUE PVE_VERIFY_SSL;
+    };
+    requiredBy = [ "prometheus-pve-exporter.service" ];
+  };
 
   # grafana config
   services.grafana = {
@@ -43,14 +68,66 @@ in
         enabledCollectors = [ "systemd" ];
         port = 9002;
       };
+      
+      nginx = {
+        enable = true;
+        port = 9003;
+        listenAddress = "127.0.0.1";
+      };
+
+      nginxlog = {
+        enable = true;
+        port = 9004;
+        listenAddress = "127.0.0.1";
+        group = "nginx"; # Use nginx user group to exporter has read-only access to logs
+        settings = {
+          namespaces = [{
+            name = "grafana";
+            source.files = ["/var/log/nginx/access.log"];
+          }];
+        };
+      };
+
+      pve = {
+        enable = true;
+        listenAddress = "127.0.0.1";
+        port = 9005;
+        environmentFile = "/run/secrets/pve-exporter.env";
+      };
     };
 
     scrapeConfigs = [
       {
         job_name = "monitoring.lan.faultymuse.com";
         static_configs = [{
-          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
+          targets = [
+            "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" 
+            "127.0.0.1:${toString config.services.prometheus.exporters.nginx.port}" 
+            "127.0.0.1:${toString config.services.prometheus.exporters.nginxlog.port}" 
+          ];
         }];
+      }
+      {
+        job_name = "pve";
+        static_configs = [{
+          targets = [ "pve.faultymuse.com" ];
+        }];
+        metrics_path = "/pve";
+        params.module = [ "default" ];
+        relabel_configs = [
+          { 
+            source_labels = ["__address__"];
+            target_label = "__param_target";
+          }
+          { 
+            source_labels = ["__param_target"];
+            target_label = "instance";
+          }
+          { 
+            target_label = "__address__";
+            replacement = "127.0.0.1:${toString config.services.prometheus.exporters.pve.port}";
+          }
+        ];
       }
     ];
   };
@@ -60,7 +137,7 @@ in
     enable = true;
     configuration = {
       
-      server.http_listen_port = 9003;
+      server.http_listen_port = 9010;
       auth_enabled = false;
 
       ingester = {
@@ -135,7 +212,7 @@ in
     enable = true;
     configuration = {
       server = {
-        http_listen_port = 3031;
+        http_listen_port = 9011;
         grpc_listen_port = 0;
       };
       positions = {
@@ -166,6 +243,7 @@ in
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
+    statusPage = true;
     virtualHosts.${config.services.grafana.settings.server.domain} = {
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.grafana.settings.server.http_port}";

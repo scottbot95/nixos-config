@@ -108,6 +108,12 @@ in
         }];
       }
       {
+        job_name = "faultybot.prod.faultymuse.com";
+        static_configs = [{
+          targets = [ "faultybot.prod.faultymuse.com:9000" ];
+        }];
+      }
+      {
         job_name = "pve";
         static_configs = [{
           targets = [ "pve.faultymuse.com" ];
@@ -227,7 +233,7 @@ in
           max_age = "12h";
           labels = {
             job = "systemd-journal";
-            host = "pihole";
+            host = "monitoring";
           };
         };
         relabel_configs = [{
@@ -243,16 +249,46 @@ in
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
+    recommendedOptimisation = true;
+    recommendedGzipSettings = true;
     statusPage = true;
+
+    upstreams = {
+      grafana = {
+        servers = {
+          "127.0.0.1:${toString config.services.grafana.settings.server.http_port}" = {};
+        };
+      };
+      loki = {
+        servers = {
+          "127.0.0.1:${toString config.services.loki.configuration.server.http_listen_port}" = {};
+        };
+      };
+    };
+
     virtualHosts.${config.services.grafana.settings.server.domain} = {
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.grafana.settings.server.http_port}";
+        proxyPass = "http://grafana";
         proxyWebsockets = true;
       };
+      listen = [{
+        addr = "0.0.0.0";
+        port = 80;
+      }];
+    };
+
+    virtualHosts.loki = {
+      locations."/" = {
+        proxyPass = "http://loki";
+      };
+      listen = [{
+        addr = "0.0.0.0";
+        port = 8010;
+      }];
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 80 ];
+  networking.firewall.allowedTCPPorts = [ 80 8010 ];
   networking.firewall.allowedUDPPorts = [ 80 ];
 
   system.stateVersion = "23.05";

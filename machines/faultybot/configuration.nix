@@ -24,10 +24,37 @@ in
 
   services.faultybot.enable = true;
   services.faultybot.envfile = "/run/secrets/faultybot.env";
+  services.faultybot.metrics.enable = true;
 
-  services.SystemdJournal2Gelf = {
+  # promtail
+  services.promtail = {
     enable = true;
-    extraOptions = "-u faultybot";
+    configuration = {
+      server = {
+        http_listen_port = 9001;
+        grpc_listen_port = 0;
+      };
+      positions = {
+        filename = "/tmp/positions.yaml";
+      };
+      clients = [{
+        url = "http://monitoring.lan.faultymuse.com:8010/loki/api/v1/push";
+      }];
+      scrape_configs = [{
+        job_name = "journal";
+        journal = {
+          max_age = "12h";
+          labels = {
+            job = "systemd-journal";
+            host = "faultybot";
+          };
+        };
+        relabel_configs = [{
+          source_labels = [ "__journal__systemd_unit" ];
+          target_label = "unit";
+        }];
+      }];
+    };
   };
 
   system.stateVersion = "23.05";

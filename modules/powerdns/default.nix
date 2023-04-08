@@ -1,11 +1,14 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nixpkgs-stable, ... }:
 let 
   cfg = config.scott.powerdns;
-  pdnsSrc = pkgs.fetchFromGitHub {
-    owner = "PowerDNS";
-    repo = "pdns";
-    rev = "rec-4.6.2";
-    sha256 = "sha256-V1qj5mP9zZAaTkwyuIX9zW2DE7/IRABIh/rMPoAY/9U=";
+  pdnsSrc = pkgs.stdenv.mkDerivation {
+    name = "pdnsSrc";
+    inherit (pkgs.pdns) src;
+    phases = [ "unpackPhase" "installPhase" ];
+    installPhase = ''
+      mkdir $out
+      mv ./* $out/
+    '';
   };
   schemaScript = "${pdnsSrc}/modules/gmysqlbackend/schema.mysql.sql";
 in 
@@ -39,10 +42,23 @@ with lib; {
       type = types.path;
       description = "Secret key used for creating session cookies";
     };
+    secretFile = mkOption {
+      type = types.path;
+      description = mdDoc ''
+        Path to file containing the secrets to be used by PowerDNS.
+        The file should contain lines formatted as `SECRET_VAR=SECRET_VALUE`.
+        This is useful to avoid putting secrets into the nix store.
+      '';
+    };
     slave = mkEnableOption "PowerDNS slave mode";
   };
 
   config = mkIf cfg.enable {
+
+    # Use 22.11 for PDNS due to https://github.com/PowerDNS-Admin/PowerDNS-Admin/issues/1376
+    nixpkgs.pkgs = mkDefault nixpkgs-stable.legacyPackages.${config.nixpkgs.hostPlatform.system};
+    system.stateVersion = mkDefault "22.11";
+
     services.mysql = {
       enable = true;
       package = pkgs.mariadb;
@@ -83,6 +99,7 @@ with lib; {
       bind-address = if cfg.openFirewall then "0.0.0.0" else "127.0.0.1";
     in {
       enable = true;
+      inherit (cfg) secretFile;
       extraConfig = ''
         local-address=${bind-address}
         local-port=${toString cfg.port}
@@ -91,7 +108,7 @@ with lib; {
         gmysql-user=pdns
         gmysql-host=localhost
         api=yes
-        api-key=$scrypt$ln=10,p=1,r=8$uMjhlsyn76+lG+MEipLAwg==$4enb+ZPxmWhcQFRc7c71nQX+F9Y+BFNAbiUAF9bSHrM=
+        api-key=$API_KEY
         slave=${if cfg.slave then "yes" else "no"}
       '';
     };

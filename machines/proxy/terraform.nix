@@ -8,7 +8,7 @@ in {
     domain = "prod.faultymuse.com";
     cores = 4;
     memory = 4096;
-    startup = "order=3";
+    startup = "order=3,up=15";
 
     network = [{
       model = "virtio";

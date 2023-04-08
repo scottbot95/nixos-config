@@ -108,6 +108,13 @@ in {
             }
           )
           cfg.envFiles;
+
+      assertions = flatten (mapAttrsToList (envName: envCfg: 
+        mapAttrsToList (var: secret: {
+          assertion = builtins.hasAttr secret config.sops.secrets;
+          message = "Unknown secret `${secret}` used in `${envName}` environment file";
+        }) envCfg.vars
+      ) cfg.envFiles);
     };
     
 }

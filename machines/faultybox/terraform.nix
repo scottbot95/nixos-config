@@ -2,6 +2,8 @@
 let
   hostname = "faultybox";
 in {
+  dns.public.cnames = [ "games" ];
+
   proxmox.qemu.${hostname} = {
     enable = true;
     vmid = 500;

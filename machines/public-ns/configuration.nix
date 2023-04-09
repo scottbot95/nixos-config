@@ -15,4 +15,10 @@
     };
     defaultGateway = "10.0.20.1";
   };
+
+  services.powerdns.extraConfig = ''
+    dnsupdate=yes
+    gmysql-dnssec=yes
+    allow-dnsupdate-from=10.0.5.0/8 192.168.4.0/8
+  '';
 }

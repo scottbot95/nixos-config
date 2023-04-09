@@ -104,11 +104,17 @@ with lib; {
         local-address=${bind-address}
         local-port=${toString cfg.port}
 
+        # Enable ALIAS records to DNS is the same zone
+        resolver=127.0.0.1:${toString cfg.port}
+        expand-alias=yes
+
         launch=gmysql
         gmysql-user=pdns
         gmysql-host=localhost
+
         api=yes
         api-key=$API_KEY
+
         slave=${if cfg.slave then "yes" else "no"}
       '';
     };

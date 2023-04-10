@@ -34,6 +34,9 @@
       enable = true;
     };
 
+    # Enable sending logs to loki by default
+    services.promtail.enable = true;
+
     networking.domain = lib.mkDefault "lan.faultymuse.com";
 
     # Turn of extra docs to reduce image size

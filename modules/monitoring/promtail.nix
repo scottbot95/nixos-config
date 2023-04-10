@@ -13,7 +13,7 @@ in
         filename = "/tmp/positions.yaml";
       };
       clients = [{
-        url = "http://monitoring.lan.fauktymuse.com:8010/loki/api/v1/push";
+        url = "http://monitoring.lan.faultymuse.com:8010/loki/api/v1/push";
       }];
       scrape_configs = [{
         job_name = "journal";

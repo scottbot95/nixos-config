@@ -26,10 +26,5 @@ in
   services.faultybot.envfile = "/run/secrets/faultybot.env";
   services.faultybot.metrics.enable = true;
 
-  # promtail
-  services.promtail = {
-    enable = true;
-  };
-
   system.stateVersion = "23.05";
 }

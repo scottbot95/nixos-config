@@ -1,4 +1,5 @@
 { config, options, lib, modulesPath, ...}:
+with lib;
 {
   imports = [
      "${modulesPath}/profiles/qemu-guest.nix"
@@ -43,6 +44,6 @@
     documentation.nixos.enable = false;
   } // (if builtins.hasAttr "sops" options then {
     scott.sops.ageKeyFile = "/var/keys/age";
-    sops.defaultSopsFile = ../../../secrets/homelab.yaml;
+    sops.defaultSopsFile = mkDefault ../../../secrets/homelab.yaml;
   } else {});
 }

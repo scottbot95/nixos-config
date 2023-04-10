@@ -5,6 +5,9 @@
     ../../modules/profiles/proxmox-guest
   ];
 
+  sops.defaultSopsFile = ./secrets.yaml;
+  sops.secrets."namesilo/api_key" = {};
+
   networking = {
     hostName = "ns1";
     interfaces.ens18 = {
@@ -21,4 +24,6 @@
     gmysql-dnssec=yes
     allow-dnsupdate-from=10.0.5.0/8 192.168.4.0/8
   '';
+
+  scott.dns-updater.enable = true;
 }

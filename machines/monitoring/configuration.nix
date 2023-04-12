@@ -1,43 +1,31 @@
-{ config, lib, faultybot, ... }:
+{ config, lib, faultybot, self, ... }:
+with lib;
 let
-  /*
-  pve-exporter:
-    user: monitoring@pve
-    token_name: pve-exporter
-    token_value: 87e38c6b-6d8f-402c-9c84-49a128ba5d8b
-    verify_ssl: false
-   */
-  PVE_USER = "pve_exporter/user";
-  PVE_TOKEN_NAME = "pve_exporter/token_name";
-  PVE_TOKEN_VALUE = "pve_exporter/token_value";
-  PVE_VERIFY_SSL = "pve_exporter/verify_ssl";
-  INFLUX_TOKEN = "monitoring/influx_token";
+  skippedExporters = ["unifi-poller"]; # Skip exporters to avoid warnings
+  machineConfigs = mapAttrs (_: value: value.config) self.nixosConfigurations;
+  scrapeConfigs = mapAttrsToList (machineName: cfg:
+    let
+      dns = "${cfg.networking.hostName}.${cfg.networking.domain}";
+      exporters = filterAttrs 
+        (exporterName: exporter: 
+          (!(builtins.elem exporterName skippedExporters))
+          &&((builtins.typeOf exporter) == "set")
+          && exporter.enable
+          && (exporter.listenAddress == "0.0.0.0"))
+        cfg.services.prometheus.exporters;
+      targets = mapAttrsToList (_: exporterCfg: "${dns}:${toString exporterCfg.port}") exporters;
+    in mkIf (builtins.length targets > 0) {
+      job_name = dns;
+      static_configs = [{
+        inherit targets;
+      }];
+    }
+  ) machineConfigs;
 in
 {
   imports = [
     ../../modules/profiles/proxmox-guest
   ];
-
-  # sops.secrets.${PVE_USER} = {};
-  # sops.secrets.${PVE_TOKEN_NAME} = {};
-  # sops.secrets.${PVE_TOKEN_VALUE} = {};
-  # sops.secrets.${PVE_VERIFY_SSL} = {};
-  # sops.secrets.${INFLUX_TOKEN} = {};
-
-  # scott.sops.enable = true;
-  # scott.sops.ageKeyFile = "/var/keys/age";
-  # scott.sops.envFiles.pve-exporter = {
-  #   vars = {
-  #     inherit PVE_USER PVE_TOKEN_NAME PVE_TOKEN_VALUE PVE_VERIFY_SSL;
-  #   };
-  #   requiredBy = [ ];
-  # };
-  # scott.sops.envFiles.telegraf = {
-  #   vars = {
-  #     inherit INFLUX_TOKEN;
-  #   };
-  #   requiredBy = [ "telegraf.service" ];
-  # };
 
   # grafana config
   services.grafana = {
@@ -51,11 +39,11 @@ in
 
     provision = {
       datasources.settings.datasources = [
-        # {
-        #   name = "Prometheus";
-        #   type = "prometheus";
-        #   url = "http://localhost:${toString config.services.prometheus.port}";
-        # }
+        {
+          name = "Prometheus";
+          type = "prometheus";
+          url = "http://localhost:${toString config.services.prometheus.port}";
+        }
         {
           name = "Loki";
           type = "loki";
@@ -66,85 +54,12 @@ in
   };
 
   #prometheus config
-  # services.prometheus = {
-  #   enable = true;
-  #   port = 9001;
+  services.prometheus = {
+    enable = true;
+    port = 9090;
 
-  #   exporters = {
-  #     node = {
-  #       enable = true;
-  #       enabledCollectors = [ "systemd" ];
-  #       port = 9002;
-  #     };
-      
-  #     nginx = {
-  #       enable = true;
-  #       port = 9003;
-  #       listenAddress = "127.0.0.1";
-  #     };
-
-  #     nginxlog = {
-  #       enable = true;
-  #       port = 9004;
-  #       listenAddress = "127.0.0.1";
-  #       group = "nginx"; # Use nginx user group to exporter has read-only access to logs
-  #       settings = {
-  #         namespaces = [{
-  #           name = "grafana";
-  #           source.files = ["/var/log/nginx/access.log"];
-  #         }];
-  #       };
-  #     };
-
-  #     pve = {
-  #       enable = true;
-  #       listenAddress = "127.0.0.1";
-  #       port = 9005;
-  #       environmentFile = "/run/secrets/pve-exporter.env";
-  #     };
-  #   };
-
-  #   scrapeConfigs = [
-  #     {
-  #       job_name = "monitoring.lan.faultymuse.com";
-  #       static_configs = [{
-  #         targets = [
-  #           "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" 
-  #           "127.0.0.1:${toString config.services.prometheus.exporters.nginx.port}" 
-  #           "127.0.0.1:${toString config.services.prometheus.exporters.nginxlog.port}" 
-  #         ];
-  #       }];
-  #     }
-  #     {
-  #       job_name = "faultybot.prod.faultymuse.com";
-  #       static_configs = [{
-  #         targets = [ "faultybot.prod.faultymuse.com:9000" ];
-  #       }];
-  #     }
-  #     {
-  #       job_name = "pve";
-  #       static_configs = [{
-  #         targets = [ "pve.faultymuse.com" ];
-  #       }];
-  #       metrics_path = "/pve";
-  #       params.module = [ "default" ];
-  #       relabel_configs = [
-  #         { 
-  #           source_labels = ["__address__"];
-  #           target_label = "__param_target";
-  #         }
-  #         { 
-  #           source_labels = ["__param_target"];
-  #           target_label = "instance";
-  #         }
-  #         { 
-  #           target_label = "__address__";
-  #           replacement = "127.0.0.1:${toString config.services.prometheus.exporters.pve.port}";
-  #         }
-  #       ];
-  #     }
-  #   ];
-  # };
+    inherit scrapeConfigs;
+  };
 
   # loki
   services.loki = {
@@ -248,11 +163,8 @@ in
   services.telegraf = {
     enable = true;
     extraConfig = {
-      agent = {
-        
-      };
       inputs = {
-        system = {}; 
+        # system = {}; 
         # prometheus = {
         #   urls = [
         #     "http://127.0.0.1:${toString config.services.prometheus.exporters.pve.port}/metrics" 
@@ -347,7 +259,7 @@ in
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 80 8010 8020 8011 ];
+  networking.firewall.allowedTCPPorts = [ 80 8010 8020 8011 8125 ];
   networking.firewall.allowedUDPPorts = [ 80 8089 ];
 
   system.stateVersion = "23.05";

@@ -24,7 +24,14 @@ in
 
   services.faultybot.enable = true;
   services.faultybot.envfile = "/run/secrets/faultybot.env";
-  services.faultybot.metrics.enable = true;
+
+  services.prometheus.exporters.faultybot = {
+    enable = true;
+    openFirewall = true;
+  };
+
+  networking.domain = "prod.faultymuse.com";
+
 
   system.stateVersion = "23.05";
 }

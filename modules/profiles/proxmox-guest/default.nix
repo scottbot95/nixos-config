@@ -40,6 +40,27 @@ with lib;
 
     networking.domain = lib.mkDefault "lan.faultymuse.com";
 
+    # Add well-known users
+    users.users.scott = {
+      isNormalUser = true;
+      createHome = false;
+      home = "/var/empty";
+      group = "users";
+      extraGroups = [ "wheel" ];
+      openssh.authorizedKeys.keyFiles = [./scott.pub];
+    };
+
+    security.sudo.extraRules = [
+      { users = [ "scott" ];
+        commands = [
+          {
+            command = "ALL";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
+
     # Turn of extra docs to reduce image size
     documentation.nixos.enable = false;
   } // (if builtins.hasAttr "sops" options then {

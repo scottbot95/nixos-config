@@ -1,31 +1,23 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixos-hardware, ... }:
 {
-  deployment.targetHost = "192.168.4.2";
-  deployment.hasFastConnection = true;
-  documentation.nixos.enable = false;
-
-  scott ={
-    proxmoxGuest.enable = false;
+  scott =  {
     technitium = {
       enable = true;
       domain = "ns1.lan.faultymuse.com";
       dhcp = true;
     };
-    hercules-ci.agent = {
-      enable = false;
-      concurrentTasks = 4;
-    };
   };
 
   imports = [
-    # TODO can we use the flake inputs here somehow? Or at least be more pure
-    "${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/raspberry-pi/4"
+    nixos-hardware.nixosModules.raspberry-pi-4
+    ../../modules/profiles/well-known-users
   ];
 
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF52J7UurrJejQxIU1ag7KvScya9GfQTa08e3a1gnqRd scott.techau@gmail.com"
+  users.users.root.openssh.authorizedKeys.keyFiles = [
+    ./id_ed25519.pub
   ];
 
+  nixpkgs.system = config.nixpkgs.hostPlatform.system; # FIXME shouldn't need this but terranix proxmox module currently requires it
   nixpkgs.hostPlatform = {
     config = "aarch64-unknown-linux-gnu";
     system = "aarch64-linux";

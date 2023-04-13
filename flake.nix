@@ -102,6 +102,7 @@
               terranix-proxmox.terranixModule
               ./terranixModules
             ];
+            extraArgs = inputs;
           };
           terranixApp = {
             command,

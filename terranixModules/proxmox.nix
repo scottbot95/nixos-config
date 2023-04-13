@@ -1,4 +1,4 @@
-{ config, lib, ...}:
+{ config, lib, self, ...}:
 let
   extractSecret = secret: "\${data.sops_file.secrets.data[\"${secret}\"]}";
 in {
@@ -16,7 +16,7 @@ in {
     defaults.qemu = {
       agent = true;
       target_node = "pve";
-      flake = toString ../.;
+      flake = toString self;
       clone = "nixos-23.05.20230217.958dbd6";
       full_clone = true;
       bios = "ovmf";
@@ -27,7 +27,7 @@ in {
     defaults.lxc = {
       target_node = "pve";
       ostemplate = "local:vztmpl/nixos-system-x86_64-linux.tar.xz";
-      flake = toString ../.;
+      flake = toString self;
       domain = "lan.faultymuse.com";
       unprivileged = true;
 

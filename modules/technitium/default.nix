@@ -24,13 +24,13 @@ with lib; {
       oci-containers.backend = "podman";
       oci-containers.containers = {
         technitium = {
-          image = "technitium/dns-server:10.0.1";
+          image = "technitium/dns-server:11.0.3";
           autoStart = true;
           environment = {
             DNS_SERVER_DOMAIN = cfg.domain;
           };
           volumes = [
-            "/etc/technitium:/etc/dns/config"
+            "/var/lib/technitium:/etc/dns"
           ];
           extraOptions = [
             "--network=host"
@@ -40,7 +40,7 @@ with lib; {
     };
     
     system.activationScripts = {
-      createTechnitiumConfig.text = "mkdir -p /etc/technitium";
+      createTechnitiumConfig.text = "mkdir -p /var/lib/technitium";
     };
 
     networking.nameservers = [

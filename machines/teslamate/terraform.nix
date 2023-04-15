@@ -1,13 +1,13 @@
 { config, lib, ... }:
 let
-  hostname = "faultybox";
+  hostname = "teslamate";
 in {
   proxmox.qemu.${hostname} = {
     enable = true;
-    vmid = 500;
+    vmid = 502;
     domain = "prod.faultymuse.com";
-    cores = 8;
-    memory = 8192;
+    cores = 2;
+    memory = 4096;
     startup = "order=5";
 
     network = [{

@@ -1,27 +1,27 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
+  hostName = "teslamate";
   podName = "teslamate_pod";
   containerServices = builtins.map (name: "podman-${name}.service") (builtins.attrNames containers);
   containers = {
       teslamate = {
-        image = "teslamate/teslamate:latest";
+        image = "teslamate/teslamate:1.27";
         autoStart = true;
         environment = {
-          DATABASE_NAME = "teslamate";
           DATABASE_HOST = "database";
           MQTT_HOST = "mosquitto";
+          VIRTUAL_HOST= config.networking.fqdn;
+          CHECK_ORIGIN = "true";
+          TZ = config.time.timeZone;
         };
-        environmentFiles = [ /run/secrets/.env ];
-        # ports = [ "4000:4000" ];
+        environmentFiles = [ /run/secrets/teslamate.env ];
+        # ports = [ "127.0.0.1:4000:4000" ];
         extraOptions = [ "--cap-drop=all" "--pod=${podName}" ];
       };
       database = {
         image = "postgres:14";
         autoStart = true;
-        environment = {
-          POSTGRES_DB = "teslamate";
-        };
-        environmentFiles = [ /run/secrets/.env ];
+        environmentFiles = [ /run/secrets/db.env ];
         volumes = [ "teslamate-db:/var/lib/postgresql/data" ];
         extraOptions = [ "--pod=${podName}" ];
       };
@@ -29,11 +29,15 @@ let
         image = "teslamate/grafana:latest";
         autoStart = true;
         environment = {
-          DATABASE_NAME = "teslamate";
           DATABASE_HOST = "database";
+          GF_AUTH_BASIC_ENABLED = "true";
+          GF_AUTH_ANONYMOUS_ENABLED = "false";
+          GF_SERVER_DOMAIN = config.networking.fqdn;
+          GF_SERVER_ROOT_URL = "https://%(domain)s/grafana";
+          GF_SERVER_SERVE_FROM_SUB_PATH = "true";
         };
-        environmentFiles = [ /run/secrets/.env ];
-        # ports = [ "3000:3000" ];
+        environmentFiles = [ /run/secrets/grafana.env ];
+        # ports = [ "127.0.0.1:3000:3000" ];
         volumes = [ "teslamate-grafana-data:/var/lib/grafana" ];
         extraOptions = [ "--pod=${podName}" ];
       };
@@ -50,56 +54,51 @@ let
       };
     };
 in {
+
+  imports = [
+    ../../modules/profiles/proxmox-guest
+  ];
+
   scott = {
     sops.enable = true;
-    proxmoxGuest.enable = true;
+    sops.envFiles = {
+      teslamate.vars = {
+        ENCRYPTION_KEY = "teslamate/encryption_key";
+        DATABASE_NAME = "db/name";
+        DATABASE_USER = "db/user";
+        DATABASE_PASS = "db/pass";
+      };
+      db.vars = {
+        POSTGRES_DB = "db/name";
+        POSTGRES_USER = "db/user";
+        POSTGRES_PASSWORD = "db/pass";
+      };
+      grafana.vars = {
+        DATABASE_NAME = "db/name";
+        DATABASE_USER = "db/user";
+        DATABASE_PASS = "db/pass";
+        GRAFANA_PASSWD = "grafana/pass";
+        GF_SECURITY_ADMIN_USER = "grafana/user";
+        GF_SECURITY_ADMIN_PASS = "grafana/pass";
+      };
+    };
   };
 
-  sops.secrets."services/teslamate/database/user" = {};
-  sops.secrets."services/teslamate/database/password" = {};
-  sops.secrets."services/teslamate/encryption_key" = {};
+  sops.defaultSopsFile = ./secrets.yaml;
+
+  sops.secrets."teslamate/encryption_key" = {};
+  sops.secrets."db/name" = {};
+  sops.secrets."db/user" = {};
+  sops.secrets."db/pass" = {};
+  sops.secrets."grafana/user" = {};
+  sops.secrets."grafana/pass" = {};
 
   networking.hostName = "teslamate";
+  networking.domain = "faultymuse.com";
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.utf8";
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  deployment.proxmox = {
-    cores = 2;
-    memory = 4096;
-    startOnBoot = true;
-    disks = [{
-      volume = "nvme0";
-      size = "100G";
-      enableSSDEmulation = true;
-      enableDiscard = true;
-    }];
-  };
-
-  environment.systemPackages = with pkgs; [
-    vim
-  ];
-
-  system.stateVersion = "22.05";
-
-  systemd.services.sops-make-env = {
-    description = "Collect sops secrets into an env file";
-    wantedBy = [ "teslamate.target" ];
-    serviceConfig.Type = "oneshot";
-    script = ''
-user=$(cat /run/secrets/services/teslamate/database/user)
-password=$(cat /run/secrets/services/teslamate/database/password)
-encryption_key=$(cat /run/secrets/services/teslamate/encryption_key)
-cat << EOF > /run/secrets/.env
-DATABASE_USER=$user
-POSTGRES_USER=$user
-DATABASE_PASS=$password
-POSTGRES_PASSWORD=$password
-ENCRYPTION_KEY=$encryption_key
-EOF
-    '';
-  };
+  system.stateVersion = "23.05";
 
   # Create a target to start/stop all teslamate services
   systemd.targets.teslamate = {
@@ -118,7 +117,7 @@ EOF
     script = let
       podmanCli = "${pkgs.podman}/bin/podman";
     in ''
-      ${podmanCli} pod exists ${podName} || ${podmanCli} pod create --name ${podName} -p 4000:4000 -p 3000:3000
+      ${podmanCli} pod exists ${podName} || ${podmanCli} pod create --name ${podName} -p 127.0.0.1:3000:3000 -p 127.0.0.1:4000:4000
     '';
   };
 
@@ -132,13 +131,13 @@ EOF
     enable = true;
     package = pkgs.nginxQuic;
     recommendedProxySettings = true;
-    virtualHosts."${config.networking.hostName}.lan.faultymuse.com" = {
+    virtualHosts."${config.networking.hostName}.prod.faultymuse.com" = {
       http3 = true;
       locations = {
-        # "/grafana" = {
-        #   proxyPass = "http://127.0.0.1:3000";
-        #   proxyWebsockets = true;
-        # };
+        "/grafana" = {
+          proxyPass = "http://127.0.0.1:3000";
+          proxyWebsockets = true;
+        };
         "/" = {
           proxyPass = "http://127.0.0.1:4000";
           proxyWebsockets = true;
@@ -146,5 +145,5 @@ EOF
       };
     };
   };
-  networking.firewall.allowedTCPPorts = [ 80 443 3000 ];
+  networking.firewall.allowedTCPPorts = [ 80 ];
 }

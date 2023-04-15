@@ -4,7 +4,7 @@ let
   mkProxy = ({ 
     name,
     host ? "${name}.prod.faultymuse.com",
-    port,
+    port ? 80,
     proxyWebsockets ? true
   }: {
     forceSSL = true;
@@ -31,6 +31,15 @@ in
   imports = [
     ../../modules/profiles/proxmox-guest
   ];
+
+  scott.sops.enable = true;
+  sops.defaultSopsFile = ./secrets.yaml;
+
+  sops.secrets."teslamate/auth_file" = {
+    mode = "0440";
+    owner = config.users.users.nginx.name;
+    group = config.users.users.nginx.group;
+  };
 
   networking = {
     interfaces.ens18 = {
@@ -87,15 +96,28 @@ in
     #   proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
     # '';
 
-    virtualHosts = (mkProxies {
-      games.port = 8080;
-      games.host = "faultybox.prod.faultymuse.com";
-    }) // {
-      "_" = {
-        default = true;
-        extraConfig = "return 444;";
-      };
-    };
+    virtualHosts = lib.mkMerge [
+      (mkProxies {
+        games.port = 8080;
+        games.host = "faultybox.prod.faultymuse.com";
+
+        teslamate.host = "teslamate.prod.faultymuse.com";
+      })
+      {
+        "_" = {
+          default = true;
+          extraConfig = "return 444;";
+        };
+        "teslamate.faultymuse.com" = {
+          locations."/" = {
+            basicAuthFile = "/run/secrets/teslamate/auth_file";
+          };
+          locations."/grafana" = {
+
+          };
+        };
+      }
+    ];   
   };
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];

@@ -2,6 +2,11 @@
 let
   hostname = "proxy";
 in {
+  dns.public.cnames = [ 
+    "games"
+    "teslamate"
+  ];
+
   proxmox.qemu.${hostname} = {
     enable = true;
     vmid = 300;

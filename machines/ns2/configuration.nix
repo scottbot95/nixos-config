@@ -6,9 +6,9 @@
     ../../modules/profiles/proxmox-guest
   ];
 
-  terranix = {
-    imports = [ ./terraform.nix ];
-  };
+  # terranix = {
+  #   imports = [ ./terraform.nix ];
+  # };
 
   scott.powerdns = {
     slave = true;

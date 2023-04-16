@@ -16,14 +16,14 @@ in
 {
   options = {
     terranix = mkOption {
-      type = types.deferredModuleWith {
+      type = with types; nullOr (deferredModuleWith {
         staticModules = terranixImports; # Only used in docs generation
-      };
+      });
       description = ''
         Terranix configuration for this machine. 
         May be a struct or function just like any normal module that would be passed to `evalModules`
       '';
-      default = {};
+      default = null;
     };
 
     terranixConfig = mkOption {
@@ -36,8 +36,13 @@ in
 
   config.terranixConfig =
     let
-      machineConfigs = map 
+      filterNotNull = list: builtins.filter (v: v != null) list;
+      machineConfigs = filterNotNull (map 
         (machine: machine.config.terranix)
-        (builtins.attrValues self.nixosConfigurations);
-    in (terranix.terranixConfiguration { imports = machine; }).config;
+        (builtins.attrValues self.nixosConfigurations));
+      terranixConfig = (terranix.lib.terranixConfiguration { 
+        inherit pkgs;
+        modules = machineConfigs;
+      });
+    in terranixConfig;
 }

@@ -11,13 +11,46 @@ in
   config = lib.mkIf cfg.enable {
     services.deluge = {
       enable = true;
-      web.enable = true;
+      declarative = true;
+      config = {
+        daemon_port = 58846;
+        allow_remote = true;
+        random_port = false;
+        listen_ports = [ 56881 56889 ];
+        pre_allocate_storage = true;
+        max_upload_speed = 20000.0;
+      };
+      openFirewall = true;
+
+      web.enable = cfg.web.enable;
     };
 
-    networking.firewall.allowedTCPPorts = [ 
-      6881 6891 # listen ports
-      58846 # daemon port
-      8112 # WebUI port
-    ];
+    services.nginx = lib.mkIf cfg.web.enable {
+      enable = true;
+      recommendedProxySettings = true;
+      recommendedOptimisation = true;
+      recommendedGzipSettings = true;
+
+      virtualHosts.${config.networking.fqdn} = {
+        locations."/" = {
+          proxyPass = "http://localhost:8112";
+          proxyWebsockets = true;
+        };
+      };
+    };
+
+    networking.firewall = {
+      # allowedTCPPortRanges = [
+      #   { from = 56881; to = 56889; }
+      # ];
+      # allowedUDPPortRanges = [
+      #   { from = 56881; to = 56889; }
+      # ];
+
+      allowedTCPPorts = [
+        80
+        config.services.deluge.config.daemon_port
+      ];
+    };
   };
 }

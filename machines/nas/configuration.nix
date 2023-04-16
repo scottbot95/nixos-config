@@ -10,6 +10,7 @@
 
   proxmoxLXC = {
     privileged = true;
+    manageHostName = true; # true means Nix managed, not proxmox managed
   };
 
   nixpkgs.system = "x86_64-linux"; # FIXME shouldn't need this but terranix proxmox module currently requires it
@@ -78,6 +79,9 @@
   networking.firewall.allowedUDPPorts = [
     3702 # WSSD
   ];
+
+  networking.hostName = "nas";
+  networking.domain = "lan.faultymuse.com";
 
   system.stateVersion = "23.05";
 }

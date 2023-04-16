@@ -96,18 +96,10 @@
           };
           sops = "${pkgs.sops}/bin/sops";
           terraform = "${pkgs.terraform}/bin/terraform";
-          terranixConfig = terranix.lib.terranixConfiguration {
-            inherit system;
-            modules = (builtins.attrValues self.terranixModules) ++ [
-              terranix-proxmox.terranixModule
-              ./terranixModules
-            ];
-            extraArgs = inputs;
-          };
           terranixApp = {
             command,
             name ? command,
-            config ? terranixConfig,
+            config ? self.packages.${system}.terraformConfig,
           }: {
             type = "app";
             program = toString (pkgs.writers.writeBash name ''
@@ -138,26 +130,8 @@
           packages =
             (builtins.removeAttrs
               (pkgs.callPackage (import ./packages) {inherit self inputs;})
-              [ "override" "overrideDerivation"]) //
-            {
-              terraformConfig = terranixConfig;
-              prebuild = 
-                let
-                  machines = pkgs.lib.filterAttrs 
-                    (dir: machine: (builtins.pathExists ./machines/${dir}/terraform.nix) && (machine.pkgs.system == system)) 
-                    self.nixosConfigurations;
-                  linkMachines = pkgs.lib.mapAttrsToList (name: machine: "ln -s ${machine.config.system.build.toplevel} $out/${name}") machines;
-                in derivation {
-                  inherit system;
-                  name = "prebuild";
-                  PATH = "${pkgs.coreutils}/bin";
-                  builder = pkgs.writeShellScript "prebuild" ''
-                    mkdir -p $out
-                    ln -s ${terranixConfig} $out/config.tf.json
-                    ${builtins.concatStringsSep "\n" linkMachines}
-                  '';
-                };
-            };
+              [ "override" "overrideDerivation"]);
         }
-      ));
+      )
+    );
 }

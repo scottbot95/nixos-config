@@ -6,6 +6,10 @@
     ../../modules/profiles/proxmox-guest
   ];
 
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
+
   scott.powerdns = {
     slave = true;
     port = 5300;

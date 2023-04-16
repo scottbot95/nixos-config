@@ -32,6 +32,10 @@ in
     ../../modules/profiles/proxmox-guest
   ];
 
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
+
   scott.sops.enable = true;
   sops.defaultSopsFile = ./secrets.yaml;
 

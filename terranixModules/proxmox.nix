@@ -1,8 +1,12 @@
-{ config, lib, self, ...}:
+{ config, lib, self, terranix-proxmox, ...}:
 let
   extractSecret = secret: "\${data.sops_file.secrets.data[\"${secret}\"]}";
 in {
   # provider.proxmox.pm_proxy_server = "http://127.0.0.1:8080";
+
+  imports = [
+    terranix-proxmox.terranixModule
+  ];
 
   proxmox = {
     show_deploy_ouptut = false;

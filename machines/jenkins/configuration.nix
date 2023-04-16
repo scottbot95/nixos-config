@@ -3,6 +3,10 @@
   imports = [
     ../../modules/profiles/proxmox-guest
   ];
+
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
   
   scott.sops.enable = true;
   scott.sops.ageKeyFile = "/var/keys/age";

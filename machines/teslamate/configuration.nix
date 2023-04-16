@@ -54,10 +54,13 @@ let
       };
     };
 in {
-
   imports = [
     ../../modules/profiles/proxmox-guest
   ];
+
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
 
   scott = {
     sops.enable = true;

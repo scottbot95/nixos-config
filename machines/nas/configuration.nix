@@ -4,6 +4,10 @@
     ../../modules/profiles/well-known-users
   ];
 
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
+
   proxmoxLXC = {
     privileged = true;
   };

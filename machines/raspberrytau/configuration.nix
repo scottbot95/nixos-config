@@ -8,6 +8,10 @@
     };
   };
 
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
+
   imports = [
     nixos-hardware.nixosModules.raspberry-pi-4
     ../../modules/profiles/well-known-users

@@ -5,6 +5,10 @@
     ../../modules/profiles/proxmox-guest
   ];
 
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
+
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."namesilo/api_key" = {};
 

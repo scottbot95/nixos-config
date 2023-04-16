@@ -9,6 +9,10 @@ in
     ../../modules/profiles/proxmox-guest
   ];
 
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
+
   sops.secrets.${discord_token_secret} = {};
   sops.secrets.${openai_key_secret} = {};
 

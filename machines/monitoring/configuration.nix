@@ -28,8 +28,9 @@ in
     ./grafana
   ];
 
-  # grafana config
-  
+  terranix = {
+    imports = [ ./terraform.nix ];
+  };
 
   #prometheus config
   services.prometheus = {

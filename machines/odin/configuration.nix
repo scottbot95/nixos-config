@@ -1,4 +1,4 @@
-{ config, lib, self, ... }:
+{ config, pkgs, lib, self, ... }:
 let 
 in
 {
@@ -31,6 +31,11 @@ in
       move_completed_path = "/mnt/downloads/deluge";
     };
     authFile = "/run/secrets/deluge/auth_file";
+  };
+
+  services.pia = {
+    enable = true;
+    # autoStart = "us3";
   };
 
   fileSystems."/mnt/downloads" = {

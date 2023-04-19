@@ -19,6 +19,8 @@ in
         listen_ports = [ 56881 56889 ];
         pre_allocate_storage = true;
         max_upload_speed = 20000.0;
+        upnp = false;
+        natpmp = false;
       };
       openFirewall = true;
 

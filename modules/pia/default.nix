@@ -60,6 +60,7 @@ with lib;
       name = "pia-${name}";
       value = mkServer {
         inherit name;
+        inherit (cfg) up down;
         autoStart = (name == cfg.autoStart);
       };
     }) cfg.servers);

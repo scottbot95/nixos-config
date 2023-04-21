@@ -3,7 +3,7 @@ let
   otherNodes = builtins.removeAttrs nodes [ name ];
   mkProxy = ({ 
     name,
-    host ? "${name}.prod.faultymuse.com",
+    host ? "http://${name}.prod.faultymuse.com",
     port ? 80,
     proxyWebsockets ? true
   }: {
@@ -14,7 +14,10 @@ let
 
     locations."/" = {
       inherit proxyWebsockets;
-      proxyPass = "http://${host}:${toString port}/";
+      proxyPass = "${host}:${toString port}/";
+      extraConfig = ''
+        proxy_ssl_verify off;
+      '';
     };
     
   });
@@ -72,40 +75,40 @@ in
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
-    # commonHttpConfig = ''
-    #   # Add HSTS header with preloading to HTTPS requests.
-    #   # Adding this header to HTTP requests is discouraged
-    #   map $scheme $hsts_header {
-    #       https   "max-age=31536000; includeSubdomains; preload";
-    #   }
-    #   add_header Strict-Transport-Security $hsts_header;
+    commonHttpConfig = ''
+      # Add HSTS header with preloading to HTTPS requests.
+      # Adding this header to HTTP requests is discouraged
+      map $scheme $hsts_header {
+          https   "max-age=31536000; includeSubdomains; preload";
+      }
+      add_header Strict-Transport-Security $hsts_header;
 
-    #   # Enable CSP for your services.
-    #   #add_header Content-Security-Policy "script-src 'self'; object-src 'none'; base-uri 'none';" always;
+      # Enable CSP for your services.
+      #add_header Content-Security-Policy "script-src 'self'; object-src 'none'; base-uri 'none';" always;
 
-    #   # Minimize information leaked to other domains
-    #   add_header 'Referrer-Policy' 'origin-when-cross-origin';
+      # Minimize information leaked to other domains
+      add_header 'Referrer-Policy' 'origin-when-cross-origin';
 
-    #   # Disable embedding as a frame
-    #   add_header X-Frame-Options DENY;
+      # Disable embedding as a frame
+      add_header X-Frame-Options DENY;
 
-    #   # Prevent injection of code in other mime types (XSS Attacks)
-    #   add_header X-Content-Type-Options nosniff;
+      # Prevent injection of code in other mime types (XSS Attacks)
+      add_header X-Content-Type-Options nosniff;
 
-    #   # Enable XSS protection of the browser.
-    #   # May be unnecessary when CSP is configured properly (see above)
-    #   add_header X-XSS-Protection "1; mode=block";
+      # Enable XSS protection of the browser.
+      # May be unnecessary when CSP is configured properly (see above)
+      add_header X-XSS-Protection "1; mode=block";
 
-    #   # This might create errors
-    #   proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
-    # '';
+      # This might create errors
+      proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
+    '';
 
     virtualHosts = lib.mkMerge [
       (mkProxies {
-        games.port = 8080;
-        games.host = "faultybox.prod.faultymuse.com";
+        games.port = 8443;
+        games.host = "https://faultybox.prod.faultymuse.com";
 
-        teslamate.host = "teslamate.prod.faultymuse.com";
+        teslamate = {};
       })
       {
         "_" = {
@@ -117,7 +120,7 @@ in
             basicAuthFile = "/run/secrets/teslamate/auth_file";
           };
           locations."/grafana" = {
-
+            # Disable basic auth since grafana has its own
           };
         };
       }

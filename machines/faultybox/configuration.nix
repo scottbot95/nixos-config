@@ -1,4 +1,8 @@
-{ config, lib, faultybox, ... }:
+{ config, pkgs, lib, faultybox, ... }:
+let
+  certsDir = "/run/certs";
+  fqdn = config.networking.fqdn;
+in
 {
   imports = [
     faultybox.nixosModules.faultybox
@@ -9,8 +13,27 @@
     imports = [ ./terraform.nix ];
   };
 
+  networking.domain = "prod.faultymuse.com";
+
   services.faultybox.enable = true;
-  services.faultybox.openFirewall = true;
+  services.faultybox.address = "127.0.0.1";
+
+  services.nginx.enable = true;
+  services.nginx.virtualHosts.${fqdn} = {
+    forceSSL = true;
+    selfSigned = true;
+    listen = [{
+      addr = "0.0.0.0";
+      port = 8443;
+      ssl = true;
+    }];
+
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:${toString config.services.faultybox.port}";
+    };
+  };
+
+  networking.firewall.allowedTCPPorts = [ 8443 ];
 
   system.stateVersion = "23.05";
 }

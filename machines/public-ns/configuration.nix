@@ -1,4 +1,4 @@
-{config, ...}: 
+{ config, ...}: 
 {
   imports = [ 
     ../../modules/profiles/nameserver
@@ -29,5 +29,11 @@
     allow-dnsupdate-from=10.0.5.0/8 192.168.4.0/8
   '';
 
-  scott.dns-updater.enable = true;
+  networking.nameservers = [ "192.168.4.2" ];
+
+  scott.dns-updater = {
+    enable = true;
+    namesilo.keyFile = config.sops.secrets."namesilo/api_key".path;
+    pdns.keyFile = config.sops.secrets."pdns/api_key".path;
+  };
 }

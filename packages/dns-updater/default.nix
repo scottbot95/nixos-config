@@ -8,6 +8,7 @@ let
   buildInputs = with pkgs; [
     bash
     curl
+    dig
   ];
 in
 stdenv.mkDerivation {

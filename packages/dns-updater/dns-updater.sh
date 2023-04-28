@@ -1,15 +1,30 @@
 #!/usr/bin/env bash
 
+set -x
+
 DATA_DIR=/var/lib/dns-updater
 IP_FILE=$DATA_DIR/last-known-ip
-API_SECRET_FILE=/run/secrets/pdns/api_key
-NAMESILO_API_KEY=/run/secrets/dns/namesilo/api_key
+
+checkVarFile() {
+    local file="${!1}"
+    if [[ -z "$file" ]]; then
+        echo "\$$1 is not set" 
+        exit 1
+    fi
+
+    if [[ ! -f "$file" ]]; then
+        echo "File '$file' does not exist"
+        exit 2
+    fi
+}
 
 namesilo_api() {
+    checkVarFile "NAMESILO_KEY_FILE"
+
     NAMESERVER=$1; shift
     IP=$1; shift
 
-    API_KEY=$(cat $NAMESILO_API_KEY)
+    API_KEY=$(cat "$NAMESILO_KEY_FILE")
     
     curl --silent --show-error --fail-with-body \
         --location --request GET \
@@ -19,6 +34,8 @@ namesilo_api() {
 }
 
 pdns_api() {
+    checkVarFile "PDNS_KEY_FILE"
+
     VERB="$1"; shift
     API_PATH="$1"; shift
     BODY="$1"; shift
@@ -26,7 +43,7 @@ pdns_api() {
     curl --silent --show-error --fail-with-body \
         --location --request "$VERB" \
         "http://127.0.0.1:8081/api/v1/servers/localhost$API_PATH" \
-        -H "X-API-Key: $(cat $API_SECRET_FILE)" \
+        -H "X-API-Key: $(cat "$PDNS_KEY_FILE")" \
         --data-raw "$BODY" \
         "$@"
     

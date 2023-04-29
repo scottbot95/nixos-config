@@ -66,23 +66,23 @@ in {
     sops.enable = true;
     sops.envFiles = {
       teslamate.vars = {
-        ENCRYPTION_KEY = "teslamate/encryption_key";
-        DATABASE_NAME = "db/name";
-        DATABASE_USER = "db/user";
-        DATABASE_PASS = "db/pass";
+        ENCRYPTION_KEY.secret = "teslamate/encryption_key";
+        DATABASE_NAME.secret = "db/name";
+        DATABASE_USER.secret = "db/user";
+        DATABASE_PASS.secret = "db/pass";
       };
       db.vars = {
-        POSTGRES_DB = "db/name";
-        POSTGRES_USER = "db/user";
-        POSTGRES_PASSWORD = "db/pass";
+        POSTGRES_DB.secret = "db/name";
+        POSTGRES_USER.secret = "db/user";
+        POSTGRES_PASSWORD.secret = "db/pass";
       };
       grafana.vars = {
-        DATABASE_NAME = "db/name";
-        DATABASE_USER = "db/user";
-        DATABASE_PASS = "db/pass";
-        GRAFANA_PASSWD = "grafana/pass";
-        GF_SECURITY_ADMIN_USER = "grafana/user";
-        GF_SECURITY_ADMIN_PASS = "grafana/pass";
+        DATABASE_NAME.secret = "db/name";
+        DATABASE_USER.secret = "db/user";
+        DATABASE_PASS.secret = "db/pass";
+        GRAFANA_PASSWD.secret = "grafana/pass";
+        GF_SECURITY_ADMIN_USER.secret = "grafana/user";
+        GF_SECURITY_ADMIN_PASS.secret = "grafana/pass";
       };
     };
   };

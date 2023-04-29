@@ -20,8 +20,8 @@ in
   scott.sops.ageKeyFile = "/var/keys/age";
   scott.sops.envFiles.faultybot = {
     vars = {
-      DISCORD_TOKEN = discord_token_secret;
-      OPENAI_KEY = openai_key_secret;
+      DISCORD_TOKEN.secret = discord_token_secret;
+      OPENAI_KEY.secret = openai_key_secret;
     };
     requiredBy = [ "faultybot.service" ];
   };

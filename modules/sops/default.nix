@@ -3,6 +3,23 @@ with lib;
 let
   cfg = config.scott.sops;
   users = config.users.users;
+  varOptions = {...}: {
+    options = {
+      secret = mkOption {
+        type = with types; nullOr str;
+        description = ''
+          Sops secret name to use for this variable.
+          Values will be used to lookup the secret path from `config.sops.secrets`
+        '';
+        default = null;
+      };
+      text = mkOption {
+        type = with types; nullOr str;
+        description = "Text literal to use for environment var";
+        default = null;
+      };
+    };
+  };
   envFilesType = types.submodule ({name, config, ...}: {
     options = {
       path = mkOption {
@@ -12,10 +29,9 @@ let
         description = "Path to store created secrets env file.";
       };
       vars = mkOption {
-        type = with types; attrsOf str;
+        type = with types; attrsOf (submodule varOptions);
         description = mdDoc ''
           Attribute set of environment variables to include in the generated file.
-          Values will be used to lookup the secret path from `config.sops.secrets`
         '';
         example = {
           FOO = "my/secret";
@@ -87,18 +103,21 @@ in {
               serviceConfig = {
                 Type = "oneshot";
                 ExecStart = let
-                  readVars = concatStringsSep "\n" (
-                    mapAttrsToList (varName: secretName: ''
-                      ${varName}=$(cat ${config.sops.secrets.${secretName}.path})
-                    '') envFile.vars 
-                  );
-                  writeVars = concatStringsSep "\n" (
-                    map (name: "${name}=\$${name}") (builtins.attrNames envFile.vars)
+                  varLines = concatStringsSep "\n" (
+                    mapAttrsToList (varName: varOpts:
+                      let
+                        value = 
+                          if builtins.hasAttr "secret" varOpts then
+                            "$(cat ${config.sops.secrets.${varOpts.secret}.path})"
+                          else
+                            ''"${varOpts.text}"'';
+                      in 
+                      "${varName}=${value}"
+                    ) envFile.vars 
                   );
                 in pkgs.writeShellScript "make-env-${name}" ''
-                  ${readVars}
                   cat <<EOT > ${envFile.path}
-                  ${writeVars}
+                  ${varLines}
                   EOT
 
                   chmod ${envFile.mode} ${envFile.path}
@@ -108,13 +127,6 @@ in {
             }
           )
           cfg.envFiles;
-
-      assertions = flatten (mapAttrsToList (envName: envCfg: 
-        mapAttrsToList (var: secret: {
-          assertion = builtins.hasAttr secret config.sops.secrets;
-          message = "Unknown secret `${secret}` used in `${envName}` environment file";
-        }) envCfg.vars
-      ) cfg.envFiles);
     };
     
 }

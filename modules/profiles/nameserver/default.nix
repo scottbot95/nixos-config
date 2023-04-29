@@ -4,7 +4,7 @@
     sops.enable = true;
     sops.envFiles.pdns = {
       vars = {
-        API_KEY = "pdns/api_key";
+        API_KEY.secret = "pdns/api_key";
       };
       requiredBy = [ "pdns.service" ];
     };

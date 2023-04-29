@@ -28,8 +28,8 @@ with lib;
 
     scott.sops.envFiles.jenkins = {
       vars = {
-        SOPS_AGE_KEY = cfg.age_key;
-        TF_TOKEN_app_terraform_io = cfg.tf_token;
+        SOPS_AGE_KEY.secret = cfg.age_key;
+        TF_TOKEN_app_terraform_io.secret = cfg.tf_token;
       };
       requiredBy = [ "jenkins.service" ];
     };

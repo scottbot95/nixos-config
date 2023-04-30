@@ -1,20 +1,14 @@
 { config, lib, ... }:
 let
-  hostname = "proxy";
+  hostname = "vault";
 in {
-  dns.public.cnames = [ 
-    "games"
-    "teslamate"
-    "vault"
-  ];
-
   proxmox.qemu.${hostname} = {
     enable = true;
-    vmid = 300;
+    vmid = 202;
     domain = "prod.faultymuse.com";
     cores = 4;
     memory = 4096;
-    startup = "order=3,up=15";
+    startup = "order=2,up=15";
 
     network = [{
       model = "virtio";
@@ -30,8 +24,6 @@ in {
       discard = true;
     }];
   };
-
-  resource.proxmox_vm_qemu.${hostname}.ipconfig0 = "ip=10.0.20.5/24,gw=10.0.20.1";
 
   module."${hostname}_deploy_nixos".keys = {
     age = "\${data.sops_file.secrets.data[\"sops_key\"]}";

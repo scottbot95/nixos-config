@@ -109,6 +109,9 @@ in
         games.host = "https://faultybox.prod.faultymuse.com";
 
         teslamate = {};
+
+        vault.port = 443;
+        vault.host = "https://vault.prod.faultymuse.com";
       })
       {
         "_" = {

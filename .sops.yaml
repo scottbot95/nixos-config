@@ -1,14 +1,10 @@
 keys:
         - &admin_scott age15hzqzdp289m868stvw6937hdzt3qqt0hz5uj4tqt7et5yne0s5eq7dhmgn
-        - &server_bob_the_builder age1vq8w35wsdvh0fzshjaqly97knexs3cc4e6jqm7nqt3d07mdhxv4qwtm2qk
-        - &server_raspberrytau age1w2thuvnscl967dqhwq54mjxsym4nepna7zsljkhmdl70x82n8qpq0tnj69
-        - &concourse_ci age1m8g67uukueuknq6zxkdpe3asf7wlxdehzx4rprfjf03dquhy3dvqpj2g6k
-         
+        - &scott_pgp 1C3C7207224916177332E431A954416D9ADA8144
 
 creation_rules:
         - key_groups:
-                - age:
+                - pgp:
+                        - *scott_pgp
+                  age:
                         - *admin_scott
-                        - *server_bob_the_builder
-                        - *server_raspberrytau
-                        - *concourse_ci

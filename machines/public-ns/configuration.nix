@@ -1,4 +1,4 @@
-{ config, ...}: 
+{ config, pkgs, ...}: 
 {
   imports = [ 
     ../../modules/profiles/nameserver
@@ -11,6 +11,14 @@
 
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."namesilo/api_key" = {};
+
+  scott.sops.envFiles.acme = {
+    requiredBy = ["acme-${config.networking.fqdn}.service" "acme-${config.networking.hostName}.service"];
+    vars = {
+      PDNS_API_URL.text = "http://127.0.0.1:8081";
+      PDNS_API_KEY.secret = "pdns/api_key";
+    };
+  };
 
   networking = {
     hostName = "ns1";
@@ -29,7 +37,49 @@
     allow-dnsupdate-from=10.0.5.0/8 192.168.4.0/8
   '';
 
+  security.acme.acceptTerms = true;
+  security.acme.defaults = {
+    email = "scott.techau+acme@gmail.com";
+    dnsProvider = "pdns";
+    credentialsFile = "/run/secrets/acme.env";
+    dnsPropagationCheck = false;
+  };
+  security.acme.certs."${config.networking.fqdn}" = {
+    domain = "*.faultymuse.com";
+  };
+  security.acme.certs."${config.networking.hostName}" = {
+    domain = "*.faultymuse.com";
+  };
+  
+  services.nginx = {
+    enable = true;
+
+    # Use recommended settings
+    virtualHosts."${config.networking.fqdn}" = {
+      enableACME= true;
+      acmeRoot = null;
+      listen = [{
+        addr = "0.0.0.0";
+        port = 9443;
+        # ssl = true;
+      }];
+
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8081";
+      };
+    };
+
+    virtualHosts."${config.networking.hostName}" = {
+      enableACME = true;
+      acmeRoot = null;
+      forceSSL = true;
+    };
+  };
+
+  networking.firewall.allowedTCPPorts = [ 9443 ];
+
   networking.nameservers = [ "192.168.4.2" ];
+  networking.domain = "prod.faultymuse.com";
 
   scott.dns-updater = {
     enable = true;

@@ -107,7 +107,7 @@ in {
                     mapAttrsToList (varName: varOpts:
                       let
                         value = 
-                          if builtins.hasAttr "secret" varOpts then
+                          if varOpts.secret != null then
                             "$(cat ${config.sops.secrets.${varOpts.secret}.path})"
                           else
                             ''"${varOpts.text}"'';

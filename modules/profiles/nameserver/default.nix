@@ -30,8 +30,4 @@
   sops.secrets."pdns/api_key" = {};
 
   users.users.powerdnsadmin.extraGroups = [ config.users.groups.keys.name ];
-
-  environment.systemPackages = with pkgs; [
-    pdns
-  ];
 }

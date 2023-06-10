@@ -59,6 +59,12 @@ with lib; {
     nixpkgs.pkgs = mkDefault nixpkgs-stable.legacyPackages.${config.nixpkgs.hostPlatform.system};
     system.stateVersion = mkDefault "22.11";
 
+    environment.systemPackages = with pkgs; [
+      (writeShellScriptBin "pdnsutil" ''
+        su pdns -s "$SHELL" -c "${pdns}/bin/pdnsutil --config-dir /run/pdns $*"
+      '')
+    ];
+
     services.mysql = {
       enable = true;
       package = pkgs.mariadb;

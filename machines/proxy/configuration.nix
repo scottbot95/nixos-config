@@ -3,8 +3,9 @@ let
   otherNodes = builtins.removeAttrs nodes [ name ];
   mkProxy = ({ 
     name,
-    host ? "http://${name}.prod.faultymuse.com",
-    port ? 80,
+    proto ? "http",
+    host ? "${proto}://${name}.prod.faultymuse.com",
+    port ? if proto == "https" then 443 else 80,
     proxyWebsockets ? true
   }: {
     forceSSL = true;
@@ -108,10 +109,11 @@ in
         games.port = 8443;
         games.host = "https://faultybox.prod.faultymuse.com";
 
+        nextcloud.proto = "https";
+
         teslamate = {};
 
-        vault.port = 443;
-        vault.host = "https://vault.prod.faultymuse.com";
+        vault.proto = "https";
       })
       {
         "_" = {

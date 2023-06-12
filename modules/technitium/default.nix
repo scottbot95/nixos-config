@@ -16,6 +16,11 @@ with lib; {
       description = "Open firewall port for DHCP";
       default = false;
     };
+    home = mkOption {
+      type = types.str;
+      default = "/var/lib/technitium";
+      description = lib.mdDoc "Storage path of technitium.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -24,13 +29,15 @@ with lib; {
       oci-containers.backend = "podman";
       oci-containers.containers = {
         technitium = {
-          image = "technitium/dns-server:11.0.3";
+          image = "technitium/dns-server:11.2";
+          # doesnt' work for some reason :(
+          # user = "technitium:technitium";
           autoStart = true;
           environment = {
             DNS_SERVER_DOMAIN = cfg.domain;
           };
           volumes = [
-            "/var/lib/technitium:/etc/dns"
+            "${cfg.home}:/etc/dns"
           ];
           extraOptions = [
             "--network=host"
@@ -38,10 +45,15 @@ with lib; {
         };
       };
     };
-    
-    system.activationScripts = {
-      createTechnitiumConfig.text = "mkdir -p /var/lib/technitium";
+
+    users.users.technitium = {
+      home = "${cfg.home}";
+      group = "technitium";
+      isSystemUser = true;
     };
+    users.groups.technitium.members = [ "technitium" ];
+
+    systemd.tmpfiles.rules = ["d ${cfg.home} 750 technitium technitium"];
 
     networking.nameservers = [
       "1.1.1.1"

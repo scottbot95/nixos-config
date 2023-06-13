@@ -60,7 +60,7 @@ with lib; {
       "1.0.0.1"
     ];
 
-    networking.firewall.allowedTCPPorts = [ 53 5380 ];
+    networking.firewall.allowedTCPPorts = [ 53 5380 53443 ];
     networking.firewall.allowedUDPPorts = [ 53 ] ++ (if cfg.dhcp then [ 67 ] else []);
   };
 }

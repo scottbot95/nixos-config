@@ -57,7 +57,7 @@ with lib; {
 
     networking.nameservers = [
       "1.1.1.1"
-      "8.8.8.8"
+      "1.0.0.1"
     ];
 
     networking.firewall.allowedTCPPorts = [ 53 5380 ];

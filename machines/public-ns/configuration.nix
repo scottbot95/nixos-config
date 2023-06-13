@@ -45,23 +45,25 @@
     dnsPropagationCheck = false;
   };
   security.acme.certs."${config.networking.fqdn}" = {
-    domain = "*.faultymuse.com";
+    group = "nginx";
   };
-  security.acme.certs."${config.networking.hostName}" = {
-    domain = "*.faultymuse.com";
-  };
+  # security.acme.certs."${config.networking.hostName}" = {
+  #   domain = config.networking.fqdn;
+  # };
   
   services.nginx = {
     enable = true;
 
     # Use recommended settings
     virtualHosts."${config.networking.fqdn}" = {
-      enableACME= true;
-      acmeRoot = null;
+      onlySSL = true; # only needed so that certificate options are used
+      sslCertificate        = "/var/lib/acme/${config.networking.fqdn}/fullchain.pem";
+      sslCertificateKey     = "/var/lib/acme/${config.networking.fqdn}/key.pem";
+      sslTrustedCertificate = "/var/lib/acme/${config.networking.fqdn}/chain.pem";
       listen = [{
         addr = "0.0.0.0";
         port = 9443;
-        # ssl = true;
+        ssl = true;
       }];
 
       locations."/" = {
@@ -70,7 +72,8 @@
     };
 
     virtualHosts."${config.networking.hostName}" = {
-      enableACME = true;
+      # enableACME = true;
+      useACMEHost = config.networking.fqdn;
       acmeRoot = null;
       forceSSL = true;
     };

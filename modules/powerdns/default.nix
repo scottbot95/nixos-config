@@ -1,4 +1,4 @@
-{ config, lib, pkgs, nixpkgs-stable, ... }:
+{ config, lib, pkgs, ... }:
 let 
   cfg = config.scott.powerdns;
   pdnsSrc = pkgs.stdenv.mkDerivation {
@@ -54,10 +54,6 @@ with lib; {
   };
 
   config = mkIf cfg.enable {
-
-    # Use 22.11 for PDNS due to https://github.com/PowerDNS-Admin/PowerDNS-Admin/issues/1376
-    nixpkgs.pkgs = mkDefault nixpkgs-stable.legacyPackages.${config.nixpkgs.hostPlatform.system};
-    system.stateVersion = mkDefault "22.11";
 
     environment.systemPackages = with pkgs; [
       (writeShellScriptBin "pdnsutil" ''

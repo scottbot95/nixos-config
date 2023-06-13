@@ -11,7 +11,7 @@ in {
   proxmox = {
     show_deploy_ouptut = false;
     provider = {
-      endpoint = "https://pve.faultymuse.com:8006/api2/json";
+      endpoint = "https://pve.lan.faultymuse.com:8006/api2/json";
       # token_id = extractSecret "pm_api.token_id";
       # token_secret = extractSecret "pm_api.token_secret";
       user = extractSecret "pm_api.user";

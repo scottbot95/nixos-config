@@ -84,10 +84,6 @@
         let 
           pkgs = import nixpkgs {
             inherit system;
-            config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
-              "steamcmd"
-              "steam-original"
-            ];
           };
           sops = "${pkgs.sops}/bin/sops";
           terraform = "${pkgs.terraform}/bin/terraform";

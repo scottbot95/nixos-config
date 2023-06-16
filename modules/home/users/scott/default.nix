@@ -1,11 +1,23 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
   imports = [
     # ./wpilib
   ];
 
   home.packages = with pkgs; [
+    anydesk
+
+    jetbrains.idea-ultimate
     thefuck # needed for zsh plugin
+    git
+    guake
+    htop
+    nixpkgs-fmt
+    python3
+    wget
+    vim
+
+    discord
   ];
 
   # Let Home Manager install and manage itself.
@@ -23,6 +35,8 @@
       nixrt = "doas nixos-rebuild test --flake ~/nixos-config";
       nixrb = "nixos-rebuild build --flake ~/nixos-config";
       nixrs = "doas nixos-rebuild switch --flake ~/nixos-config";
+      
+      switch-yk = "gpg-connect-agent 'scd serialno' 'learn --force' /bye";
     };
   };
 
@@ -58,6 +72,7 @@
         "**/.factorypath" = true;
       };
       "remote.SSH.logLevel" =  "trace";
+      "workbench.iconTheme" = "material-icon-theme";
     };
   };
 

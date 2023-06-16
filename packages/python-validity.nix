@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, python3 }:
+{ lib, fetchFromGitHub, python3, ... }:
 
 python3.pkgs.buildPythonPackage rec {
   pname = "python-validity";

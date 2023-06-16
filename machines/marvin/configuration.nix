@@ -1,11 +1,10 @@
-{ config, pkgs, home-manager, nixos-hardware, ... }:
+{ config, pkgs, nixos-hardware, lib, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    home-manager.nixosModules.home-manager
     nixos-hardware.nixosModules.lenovo-thinkpad-t480
-  ] ++ import ../../modules/module-list.nix;
+  ];
 
   nixpkgs.system = "x86_64-linux";
 
@@ -87,9 +86,18 @@
 
   programs.java = { enable = true; package = pkgs.openjdk11; };
 
-  nixpkgs.config = {
-    allowUnfree = true;
-  };
+  programs.git.enable = true;
+
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "anydesk"
+    "discord"
+    "idea-ultimate"
+    "memtest86-efi"
+    "steam"
+    "steam-run"
+    "steam-original"
+    "vscode"
+  ];
 
   nix = {
     package = pkgs.nixUnstable;
@@ -98,19 +106,25 @@
     '';
   };
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.users.scott = import ../../modules/home.nix;
+  services.python-validity.enable = true;
+
+  scott.steam.enable = true;
+  scott.yubikey.enable = true;
+
+  scott.home = {
+    enable = true;
+    users.scott.enable = true;
+  };
 
   # Virutal box setup
   # virtualisation.virtualbox.host.enable = true;
   # virtualisation.virtualbox.host.enableExtensionPack = true;
   # users.extraGroups.vboxusers.members = [ "scott" ];
 
-  virtualisation.podman = {
-    enable = true;
-    dockerCompat = true;
-  };
+  # virtualisation.podman = {
+  #   enable = true;
+  #   dockerCompat = true;
+  # };
 
   # List services that you want to enable:
 

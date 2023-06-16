@@ -2,3 +2,4 @@
 config.tf.json
 .terraform
 *.log
+*.qcow2

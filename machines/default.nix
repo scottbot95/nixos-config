@@ -14,10 +14,10 @@ let
     ];
     specialArgs = inputs;
   }) (dirsWithFile "configuration.nix");
-  terranixModules = 
-    mapAttrs
-      (name: _: import ./${name}/terraform.nix)
-      (dirsWithFile "terraform.nix");
+  vms = mapAttrs (name: machine: (machine.extendModules {
+    modules = if (builtins.pathExists ./${name}/test.nix) then [./${name}/test.nix] else [];
+    specialArgs = { test = true; };
+  }).config.system.build.vm) nixosConfigurations;
 in {
-  inherit nixosConfigurations terranixModules;
+  inherit nixosConfigurations vms;
 }

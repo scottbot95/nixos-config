@@ -18,3 +18,10 @@ You can then copy the image to a USB stick with:
 ```
 dd if=result/iso/*.iso of=$USB_DEV status=progress
 ```
+
+## VM Testing
+
+Machine configuration can be tested locally with a QEMU VM using
+```
+nix run .#vms.<machine>
+```

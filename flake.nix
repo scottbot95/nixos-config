@@ -59,7 +59,7 @@
     machines = import ./machines inputs;
   in nixpkgs.lib.recursiveUpdate
     {
-      inherit (machines) nixosConfigurations terranixModules;
+      inherit (machines) nixosConfigurations vms;
 
       # Output all modules in ./modules to flake. Module must be in individual
       # subdirectories and contain a default.nix which contains a standard NixOS module 

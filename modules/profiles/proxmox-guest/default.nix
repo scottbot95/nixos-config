@@ -41,6 +41,8 @@ with lib;
 
     networking.domain = lib.mkDefault "lan.faultymuse.com";
 
+    users.users.root.initialPassword = "";
+
     # Turn of extra docs to reduce image size
     documentation.nixos.enable = false;
   } // (if builtins.hasAttr "sops" options then {

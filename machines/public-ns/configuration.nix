@@ -89,4 +89,6 @@
     namesilo.keyFile = config.sops.secrets."namesilo/api_key".path;
     pdns.keyFile = config.sops.secrets."pdns/api_key".path;
   };
+
+  system.stateVersion = "23.05";
 }

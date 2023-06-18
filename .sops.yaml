@@ -1,10 +1,13 @@
 keys:
-        - &admin_scott age15hzqzdp289m868stvw6937hdzt3qqt0hz5uj4tqt7et5yne0s5eq7dhmgn
-        - &scott_pgp 1C3C7207224916177332E431A954416D9ADA8144
+    - &admin_scott age15hzqzdp289m868stvw6937hdzt3qqt0hz5uj4tqt7et5yne0s5eq7dhmgn
+    - &scott_pgp 1C3C7207224916177332E431A954416D9ADA8144
 
 creation_rules:
-        - key_groups:
-                - pgp:
-                        - *scott_pgp
-                  age:
-                        - *admin_scott
+    - path_regex: machines/marvin/secrets.yaml
+      pgp: *scott_pgp
+
+    - key_groups:
+          - pgp:
+                - *scott_pgp
+            age:
+                - *admin_scott

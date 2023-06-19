@@ -3,8 +3,8 @@ keys:
     - &scott_pgp 1C3C7207224916177332E431A954416D9ADA8144
 
 creation_rules:
-    - path_regex: machines/marvin/secrets.yaml
-      pgp: *scott_pgp
+    # - path_regex: machines/marvin/secrets.yaml
+    #   pgp: *scott_pgp
 
     - key_groups:
           - pgp:

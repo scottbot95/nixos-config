@@ -11,8 +11,8 @@
   scott.sops.enable = true;
   sops.defaultSopsFile = ./secrets.yaml;
 
-  sops.secrets."wireguard/presharedKey" = {};
-  sops.secrets."wireguard/privateKey" = {};
+  sops.secrets."wireguard/presharedKey" = { };
+  sops.secrets."wireguard/privateKey" = { };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -62,7 +62,7 @@
   services.xserver.enable = true;
 
   fonts.fonts = with pkgs; [
-    fira-code 
+    fira-code
     fira-code-symbols
   ];
 
@@ -182,7 +182,7 @@
     login.fprintAuth = true;
     xscreensaver.fprintAuth = true;
   };
-  
+
   services.printing = {
     enable = true;
     drivers = [ pkgs.brlaser ];

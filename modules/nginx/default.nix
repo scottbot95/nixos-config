@@ -1,8 +1,8 @@
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, ... }:
 with lib;
 let
   certsDir = "/run/certs";
-  vhOptions = { name, config, ...}: {
+  vhOptions = { name, config, ... }: {
     options.selfSigned = mkEnableOption "creating and using a self-signed cert for this virtual host";
 
     config = mkIf config.selfSigned {
@@ -17,28 +17,30 @@ in
     type = with types; attrsOf (submodule vhOptions);
   };
 
-  config.systemd.services = mapAttrs' (domain: vhCfg: {
-    name = "${domain}-create-certificate";
-    value = mkIf vhCfg.selfSigned {
+  config.systemd.services = mapAttrs'
+    (domain: vhCfg: {
+      name = "${domain}-create-certificate";
+      value = mkIf vhCfg.selfSigned {
         serviceConfig = {
-        Type = "oneshot";
+          Type = "oneshot";
+        };
+        requiredBy = [ "nginx.service" ];
+        before = [ "nginx.service" ];
+
+        script = ''
+          mkdir -p ${certsDir}
+          ${pkgs.openssl}/bin/openssl req \
+            -x509 \
+            -noenc \
+            -days 365 \
+            -newkey rsa:4096 \
+            -subj "/O=FaultyMuse/OU=homelab/CN=${domain}" \
+            -keyout ${certsDir}/${domain}.key \
+            -out ${certsDir}/${domain}.crt
+
+          chown ${config.services.nginx.user}:nginx ${certsDir}/${domain}.{crt,key}
+        '';
       };
-      requiredBy = [ "nginx.service" ];
-      before = [ "nginx.service" ];
-
-      script = ''
-        mkdir -p ${certsDir}
-        ${pkgs.openssl}/bin/openssl req \
-          -x509 \
-          -noenc \
-          -days 365 \
-          -newkey rsa:4096 \
-          -subj "/O=FaultyMuse/OU=homelab/CN=${domain}" \
-          -keyout ${certsDir}/${domain}.key \
-          -out ${certsDir}/${domain}.crt
-
-        chown nginx:nginx ${certsDir}/${domain}.{crt,key}
-      '';
-    };
-  }) cfg;
+    })
+    cfg;
 }

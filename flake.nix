@@ -35,84 +35,90 @@
     terranix-proxmox.inputs.terranix.follows = "terranix";
   };
 
-  outputs = { 
-    self,
-    nixpkgs,
-    home-manager, 
-    nixos-hardware, 
-    sops-nix,
-    terranix,
-    terranix-proxmox, 
-    ... 
-  }@inputs: 
-  let 
-    subDirs = path:
-      let
-        contents = builtins.readDir path;
-      in builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
-    extraArgs = { 
-      inherit subDirs inputs;
-      root = ./.;
-      # inputs = builtins.removeAttrs inputs [ "self" ];
-    };
-    callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
-    machines = import ./machines inputs;
-  in nixpkgs.lib.recursiveUpdate
-    {
-      inherit (machines) nixosConfigurations vms;
-
-      # Output all modules in ./modules to flake. Module must be in individual
-      # subdirectories and contain a default.nix which contains a standard NixOS module 
-      nixosModules = let
-        validModules = builtins.filter 
-          (d: builtins.pathExists ./modules/${d}/default.nix)
-          (subDirs ./modules);
-      in (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m}; }) validModules));
-
-      packages.x86_64-linux = {
-        pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
-          system = "x86_64-linux";
-          modules = [
-            ./systems/pve/minimal-installer.nix
-          ];
-          format = "install-iso";
-        };
+  outputs =
+    { self
+    , nixpkgs
+    , home-manager
+    , nixos-hardware
+    , sops-nix
+    , terranix
+    , terranix-proxmox
+    , ...
+    }@inputs:
+    let
+      subDirs = path:
+        let
+          contents = builtins.readDir path;
+        in
+        builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
+      extraArgs = {
+        inherit subDirs inputs;
+        root = ./.;
+        # inputs = builtins.removeAttrs inputs [ "self" ];
       };
-    } 
-    (inputs.flake-utils.lib.eachDefaultSystem
-      (system:
-        let 
+      callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
+      machines = import ./machines inputs;
+    in
+    nixpkgs.lib.recursiveUpdate
+      {
+        inherit (machines) nixosConfigurations vms;
+
+        # Output all modules in ./modules to flake. Module must be in individual
+        # subdirectories and contain a default.nix which contains a standard NixOS module 
+        nixosModules =
+          let
+            validModules = builtins.filter
+              (d: builtins.pathExists ./modules/${d}/default.nix)
+              (subDirs ./modules);
+          in
+          (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m}; }) validModules));
+
+        packages.x86_64-linux = {
+          pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
+            system = "x86_64-linux";
+            modules = [
+              ./systems/pve/minimal-installer.nix
+            ];
+            format = "install-iso";
+          };
+        };
+      }
+      (inputs.flake-utils.lib.eachDefaultSystem
+        (system:
+        let
           pkgs = import nixpkgs {
             inherit system;
           };
           sops = "${pkgs.sops}/bin/sops";
           terraform = "${pkgs.terraform}/bin/terraform";
-          terranixApp = {
-            command,
-            name ? command,
-            config ? self.packages.${system}.terraformConfig,
-          }: {
-            type = "app";
-            program = toString (pkgs.writers.writeBash name ''
-              set -e
-              if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
-              cp ${config} config.tf.json 
+          terranixApp =
+            { command
+            , name ? command
+            , config ? self.packages.${system}.terraformConfig
+            ,
+            }: {
+              type = "app";
+              program = toString (pkgs.writers.writeBash name ''
+                set -e
+                if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
+                cp ${config} config.tf.json 
 
-              export PATH=${pkgs.jq}/bin:$PATH
-              export TF_TOKEN_app_terraform_io=$(${sops} --extract '["tf_token"]' -d secrets/homelab.yaml)
+                export PATH=${pkgs.jq}/bin:$PATH
+                export TF_TOKEN_app_terraform_io=$(${sops} --extract '["tf_token"]' -d secrets/homelab.yaml)
 
-              ${terraform} init 
-              ${terraform} ${command} "$@"
-            '');
-          };
-        in {
+                ${terraform} init 
+                ${terraform} ${command} "$@"
+              '');
+            };
+        in
+        {
           devShells.default = import ./shell.nix {
             inherit pkgs;
             flake = self;
           };
 
           # nix run ".#apply"
-          apps.apply = terranixApp { command ="apply"; };
+          apps.apply = terranixApp { command = "apply"; };
           # nix run ".#destroy"
           apps.destroy = terranixApp { command = "destroy"; };
           # nix run ".#plan"
@@ -120,9 +126,9 @@
 
           packages =
             (builtins.removeAttrs
-              (pkgs.callPackage (import ./packages) {inherit self inputs;})
-              [ "override" "overrideDerivation"]);
+              (pkgs.callPackage (import ./packages) { inherit self inputs; })
+              [ "override" "overrideDerivation" ]);
         }
-      )
-    );
+        )
+      );
 }

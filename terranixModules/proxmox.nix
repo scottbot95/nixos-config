@@ -1,7 +1,8 @@
-{ config, lib, self, terranix-proxmox, ...}:
+{ config, lib, self, terranix-proxmox, ... }:
 let
   extractSecret = secret: "\${data.sops_file.secrets.data[\"${secret}\"]}";
-in {
+in
+{
   # provider.proxmox.pm_proxy_server = "http://127.0.0.1:8080";
 
   imports = [
@@ -11,6 +12,7 @@ in {
   proxmox = {
     show_deploy_ouptut = false;
     provider = {
+      version = "2.9.14";
       endpoint = "https://pve.lan.faultymuse.com:8006/api2/json";
       # token_id = extractSecret "pm_api.token_id";
       # token_secret = extractSecret "pm_api.token_secret";

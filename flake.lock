@@ -675,11 +675,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1687548624,
-        "narHash": "sha256-9uQGGB6jCBEmSxB7b5uPJEAe/8aY5ZjxmoyHLTKEjn8=",
+        "lastModified": 1687551557,
+        "narHash": "sha256-YGL4xXaK/rLxWKMb0Nns3O5YzkiCHdOjbl7Uzvxy9dA=",
         "owner": "scottbot95",
         "repo": "terranix-proxmox",
-        "rev": "71e272d403b5bc92b4377314754513c67ea1e84e",
+        "rev": "1f96f8fd66e54e46149dc4360e29690db1e6ebd9",
         "type": "github"
       },
       "original": {

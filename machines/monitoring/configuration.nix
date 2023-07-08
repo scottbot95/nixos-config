@@ -1,26 +1,29 @@
 { config, lib, faultybot, self, ... }:
 with lib;
 let
-  skippedExporters = ["unifi-poller"]; # Skip exporters to avoid warnings
+  skippedExporters = [ "unifi-poller" ]; # Skip exporters to avoid warnings
   machineConfigs = mapAttrs (_: value: value.config) self.nixosConfigurations;
-  scrapeConfigs = mapAttrsToList (machineName: cfg:
-    let
-      dns = "${cfg.networking.hostName}.${cfg.networking.domain}";
-      exporters = filterAttrs 
-        (exporterName: exporter: 
-          (!(builtins.elem exporterName skippedExporters))
-          &&((builtins.typeOf exporter) == "set")
-          && exporter.enable
-          && (exporter.listenAddress == "0.0.0.0"))
-        cfg.services.prometheus.exporters;
-      targets = mapAttrsToList (_: exporterCfg: "${dns}:${toString exporterCfg.port}") exporters;
-    in mkIf (builtins.length targets > 0) {
-      job_name = dns;
-      static_configs = [{
-        inherit targets;
-      }];
-    }
-  ) machineConfigs;
+  scrapeConfigs = mapAttrsToList
+    (machineName: cfg:
+      let
+        dns = "${cfg.networking.hostName}.${cfg.networking.domain}";
+        exporters = filterAttrs
+          (exporterName: exporter:
+            (!(builtins.elem exporterName skippedExporters))
+            && ((builtins.typeOf exporter) == "set")
+            && exporter.enable
+            && (exporter.listenAddress == "0.0.0.0"))
+          cfg.services.prometheus.exporters;
+        targets = mapAttrsToList (_: exporterCfg: "${dns}:${toString exporterCfg.port}") exporters;
+      in
+      mkIf (builtins.length targets > 0) {
+        job_name = dns;
+        static_configs = [{
+          inherit targets;
+        }];
+      }
+    )
+    machineConfigs;
 in
 {
   imports = [
@@ -44,7 +47,7 @@ in
   services.loki = {
     enable = true;
     configuration = {
-      
+
       server.http_listen_port = 9010;
       auth_enabled = false;
 
@@ -165,33 +168,39 @@ in
 
   users.users.telegraf.extraGroups = [ "utmp" ];
 
+  # TODO Not sure why we need this (we probably shouldn't)
+  systemd.tmpfiles.rules = [
+    "d /tmp/nginx_proxy 750 nginx nginx"
+    "d /tmp/nginx_client_body 750 nginx nginx"
+  ];
+
   # nginx reverse proxy
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
     recommendedOptimisation = true;
-    recommendedGzipSettings = true;
+    # recommendedGzipSettings = true;
     statusPage = true;
 
     upstreams = {
       grafana = {
         servers = {
-          "127.0.0.1:${toString config.services.grafana.settings.server.http_port}" = {};
+          "127.0.0.1:${toString config.services.grafana.settings.server.http_port}" = { };
         };
       };
       loki = {
         servers = {
-          "127.0.0.1:${toString config.services.loki.configuration.server.http_listen_port}" = {};
+          "127.0.0.1:${toString config.services.loki.configuration.server.http_listen_port}" = { };
         };
       };
       promtail = {
         servers = {
-          "127.0.0.1:9011" = {};
+          "127.0.0.1:9011" = { };
         };
       };
       influxdb = {
         servers = {
-          "127.0.0.1:8086" = {};
+          "127.0.0.1:8086" = { };
         };
       };
     };

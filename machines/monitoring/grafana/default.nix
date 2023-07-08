@@ -1,9 +1,9 @@
-{config, ...}:
+{ config, ... }:
 {
   services.grafana = {
     enable = true;
     settings.server = {
-      domain = "monitoring.lan.faultymuse.com";
+      domain = config.networking.fqdn;
       http_port = 2342;
       http_addr = "127.0.0.1";
       root_url = "http://%(domain)s";
@@ -22,7 +22,7 @@
           url = "http://localhost:${toString config.services.loki.configuration.server.http_listen_port}";
         }
       ];
-      
+
       dashboards.settings.providers = [{
         name = "default";
         folder = "homelab";

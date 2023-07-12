@@ -3,7 +3,7 @@ with lib;
 let
   cfg = config.scott.sops;
   users = config.users.users;
-  varOptions = {...}: {
+  varOptions = { ... }: {
     options = {
       secret = mkOption {
         type = with types; nullOr str;
@@ -20,7 +20,7 @@ let
       };
     };
   };
-  envFilesType = types.submodule ({name, config, ...}: {
+  envFilesType = types.submodule ({ name, config, ... }: {
     options = {
       path = mkOption {
         type = types.str;
@@ -62,71 +62,78 @@ let
       requiredBy = mkOption {
         type = with types; listOf str;
         description = "List of systemd services that depend on this file existing";
-        default = [];
+        default = [ ];
       };
     };
   });
-in {
-    options.scott.sops = {
-      enable = mkEnableOption "Enable SOPS secrets";
-      ageKeyFile = mkOption {
-        type = types.str;
-        default = "/home/scott/.config/sops/age/keys.txt";
-        description = "Path to age key used decrypt secrets file";
-      };
-
-      envFiles = mkOption {
-        type = types.attrsOf envFilesType;
-        description = "Environment files to create based off secrets";
-        default = {};
-      };
+in
+{
+  options.scott.sops = {
+    enable = mkEnableOption "Enable SOPS secrets";
+    ageKeyFile = mkOption {
+      type = types.str;
+      default = "/home/scott/.config/sops/age/keys.txt";
+      description = "Path to age key used decrypt secrets file";
     };
 
-    imports = [
-      sops-nix.nixosModules.sops
-    ];
+    envFiles = mkOption {
+      type = types.attrsOf envFilesType;
+      description = "Environment files to create based off secrets";
+      default = { };
+    };
+  };
 
-    config = mkIf cfg.enable {
-        sops.age.keyFile = cfg.ageKeyFile;
+  imports = [
+    sops-nix.nixosModules.sops
+  ];
 
-        systemd.services = mapAttrs'
-          (name: envFile: 
-            nameValuePair "make-env-${name}" {
-              description = "Create environment file '${name}'";
+  config = mkIf cfg.enable {
+    sops.age.keyFile = cfg.ageKeyFile;
 
-              wantedBy = [ "multi-user.target" ];
-              requiredBy = envFile.requiredBy;
-              before = envFile.requiredBy;
+    systemd.services = mapAttrs'
+      (name: envFile:
+        nameValuePair "make-env-${name}" {
+          description = "Create environment file '${name}'";
 
-              restartIfChanged = true;
+          wantedBy = [ "multi-user.target" ];
+          requiredBy = envFile.requiredBy;
+          before = envFile.requiredBy;
 
-              serviceConfig = {
-                Type = "oneshot";
-                ExecStart = let
-                  varLines = concatStringsSep "\n" (
-                    mapAttrsToList (varName: varOpts:
+          restartIfChanged = true;
+
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart =
+              let
+                varLines = concatStringsSep "\n" (
+                  mapAttrsToList
+                    (varName: varOpts:
                       let
-                        value = 
+                        value =
                           if varOpts.secret != null then
                             "$(cat ${config.sops.secrets.${varOpts.secret}.path})"
                           else
                             ''"${varOpts.text}"'';
-                      in 
+                      in
                       "${varName}=${value}"
-                    ) envFile.vars 
-                  );
-                in pkgs.writeShellScript "make-env-${name}" ''
-                  cat <<EOT > ${envFile.path}
-                  ${varLines}
-                  EOT
+                    )
+                    envFile.vars
+                );
+              in
+              pkgs.writeShellScript "make-env-${name}" ''
+                echo Creating ${envFile.path}
+                cat <<EOT > ${envFile.path}
+                ${varLines}
+                EOT
 
-                  chmod ${envFile.mode} ${envFile.path}
-                  chown ${envFile.owner}:${envFile.group} ${envFile.path}
-                '';
-              };
-            }
-          )
-          cfg.envFiles;
-    };
-    
+                chmod ${envFile.mode} ${envFile.path}
+                chown ${envFile.owner}:${envFile.group} ${envFile.path}
+                echo Done
+              '';
+          };
+        }
+      )
+      cfg.envFiles;
+  };
+
 }

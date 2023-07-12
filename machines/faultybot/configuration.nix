@@ -1,7 +1,7 @@
-{ config, lib, faultybot, ... }:
+{ config, pkgs, lib, faultybot, ... }:
 let
-  discord_token_secret = "services/faultybot/discord_token";
-  openai_key_secret = "services/faultybot/openai_key";
+  discord_token_secret = "discord_token";
+  openai_key_secret = "openai_key";
 in
 {
   imports = [
@@ -13,8 +13,9 @@ in
     imports = [ ./terraform.nix ];
   };
 
-  sops.secrets.${discord_token_secret} = {};
-  sops.secrets.${openai_key_secret} = {};
+  sops.defaultSopsFile = ./secrets.yaml;
+  sops.secrets.${discord_token_secret} = { };
+  sops.secrets.${openai_key_secret} = { };
 
   scott.sops.enable = true;
   scott.sops.ageKeyFile = "/var/keys/age";
@@ -26,8 +27,30 @@ in
     requiredBy = [ "faultybot.service" ];
   };
 
-  services.faultybot.enable = true;
-  services.faultybot.envfile = "/run/secrets/faultybot.env";
+  services.faultybot = {
+    enable = true;
+    envfile = "/run/secrets/faultybot.env";
+    settings = {
+      database.url = "postgresql:///faultybot?host=/var/run/postgresql";
+    };
+  };
+
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql_15;
+    initialScript = pkgs.writeText "faultybot-initScript" ''
+      CREATE DATABASE faultybot;
+      CREATE USER "faultybot";
+      GRANT ALL PRIVILEGES ON DATABASE faultybot TO "faultybot";
+      \c faultybot
+      GRANT ALL ON SCHEMA public TO "faultybot";
+    '';
+  };
+
+  systemd.services.faultybot = {
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
+  };
 
   services.prometheus.exporters.faultybot = {
     enable = true;
@@ -35,7 +58,6 @@ in
   };
 
   networking.domain = "prod.faultymuse.com";
-
 
   system.stateVersion = "23.05";
 }

@@ -15,7 +15,7 @@ let
 
     locations."/" = {
       inherit proxyWebsockets;
-      proxyPass = "${host}:${toString port}/";
+      proxyPass = "${host}:${toString port}";
       extraConfig = ''
         proxy_ssl_verify off;
       '';
@@ -110,7 +110,7 @@ in
         games.port = 8443;
         games.host = "https://faultybox.prod.faultymuse.com";
 
-        nextcloud.proto = "https";
+        # nextcloud.proto = "https";
 
         teslamate = {};
 

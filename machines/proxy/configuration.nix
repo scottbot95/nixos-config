@@ -69,6 +69,7 @@ in
     statusPage = true;
     
     resolver.addresses = [ "192.168.4.2" "10.0.5.2" ];
+    proxyResolveWhileRunning = true;
 
     # Use recommended settings
     recommendedGzipSettings = true;

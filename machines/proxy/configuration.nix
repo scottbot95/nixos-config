@@ -110,7 +110,7 @@ in
         games.port = 8443;
         games.host = "https://faultybox.prod.faultymuse.com";
 
-        # nextcloud.proto = "https";
+        nextcloud.proto = "https";
 
         teslamate = {};
 

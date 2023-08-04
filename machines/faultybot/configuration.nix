@@ -38,6 +38,8 @@ in
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql_15;
+    # Need an init script since you can't grant schema under a specific database with
+    # services.postgresql.ensureUsers
     initialScript = pkgs.writeText "faultybot-initScript" ''
       CREATE DATABASE faultybot;
       CREATE USER "faultybot";

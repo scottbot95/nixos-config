@@ -20,7 +20,7 @@
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    faultybot.url = "github:scottbot95/faultybot";
+    faultybot.url = "github:scottbot95/faultybot/permissions_v2";
     faultybot.inputs.nixpkgs.follows = "nixpkgs";
 
     faultybox.url = "github:scottbot95/faultybox";

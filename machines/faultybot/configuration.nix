@@ -2,6 +2,8 @@
 let
   discord_token_secret = "discord_token";
   openai_key_secret = "openai_key";
+  github_token = "github_token";
+  github_confirmation_channel = "github_confirmation_channel";
 in
 {
   imports = [
@@ -16,13 +18,17 @@ in
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets.${discord_token_secret} = { };
   sops.secrets.${openai_key_secret} = { };
+  sops.secrets.${github_token} = { };
+  sops.secrets.${github_confirmation_channel} = { };
 
   scott.sops.enable = true;
   scott.sops.ageKeyFile = "/var/keys/age";
   scott.sops.envFiles.faultybot = {
     vars = {
-      DISCORD_TOKEN.secret = discord_token_secret;
-      OPENAI_KEY.secret = openai_key_secret;
+      DISCORD__TOKEN.secret = discord_token_secret;
+      OPENAI__KEY.secret = openai_key_secret;
+      GITHUB__TOKEN.secret = github_token;
+      GITHUB__CONFIRMATION_CHANNEL.secret = github_confirmation_channel;
     };
     requiredBy = [ "faultybot.service" ];
   };
@@ -32,6 +38,10 @@ in
     envfile = "/run/secrets/faultybot.env";
     settings = {
       database.url = "postgresql:///faultybot?host=/var/run/postgresql";
+      github = {
+        owner = "scottbot95";
+        repo = "faultybot";
+      };
     };
   };
 

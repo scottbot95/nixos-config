@@ -36,12 +36,29 @@ with lib;
       enable = true;
     };
 
-    # Enable sending logs to loki by default
-    services.promtail.enable = true;
-
     networking.domain = lib.mkDefault "lan.faultymuse.com";
 
     users.users.root.initialPassword = "";
+
+    # Enable sending logs to loki by default
+    services.promtail.enable = true;
+
+    # Enable monitoring on VMs
+    services.telegraf = {
+      enable = true;
+      extraConfig = {
+        inputs = {
+          system = {};
+          systemd_units = {};
+        };
+        outputs = {
+          influxdb = {
+            database = "homelab";
+            urls = [ "http://monitoring.lan.faultymuse.com:8020" ];
+          };
+        };
+      };
+    };
 
     # Turn of extra docs to reduce image size
     documentation.nixos.enable = false;

@@ -97,7 +97,7 @@ in {
   sops.secrets."grafana/pass" = {};
 
   networking.hostName = "teslamate";
-  networking.domain = "faultymuse.com";
+  networking.domain = "prod.faultymuse.com";
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.utf8";
 

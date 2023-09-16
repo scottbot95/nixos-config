@@ -43,11 +43,11 @@ in
   scott.sops.enable = true;
   sops.defaultSopsFile = ./secrets.yaml;
 
-  sops.secrets."teslamate/auth_file" = {
-    mode = "0440";
-    owner = config.users.users.nginx.name;
-    group = config.users.users.nginx.group;
-  };
+  # sops.secrets."teslamate/auth_file" = {
+  #   mode = "0440";
+  #   owner = config.users.users.nginx.name;
+  #   group = config.users.users.nginx.group;
+  # };
 
   networking = {
     interfaces.ens18 = {
@@ -112,7 +112,7 @@ in
 
         nextcloud.proto = "https";
 
-        teslamate = {};
+        # teslamate = {};
 
         vault.proto = "https";
       })
@@ -121,14 +121,14 @@ in
           default = true;
           extraConfig = "return 444;";
         };
-        "teslamate.faultymuse.com" = {
-          locations."/" = {
-            basicAuthFile = "/run/secrets/teslamate/auth_file";
-          };
-          locations."/grafana" = {
-            # Disable basic auth since grafana has its own
-          };
-        };
+        # "teslamate.faultymuse.com" = {
+        #   locations."/" = {
+        #     basicAuthFile = "/run/secrets/teslamate/auth_file";
+        #   };
+        #   locations."/grafana" = {
+        #     # Disable basic auth since grafana has its own
+        #   };
+        # };
       }
     ];   
   };

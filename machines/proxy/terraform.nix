@@ -5,7 +5,7 @@ in {
   dns.public.cnames = [ 
     "games"
     "nextcloud"
-    "teslamate"
+    # "teslamate"
     "vault"
   ];
 

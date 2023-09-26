@@ -51,12 +51,6 @@
           contents = builtins.readDir path;
         in
         builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
-      extraArgs = {
-        inherit subDirs inputs;
-        root = ./.;
-        # inputs = builtins.removeAttrs inputs [ "self" ];
-      };
-      callPackage = nixpkgs.legacyPackages.${builtins.currentSystem}.newScope (extraArgs // { inherit extraArgs; });
       machines = import ./machines inputs;
     in
     nixpkgs.lib.recursiveUpdate

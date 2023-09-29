@@ -50,7 +50,7 @@ in
       features.nesting = true;
 
       rootfs = {
-        storage = "nvme0";
+        storage = "nvme";
         size = "8G";
       };
     };

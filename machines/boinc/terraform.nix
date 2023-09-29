@@ -8,6 +8,7 @@ in {
     domain = "prod.faultymuse.com";
     cores = 16;
     memory = 32 * 1024;
+    balloon = 8 * 1024;
     startup = "order=5";
 
     network = [{
@@ -19,7 +20,7 @@ in {
 
     disk = [{
       type = "virtio";
-      storage = "nvme0";
+      storage = "nvme";
       size = "50G";
       discard = true;
     }];

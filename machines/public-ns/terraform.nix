@@ -21,7 +21,7 @@ in {
 
     disk = [{
       type = "virtio";
-      storage = "nvme0";
+      storage = "nvme";
       size = "20G";
       discard = true;
     }];

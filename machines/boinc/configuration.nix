@@ -17,6 +17,15 @@ in
     allowRemoteGuiRpc = true;
   };
 
+  systemd.services.boinc = {
+    startLimitBurst = 5;
+    startLimitIntervalSec = 120;
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
+
   networking.domain = "prod.faultymuse.com";
 
   networking.firewall.allowedTCPPorts = [ 31416 ];

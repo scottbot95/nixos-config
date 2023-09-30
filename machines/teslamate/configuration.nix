@@ -1,11 +1,12 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
+  home = "/var/lib/teslamate";
   hostName = "teslamate";
   podName = "teslamate_pod";
   containerServices = builtins.map (name: "podman-${name}.service") (builtins.attrNames containers);
   containers = {
       teslamate = {
-        image = "teslamate/teslamate:1.27";
+        image = "teslamate/teslamate:1.27.3";
         autoStart = true;
         environment = {
           DATABASE_HOST = "database";
@@ -15,15 +16,13 @@ let
           TZ = config.time.timeZone;
         };
         environmentFiles = [ /run/secrets/teslamate.env ];
-        # ports = [ "127.0.0.1:4000:4000" ];
-        extraOptions = [ "--cap-drop=all" "--pod=${podName}" ];
+        ports = [ "127.0.0.1:4000:4000" ];
       };
       database = {
-        image = "postgres:14";
+        image = "postgres:15";
         autoStart = true;
         environmentFiles = [ /run/secrets/db.env ];
-        volumes = [ "teslamate-db:/var/lib/postgresql/data" ];
-        extraOptions = [ "--pod=${podName}" ];
+        volumes = [ "${home}/postgresql:/var/lib/postgresql/data" ];
       };
       grafana = {
         image = "teslamate/grafana:latest";
@@ -37,20 +36,18 @@ let
           GF_SERVER_SERVE_FROM_SUB_PATH = "true";
         };
         environmentFiles = [ /run/secrets/grafana.env ];
-        # ports = [ "127.0.0.1:3000:3000" ];
-        volumes = [ "teslamate-grafana-data:/var/lib/grafana" ];
-        extraOptions = [ "--pod=${podName}" ];
+        ports = [ "127.0.0.1:3000:3000" ];
+        volumes = [ "${home}/grafana:/var/lib/grafana" ];
       };
       mosquitto = {
         image = "eclipse-mosquitto:2";
         autoStart = true;
         cmd = [ "mosquitto" "-c" "/mosquitto-no-auth.conf" ];
-        # ports = [ "127.0.0.1:1883:1883" ];
+        ports = [ "127.0.0.1:1883:1883" ];
         volumes = [
-          "mosquitto-conf:/mosquitto/config"
-          "mosquitto-data:/mosquitto/data"
+          "${home}/mosquitto/config:/mosquitto/config"
+          "${home}/mosquitto/data:/mosquitto/data"
         ];
-        extraOptions = [ "--pod=${podName}" ];
       };
     };
 in {
@@ -101,31 +98,39 @@ in {
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.utf8";
 
-  system.stateVersion = "23.05";
+  users.users.teslamate = {
+    inherit home;
+    isSystemUser = true;
+    group = config.users.groups.teslamate.name;
+  };
+  users.groups.teslamate = {};
+
+  systemd.tmpfiles.rules = [
+    # "d ${home} 755 teslamate teslamate"
+    # Grafana need global write cuz the container uses a custom user
+    "d ${home}/grafana 777 teslamate teslamate"
+    "d ${home}/postgresql 750 teslamate teslamate"
+    "d ${home}/mosquitto/config 750 teslamate teslamate"
+    "d ${home}/mosquitto/data 750 teslamate teslamate"
+  ];
+
+  environment.systemPackages = with pkgs; [
+    (callPackage ./backup.nix {})
+  ];
 
   # Create a target to start/stop all teslamate services
   systemd.targets.teslamate = {
     description = "Teslamate target";
     wantedBy = [ "multi-user.target" ];
-    requiredBy = containerServices ++ [ "podman-create-pod-teslamate.service" ];
+    requiredBy = containerServices;
     wants = containerServices;
-  };
-
-  # Create the docker network
-  systemd.services.podman-create-pod-teslamate = {
-    description = "Create the pod for teslamate containers";
-    wantedBy = containerServices;
-
-    serviceConfig.Type = "oneshot";
-    script = let
-      podmanCli = "${pkgs.podman}/bin/podman";
-    in ''
-      ${podmanCli} pod exists ${podName} || ${podmanCli} pod create --name ${podName} -p 127.0.0.1:3000:3000 -p 127.0.0.1:4000:4000
-    '';
   };
 
   virtualisation = {
     podman.enable = true;
+    podman.defaultNetwork.settings = {
+      dns_enabled = true;
+    };
     oci-containers.backend = "podman";
     oci-containers.containers = containers;
   };
@@ -148,5 +153,11 @@ in {
       };
     };
   };
+  
   networking.firewall.allowedTCPPorts = [ 80 ];
+
+  # For some reason this isn't enabled by default when using defaultNetwork.dns_enabled
+  networking.firewall.interfaces.podman0.allowedUDPPorts = [ 53 ];
+
+  system.stateVersion = "23.05";
 }

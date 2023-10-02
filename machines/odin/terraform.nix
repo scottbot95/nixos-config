@@ -26,14 +26,6 @@ in {
     }];
   };
 
-  resource.proxmox_vm_qemu.${hostname} = {
-    ipconfig0 = "ip=10.0.5.10/24,gw=10.0.5.1";
-  };
-
-  resource.time_sleep."${hostname}_cloud_init_delay" = {
-    triggers.${hostname} = lib.mkForce "\${proxmox_vm_qemu.${hostname}.ssh_host}";
-  };
-
   module."${hostname}_deploy_nixos".keys = {
     age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
   };

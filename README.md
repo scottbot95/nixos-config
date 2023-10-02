@@ -10,18 +10,18 @@ See [./homelab.md](./homelab.md) for details
 ## Creating an ISO
 
 A NixOS installer ISO can be built with:
-```
+```sh
 nix build .#nixosConfigurations.$HOST_ISO.config.system.build.isoImage
 ```
 
 You can then copy the image to a USB stick with:
-```
+```sh
 dd if=result/iso/*.iso of=$USB_DEV status=progress
 ```
 
 ## VM Testing
 
 Machine configuration can be tested locally with a QEMU VM using
-```
+```sh
 nix run .#vms.<machine>
 ```

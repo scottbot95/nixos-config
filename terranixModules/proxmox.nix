@@ -10,7 +10,7 @@ in
   ];
 
   proxmox = {
-    show_deploy_ouptut = false;
+    show_deploy_output = lib.mkDefault false;
     provider = {
       version = "2.9.14";
       endpoint = "https://pve.lan.faultymuse.com:8006/api2/json";

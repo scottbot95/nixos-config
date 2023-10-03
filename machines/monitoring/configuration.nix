@@ -6,7 +6,7 @@ let
   scrapeConfigs = mapAttrsToList
     (machineName: cfg:
       let
-        dns = "${cfg.networking.hostName}.${cfg.networking.domain}";
+        dns = "${cfg.networking.fqdn}";
         exporters = filterAttrs
           (exporterName: exporter:
             (!(builtins.elem exporterName skippedExporters))
@@ -40,7 +40,15 @@ in
     enable = true;
     port = 9090;
 
-    inherit scrapeConfigs;
+    scrapeConfigs = scrapeConfigs ++ [{
+      job_name = "ether.prod.faultymuse.com";
+      static_configs = [{
+        targets = [ 
+          "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.lighthouse.beacon.metrics.port }" 
+          "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.geth.sepolia.args.metrics.port }" 
+        ];
+      }];
+    }];
   };
 
   # loki

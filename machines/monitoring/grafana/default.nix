@@ -1,4 +1,12 @@
-{ config, ... }:
+{ config, pkgs, ... }:
+let
+  lighthouse-metrics = pkgs.fetchFromGitHub {
+    owner = "sigp";
+    repo = "lighthouse-metrics";
+    rev = "71054d58b340a5f01f0da0cc24f900035247388f";
+    hash = "sha256-00RosQhsWFgZm8gTioe57+aixbupDQqqiqhjDPOtjCA=";
+  };
+in
 {
   services.grafana = {
     enable = true;
@@ -23,12 +31,20 @@
         }
       ];
 
-      dashboards.settings.providers = [{
-        name = "default";
-        folder = "homelab";
-        allowUiUpdates = true;
-        options.path = ./dashboards;
-      }];
+      dashboards.settings.providers = [
+        {
+          name = "default";
+          folder = "homelab";
+          allowUiUpdates = true;
+          options.path = ./dashboards;
+        }
+        {
+          name = "lighthouse";
+          folder = "lighthouse";
+          allowUiUpdates = true;
+          options.path = "${lighthouse-metrics}/dashboards";
+        }
+      ];
     };
   };
 }

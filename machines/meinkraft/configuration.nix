@@ -35,14 +35,27 @@ in
   ];
 
   sops.defaultSopsFile = ./secrets.yaml;
+  sops.secrets."meinkraft/rcon" = {};
 
   scott.sops.enable = true;
   scott.sops.ageKeyFile = "/var/keys/age";
+
+  scott.sops.envFiles.meinkraft = {
+    vars = {
+      RCON_PASS.secret = "meinkraft/rcon";
+    };
+
+    owner = config.services.minecraft-servers.user;
+    group = config.services.minecraft-servers.group;
+
+    requiredBy = [ "minecraft-server-meinkraft.service" ];
+  };
 
   services.minecraft-servers = {
     enable = true;
     eula = true;
     openFirewall = true;
+    environmentFile = config.scott.sops.envFiles.meinkraft.path;
     servers = {
       meinkraft = {
         enable = true;
@@ -90,7 +103,8 @@ in
           prevent-proxy-connections = false;
           use-native-transport = true;
           motd = "\\u00A7lThe 1.12.2 Pack Server v1.5.5";
-          enable-rcon = false;
+          enable-rcon = true;
+          "rcon.password" = "@RCON_PASS@";
         };
       };
     };

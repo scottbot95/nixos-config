@@ -7,7 +7,8 @@ in {
     vmid = 201;
     domain = "lan.faultymuse.com";
     cores = 8;
-    memory = 8192;
+    balloon = 8 * 1024;
+    memory = 16 * 1024;
     startup = "order=2";
 
     network = [{

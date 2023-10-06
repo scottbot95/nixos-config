@@ -21,7 +21,7 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     # ethereum-nix.url = "github:nix-community/ethereum.nix";
-    ethereum-nix.url = "github:scottbot95/ethereum.nix/issue-392";
+    ethereum-nix.url = "path:///home/scott/workplace/ethereum.nix";
     ethereum-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     faultybot.url = "github:scottbot95/faultybot";
@@ -29,6 +29,8 @@
 
     faultybox.url = "github:scottbot95/faultybox";
     # faultybox.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
 
     terranix.url = "github:terranix/terranix";
     terranix.inputs.nixpkgs.follows = "nixpkgs";

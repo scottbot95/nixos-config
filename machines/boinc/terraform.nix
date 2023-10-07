@@ -6,7 +6,7 @@ in {
     enable = true;
     vmid = 503;
     domain = "prod.faultymuse.com";
-    cores = 16;
+    cores = 24;
     memory = 32 * 1024;
     balloon = 8 * 1024;
     startup = "order=5";

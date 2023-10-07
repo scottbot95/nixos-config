@@ -9,12 +9,6 @@ in
 
   nixpkgs.overlays = [
     ethereum-nix.overlays.default
-    (final: prev: {
-      lighthouse = prev.lighthouse.overrideAttrs (final: prev: {
-        # My dinky E5 v3's don't support ADX :(
-        cargoBuildFeatures = [ "portable" ];
-      });
-    })
   ];
 
   terranix = {
@@ -24,8 +18,8 @@ in
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."eth/jwt" = {
     restartUnits = [
-      "geth-sepolia.service"
-      "prysm-beacon-sepolia.service"
+      "geth-holesky.service"
+      "prysm-beacon-holesky.service"
       "lighthouse-beacon.service"
     ];
   };
@@ -33,12 +27,12 @@ in
   scott.sops.enable = true;
   scott.sops.ageKeyFile = "/var/keys/age";
 
-  services.ethereum.geth.sepolia = {
+  services.ethereum.geth.holesky = {
     enable = true;
     package = pkgs.geth;
     openFirewall = true;
     args = {
-      network = "sepolia";
+      network = "holesky";
       http = {
         enable = true;
         addr = "0.0.0.0";
@@ -47,23 +41,16 @@ in
       };
       authrpc.jwtsecret = config.sops.secrets."eth/jwt".path;
     };
-    # backup = {
-    #   restic.passwordFile = "FIXME";
-    # };
-    # restore = {
-    #   restic.passwordFile = "FIXME";
-    #   snapshot = "FIXME";
-    # };
   };
 
-  services.ethereum.prysm-beacon.sepolia = {
+  services.ethereum.prysm-beacon.holesky = {
     enable = false;
     openFirewall = true;
     args = {
-      network = "sepolia";
+      network = "holesky";
       jwt-secret = config.sops.secrets."eth/jwt".path;
-      checkpoint-sync-url = "https://checkpoint-sync.sepolia.ethpandaops.io";
-      genesis-beacon-api-url = "https://checkpoint-sync.sepolia.ethpandaops.io";
+      checkpoint-sync-url = "https://beaconstate-holesky.chainsafe.io";
+      genesis-beacon-api-url = "https://beaconstate-holesky.chainsafe.io";
     };
     extraArgs = [
       "--rpc-host=0.0.0.0"
@@ -71,24 +58,19 @@ in
     ];
   };
 
-  # TODO migrate to ethereum-nix whenver lighthouse is supported. Or just switch to prysm???
-  services.lighthouse.network = "sepolia";
-  services.lighthouse.beacon = {
+  services.ethereum.lighthouse-beacon.holesky = {
     enable = true;
     openFirewall = true;
-    execution.jwtPath = config.sops.secrets."eth/jwt".path;
-    http.enable = true;
-    http.address = "0.0.0.0";
-    metrics.enable = true;
-    metrics.address = "0.0.0.0";
-    disableDepositContractSync = true;
-    extraArgs = "--checkpoint-sync-url https://beaconstate-sepolia.chainsafe.io";
+    args = {
+      execution-jwt = config.sops.secrets."eth/jwt".path;
+      http-address = "0.0.0.0";
+      metrics-address = "0.0.0.0";
+      disable-deposit-contract-sync = true;
+      checkpoint-sync-url = "https://beaconstate-holesky.chainsafe.io";
+      genesis-state-url = "https://beaconstate-holesky.chainsafe.io";
+    };
   };
 
-  networking.firewall.allowedTCPPorts = [ 
-    config.services.lighthouse.beacon.http.port 
-    config.services.lighthouse.beacon.metrics.port 
-  ];
 
   networking.domain = "prod.faultymuse.com";
 

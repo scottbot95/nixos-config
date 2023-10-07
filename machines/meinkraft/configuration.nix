@@ -68,7 +68,7 @@ in
       meinkraft = {
         enable = true;
         package = the122PackServer;
-        jvmOpts = "-Xmx16G -Xms2G -Dfml.queryResult=confirm -Djava.awt.headless=true";
+        jvmOpts = "-Xmx20G -Xms2G -Dfml.queryResult=confirm -Djava.awt.headless=true";
 
         symlinks = { 
           # "mods" = "${the122Pack}/mods";

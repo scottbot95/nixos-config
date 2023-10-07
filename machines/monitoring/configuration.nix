@@ -40,15 +40,17 @@ in
     enable = true;
     port = 9090;
 
-    scrapeConfigs = scrapeConfigs ++ [{
-      job_name = "ether.prod.faultymuse.com";
-      static_configs = [{
-        targets = [ 
-          "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.lighthouse.beacon.metrics.port }" 
-          "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.geth.sepolia.args.metrics.port }" 
-        ];
-      }];
-    }];
+    scrapeConfigs = scrapeConfigs ++ [
+      {
+        job_name = "ether.prod.faultymuse.com";
+        static_configs = [{
+          targets = [ 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.lighthouse.beacon.metrics.port }" 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.geth.holesky.args.metrics.port }" 
+          ];
+        }];
+      }
+    ];
   };
 
   # loki

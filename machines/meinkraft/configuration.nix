@@ -51,6 +51,14 @@ in
     requiredBy = [ "minecraft-server-meinkraft.service" ];
   };
 
+  scott.sops.envFiles.meinkraft-exporter = {
+    vars = {
+      MC_RCON_PASSWORD.secret = "meinkraft/rcon";
+    };
+
+    requiredBy = [ "prometheus-meinkraft-exporter.service" ];
+  };
+
   services.minecraft-servers = {
     enable = true;
     eula = true;
@@ -108,6 +116,18 @@ in
         };
       };
     };
+  };
+
+  services.prometheus.exporters.minecraft = let
+      name = "meinkraft";
+      serverConfig = config.services.minecraft-servers.servers.${name};
+      dataDir = "${config.services.minecraft-servers.dataDir}/${name}";
+  in {
+    enable = true;
+    environmentFile = "-${config.scott.sops.envFiles.meinkraft-exporter.path}";
+    worldPath = "${dataDir}/${serverConfig.serverProperties.level-name}";
+    modServerStats = "forge";
+    openFirewall = true;
   };
 
   networking.domain = "prod.faultymuse.com";

@@ -45,8 +45,9 @@ in
         job_name = "ether.prod.faultymuse.com";
         static_configs = [{
           targets = [ 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.lighthouse.beacon.metrics.port }" 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.geth.holesky.args.metrics.port }" 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-validator.goerli.args.metrics.port }" 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.goerli.args.metrics.port }" 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.geth.goerli.args.metrics.port }" 
           ];
         }];
       }

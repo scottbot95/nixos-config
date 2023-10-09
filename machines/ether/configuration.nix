@@ -18,8 +18,7 @@ in
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."eth/jwt" = {
     restartUnits = [
-      "geth-holesky.service"
-      "prysm-beacon-holesky.service"
+      "geth-goerli.service"
       "lighthouse-beacon.service"
     ];
   };
@@ -27,12 +26,16 @@ in
   scott.sops.enable = true;
   scott.sops.ageKeyFile = "/var/keys/age";
 
-  services.ethereum.geth.holesky = {
+  environment.systemPackages = [
+    config.services.ethereum.lighthouse-beacon.goerli.package
+  ];
+
+  services.ethereum.geth.goerli = {
     enable = true;
     package = pkgs.geth;
     openFirewall = true;
     args = {
-      network = "holesky";
+      network = "goerli";
       http = {
         enable = true;
         addr = "0.0.0.0";
@@ -43,31 +46,23 @@ in
     };
   };
 
-  services.ethereum.prysm-beacon.holesky = {
-    enable = false;
-    openFirewall = true;
-    args = {
-      network = "holesky";
-      jwt-secret = config.sops.secrets."eth/jwt".path;
-      checkpoint-sync-url = "https://beaconstate-holesky.chainsafe.io";
-      genesis-beacon-api-url = "https://beaconstate-holesky.chainsafe.io";
-    };
-    extraArgs = [
-      "--rpc-host=0.0.0.0"
-      "--monitoring-host=0.0.0.0"
-    ];
-  };
-
-  services.ethereum.lighthouse-beacon.holesky = {
+  services.ethereum.lighthouse-beacon.goerli = {
     enable = true;
     openFirewall = true;
     args = {
       execution-jwt = config.sops.secrets."eth/jwt".path;
-      http-address = "0.0.0.0";
-      metrics-address = "0.0.0.0";
-      disable-deposit-contract-sync = true;
-      checkpoint-sync-url = "https://beaconstate-holesky.chainsafe.io";
-      genesis-state-url = "https://beaconstate-holesky.chainsafe.io";
+      http.address = "0.0.0.0";
+      metrics.address = "0.0.0.0";
+      checkpoint-sync-url = "https://beaconstate-goerli.chainsafe.io";
+      genesis-state-url = "https://beaconstate-goerli.chainsafe.io";
+    };
+  };
+
+  services.ethereum.lighthouse-validator.goerli = {
+    enable = true;
+    openFirewall = true;
+    args = {
+      suggested-fee-recipient = "0x8cD3E0e42C16CaeDA365C8089D875163b32313d1";
     };
   };
 

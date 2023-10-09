@@ -166,14 +166,18 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1696488684,
-        "narHash": "sha256-vyo9wFAsYJXfBzeGGJVVVDFJ0StEA3MBFIMHXRodTVY=",
-        "path": "/home/scott/workplace/ethereum.nix",
-        "type": "path"
+        "lastModified": 1696813702,
+        "narHash": "sha256-ZNwKfgjmjmRVk00/7A/2KQTPrlRXf9N1pZWXm4V7/Pk=",
+        "owner": "scottbot95",
+        "repo": "ethereum.nix",
+        "rev": "1e2168d40388d828359d119b3cbfd52b824a3416",
+        "type": "github"
       },
       "original": {
-        "path": "/home/scott/workplace/ethereum.nix",
-        "type": "path"
+        "owner": "scottbot95",
+        "ref": "lighthouse-service",
+        "repo": "ethereum.nix",
+        "type": "github"
       }
     },
     "faultybot": {

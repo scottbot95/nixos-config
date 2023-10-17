@@ -30,6 +30,7 @@ in
       bios = "ovmf";
       os_type = "cloud-init";
       onboot = true;
+      balloon = 1024; # minimal VM seems to take ~512 so give some extra
     };
 
     defaults.lxc = {

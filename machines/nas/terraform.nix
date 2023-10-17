@@ -16,7 +16,7 @@
     };
 
     mountpoint."/mnt/nfs_datadir_1" = {
-      storage = "nvme";
+      storage = "LTS";
       size = "2T";
     };
 

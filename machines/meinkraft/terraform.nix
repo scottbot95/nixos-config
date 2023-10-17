@@ -8,6 +8,7 @@ in {
     onboot = true;
     domain = "prod.faultymuse.com";
     cores = 12;
+    balloon = 12 * 1024;
     memory = 24 * 1024;
     startup = "order=5";
 

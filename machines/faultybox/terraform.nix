@@ -7,7 +7,7 @@ in {
     vmid = 500;
     domain = "prod.faultymuse.com";
     cores = 8;
-    memory = 8192;
+    memory = 4 * 1024;
     startup = "order=5";
 
     network = [{

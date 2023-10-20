@@ -8,12 +8,6 @@
 
   nixpkgs.system = "x86_64-linux";
 
-  scott.sops.enable = true;
-  sops.defaultSopsFile = ./secrets.yaml;
-
-  sops.secrets."wireguard/presharedKey" = { };
-  sops.secrets."wireguard/privateKey" = { };
-
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -32,20 +26,20 @@
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.wlp3s0.useDHCP = true;
 
-  networking.wg-quick.interfaces.wg0 = {
-    address = [ "192.168.100.3/32" ];
-    # listenPort = 51280;
-    privateKeyFile = "/run/secrets/wireguard/privateKey";
-    dns = [ "192.168.4.2" "10.0.5.2" ];
-    autostart = false;
+  # networking.wg-quick.interfaces.wg0 = {
+  #   address = [ "192.168.100.3/32" ];
+  #   # listenPort = 51280;
+  #   privateKeyFile = "/run/secrets/wireguard/privateKey";
+  #   dns = [ "192.168.4.2" "10.0.5.2" ];
+  #   autostart = false;
 
-    peers = [{
-      publicKey = "sr+ukdiTPS9TsyS/1G8Pm27nscZR1fjolxBtQnJaLCA=";
-      presharedKeyFile = "/run/secrets/wireguard/presharedKey";
-      allowedIPs = [ "0.0.0.0/0" ];
-      endpoint = "us-west-1.faultymuse.com:51820";
-    }];
-  };
+  #   peers = [{
+  #     publicKey = "sr+ukdiTPS9TsyS/1G8Pm27nscZR1fjolxBtQnJaLCA=";
+  #     presharedKeyFile = "/run/secrets/wireguard/presharedKey";
+  #     allowedIPs = [ "0.0.0.0/0" ];
+  #     endpoint = "us-west-1.faultymuse.com:51820";
+  #   }];
+  # };
 
   # networking.firewall.allowedUDPPorts = [ 
   #   config.networking.wireguard.interfaces.wg0.listenPort

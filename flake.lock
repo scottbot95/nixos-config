@@ -166,11 +166,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1696813702,
-        "narHash": "sha256-ZNwKfgjmjmRVk00/7A/2KQTPrlRXf9N1pZWXm4V7/Pk=",
+        "lastModified": 1697912890,
+        "narHash": "sha256-2d/S7Gv6TyRfZx6WPsoaQoteUjox3/dSGlRZrJVZg5Q=",
         "owner": "scottbot95",
         "repo": "ethereum.nix",
-        "rev": "1e2168d40388d828359d119b3cbfd52b824a3416",
+        "rev": "13740a9c579c5cc73cf6ad21f0b19cf88f24735d",
         "type": "github"
       },
       "original": {

@@ -4,6 +4,7 @@
     enable = true;
     vmid = 100;
     unprivileged = false;
+    startup = "order=1";
 
     cores = 4;
     memory = 4096;

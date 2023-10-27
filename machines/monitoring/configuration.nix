@@ -1,4 +1,4 @@
-{ config, lib, faultybot, self, ... }:
+{ config, pkgs, lib, faultybot, self, ... }:
 with lib;
 let
   skippedExporters = [ "unifi-poller" ]; # Skip exporters to avoid warnings
@@ -29,6 +29,7 @@ in
   imports = [
     ../../modules/profiles/proxmox-guest
     ./grafana
+    ./snmp/module.nix
   ];
 
   terranix = {
@@ -45,9 +46,9 @@ in
         job_name = "ether.prod.faultymuse.com";
         static_configs = [{
           targets = [ 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-validator.goerli.args.metrics.port }" 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.goerli.args.metrics.port }" 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.geth.goerli.args.metrics.port }" 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-validator.holesky.args.metrics.port}" 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.holesky.args.metrics.port}" 
+            # "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.mainnet.args.metrics.port}" 
           ];
         }];
       }

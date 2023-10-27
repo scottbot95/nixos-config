@@ -98,11 +98,8 @@ let
         # Extract the key (remainder after the prefix)
         key="''${env_var#ENVFILE_TEXT_}"
 
-        # Read the content of the variable and use jq to escape as JSON string
-        value=$(jq -R . < <(echo "$key"))
-
         # Append line to file
-        echo "$key=\"$value"\" >> ${envFile.path}
+        echo "$key=\"''${!env_var}"\" >> ${envFile.path}
       done
     '';
     json = ''
@@ -128,7 +125,7 @@ let
         key="''${env_var#ENVFILE_TEXT_}"
 
         # Read the content of the variable and use jq to escape as JSON string
-        value=$(jq -R . < <(echo "$key"))
+        value=$(jq -R . < <(echo ''${!env_var}))
 
         # Add key-value pair to the JSON object
         json_object+="\"$key\":$value,"
@@ -188,7 +185,7 @@ in
           }) envFile.vars;
 
           script = ''
-            set -x
+            set -e
             echo Creating ${envFile.path}
 
             rm -f ${envFile.path}

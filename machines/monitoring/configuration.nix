@@ -1,4 +1,4 @@
-{ config, pkgs, lib, faultybot, self, ... }:
+{ config, pkgs, lib, faultybot, nixpkgs-unstable, self, ... }:
 with lib;
 let
   skippedExporters = [ "unifi-poller" ]; # Skip exporters to avoid warnings
@@ -30,10 +30,15 @@ in
     ../../modules/profiles/proxmox-guest
     ./grafana
     ./snmp/module.nix
+    ./idrac.nix
   ];
 
   terranix = {
     imports = [ ./terraform.nix ];
+  };
+
+  nixpkgs.pkgs = import nixpkgs-unstable {
+    system = "x86_64-linux";
   };
 
   #prometheus config
@@ -152,33 +157,6 @@ in
       }];
     };
   };
-
-  # Telegraf ingestion for InfluxDB
-  services.telegraf = {
-    enable = true;
-    extraConfig = {
-      inputs = {
-        # system = {}; 
-        # prometheus = {
-        #   urls = [
-        #     "http://127.0.0.1:${toString config.services.prometheus.exporters.pve.port}/metrics" 
-        #   ];
-        # };
-
-        statsd = {
-          service_address = ":8125";
-        };
-      };
-      outputs = {
-        influxdb = {
-          database = "homelab";
-          urls = [ "http://localhost:8086" ];
-        };
-      };
-    };
-  };
-
-  users.users.telegraf.extraGroups = [ "utmp" ];
 
   # TODO Not sure why we need this (we probably shouldn't)
   systemd.tmpfiles.rules = [

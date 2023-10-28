@@ -44,7 +44,7 @@ with lib;
     services.promtail.enable = true;
 
     # Enable monitoring on VMs
-    services.telegraf = {
+    services.telegraf = mkIf (config.networking.hostName != "monitoring") {
       enable = true;
       extraConfig = {
         inputs = {

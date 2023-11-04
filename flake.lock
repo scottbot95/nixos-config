@@ -350,6 +350,23 @@
         "type": "github"
       }
     },
+    "flake-parts_4": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib_2"
+      },
+      "locked": {
+        "lastModified": 1696343447,
+        "narHash": "sha256-B2xAZKLkkeRFG5XcHHSXXcP7To9Xzr59KXeZiRf4vdQ=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "c9afaba3dfa4085dbd2ccb38dfade5141e33d9d4",
+        "type": "github"
+      },
+      "original": {
+        "id": "flake-parts",
+        "type": "indirect"
+      }
+    },
     "flake-root": {
       "locked": {
         "lastModified": 1692742795,
@@ -714,6 +731,24 @@
         "type": "github"
       }
     },
+    "nixpkgs-lib_2": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1696019113,
+        "narHash": "sha256-X3+DKYWJm93DRSdC5M6K5hLqzSya9BjibtBsuARoPco=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f5892ddac112a1e9b3612c39af1b72987ee5783a",
+        "type": "github"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1693675694,
@@ -838,6 +873,7 @@
         "nixpkgs": "nixpkgs_5",
         "nixpkgs-unstable": "nixpkgs-unstable_2",
         "sops-nix": "sops-nix",
+        "steam-servers": "steam-servers",
         "terranix": "terranix",
         "terranix-proxmox": "terranix-proxmox"
       }
@@ -964,6 +1000,49 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "steam-fetcher": {
+      "inputs": {
+        "nixpkgs": [
+          "steam-servers",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1694424148,
+        "narHash": "sha256-1PV7sxioWWD/yLxnkLVOL6zvlTOBl98kUv4ol4p0ozo=",
+        "owner": "aidalgol",
+        "repo": "nix-steam-fetcher",
+        "rev": "2033f99c7aee506f5af18026a3cab1c93bd0439f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aidalgol",
+        "repo": "nix-steam-fetcher",
+        "type": "github"
+      }
+    },
+    "steam-servers": {
+      "inputs": {
+        "flake-parts": "flake-parts_4",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "steam-fetcher": "steam-fetcher"
+      },
+      "locked": {
+        "lastModified": 1699086708,
+        "narHash": "sha256-AtSCTEZ8yruyvY4NYPkqQx61b568dwJANYt1Wl4jGuU=",
+        "owner": "scottbot95",
+        "repo": "nix-steam-servers",
+        "rev": "4dfd79bb44741a67b7325678ebbf822e2188ec84",
+        "type": "github"
+      },
+      "original": {
+        "owner": "scottbot95",
+        "repo": "nix-steam-servers",
         "type": "github"
       }
     },

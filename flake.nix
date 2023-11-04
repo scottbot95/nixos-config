@@ -31,7 +31,12 @@
     faultybox.url = "github:scottbot95/faultybox";
     # faultybox.inputs.nixpkgs.follows = "nixpkgs";
 
-    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    # nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    nix-minecraft.url = "path:///home/scott/workplace/nix-minecraft";
+
+    steam-servers.url = "github:scottbot95/nix-steam-servers";
+    # steam-servers.url = "path:///home/scott/workplace/nix-steam-servers";
+    steam-servers.inputs.nixpkgs.follows = "nixpkgs";
 
     terranix.url = "github:terranix/terranix";
     terranix.inputs.nixpkgs.follows = "nixpkgs";

@@ -29,7 +29,7 @@ with lib; {
       oci-containers.backend = "podman";
       oci-containers.containers = {
         technitium = {
-          image = "technitium/dns-server:11.5.2";
+          image = "technitium/dns-server:11.5.3";
           # doesnt' work for some reason :(
           # user = "technitium:technitium";
           autoStart = true;

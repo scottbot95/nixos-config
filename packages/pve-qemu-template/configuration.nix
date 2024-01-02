@@ -2,7 +2,6 @@
 let
 in {
   imports = [ 
-    "${modulesPath}/profiles/qemu-guest.nix"
     ../../modules/profiles/proxmox-guest 
   ];
 
@@ -17,8 +16,44 @@ in {
     template = 1;
   };
 
-  services.cloud-init.enable = true;
-  services.cloud-init.network.enable = true;
+  users.users.ops = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ];
+  };
 
-  system.stateVersion = "23.05";
+  users.users.ops.initialPassword = "";
+
+  services.cloud-init = {
+    enable = true;
+    network.enable = true;
+    settings = {
+      system_info = {
+        distro = "nixos";
+        network.renderers = [ "networkd" ];
+        default_user = {
+          name = "ops";
+        };
+      };
+      users = [ "default" ];
+      manage_etc_hosts = false;
+      
+      cloud_init_modules = [
+        "migrator"
+        "seed_random"
+        "growpart"
+        "resizefs"
+        "set_hostname"
+      ];
+
+      cloud_config_modules = [
+        "disable-ec2-metadata"
+        "ssh"
+      ];
+
+      # Overwrite default since we need these modules
+      cloud_final_modules = [];
+    };
+  };
+
+  system.stateVersion = "23.11";
 }

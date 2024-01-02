@@ -31,11 +31,8 @@ in {
     ipconfig0 = "ip=10.0.20.2/24,gw=10.0.20.1";
   };
 
-  resource.time_sleep."${vm_name}_cloud_init_delay" = {
-    triggers.${vm_name} = lib.mkForce "\${proxmox_vm_qemu.${vm_name}.ssh_host}";
-  };
-
   module."${vm_name}_deploy_nixos" = lib.mkIf enable {
+    target_host = lib.mkForce "\${proxmox_vm_qemu.${vm_name}.ssh_host}";
     keys.age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
   };
 }

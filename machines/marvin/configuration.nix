@@ -4,6 +4,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     nixos-hardware.nixosModules.lenovo-thinkpad-t480
+    ../../modules/profiles/ca-certs
   ];
 
   nixpkgs.system = "x86_64-linux";

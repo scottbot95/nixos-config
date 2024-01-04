@@ -4,6 +4,7 @@ with lib;
   imports = [
      "${modulesPath}/profiles/qemu-guest.nix"
      ../well-known-users
+     ../ca-certs
   ];
 
   config = {

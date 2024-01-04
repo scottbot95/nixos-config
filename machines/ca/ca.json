@@ -1,0 +1,47 @@
+{
+	"root": "/var/lib/step-ca/certs/root_ca.crt",
+	"federatedRoots": null,
+	"crt": "/var/lib/step-ca/certs/intermediate_ca.crt",
+	"key": "/var/lib/step-ca/secrets/intermediate_ca_key",
+	"insecureAddress": "",
+	"dnsNames": [
+		"ca.lan.faultymuse.com"
+	],
+	"logger": {
+		"format": "text"
+	},
+	"db": {
+		"type": "badgerv2",
+		"dataSource": "/var/lib/step-ca/db",
+		"badgerFileLoadingMode": ""
+	},
+	"authority": {
+		"claims": {
+			"maxTLSCertDuration": "8h",
+			"defaultTLSCertDuration": "2h"
+		},
+		"provisioners": [
+			{
+				"type": "ACME",
+				"name": "acme",
+				"forceCN": true,
+				"caaIdentities": [
+					"ca.lan.faultymuse.com"
+				],
+				"challenges": [
+					"http-01",
+					"dns-01"
+				]
+			}
+		]
+	},
+	"tls": {
+		"cipherSuites": [
+			"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+			"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
+		],
+		"minVersion": 1.2,
+		"maxVersion": 1.3,
+		"renegotiation": false
+	}
+}

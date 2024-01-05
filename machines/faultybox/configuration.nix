@@ -6,7 +6,7 @@ in
 {
   imports = [
     faultybox.nixosModules.faultybox
-    ../../modules/profiles/proxmox-guest
+    ../../modules/profiles/proxmox-guest/v2.nix
   ];
 
   terranix = {

@@ -8,12 +8,6 @@ with lib;
   ];
 
   config = {
-    # Let ops account import unsigned NARs (eg not from cache.nixos.org)
-    # TODO maybe we can start signing NARs and add the key?
-    nix.settings.trusted-users = [
-      "ops"
-    ];
-
     nixpkgs.system = "x86_64-linux"; # FIXME shouldn't need this but terranix proxmox module currently requires it
     nixpkgs.hostPlatform = lib.systems.examples.gnu64;
 
@@ -45,31 +39,8 @@ with lib;
 
     networking.domain = lib.mkDefault "lan.faultymuse.com";
 
-    networking = {
-      useNetworkd = true;
-      dhcpcd.enable = false;
-      interfaces.ens18.useDHCP = true;
-    };
-
-    systemd.network.enable = true;
-
-    # User for performing deployments
-    users.users.ops = {
-      isNormalUser = true;
-      extraGroups = [ "wheel" ];
-    };
-
-    # Enabled passwordless sudo for ops account
-    security.sudo.extraRules = [{ 
-      users = [ "ops" ];
-      commands = [{
-        command = "ALL";
-        options = [ "NOPASSWD" ];
-      }];
-    }];
-
     # Disable login of root account
-    users.users.root.initialPassword = "";
+    users.users.root.initialPassword = mkDefault "";
 
     # Enable sending logs to loki by default
     services.promtail.enable = true;

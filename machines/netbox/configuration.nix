@@ -18,6 +18,7 @@
 
   services.netbox = {
     enable = true;
+    package = pkgs.netbox_3_6;
     listenAddress = "127.0.0.1";
 
     secretKeyFile = "/run/secrets/netbox/secret";

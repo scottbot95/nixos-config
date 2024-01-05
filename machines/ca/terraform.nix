@@ -7,7 +7,7 @@ in {
     vmid = 210;
     clone = "nixos-23.11.20231202.933d7dc";
     onboot = true;
-    domain = "lan.faultymuse.com";
+    domain = "prod.faultymuse.com";
     cores = 4;
     memory = 4096;
     startup = "order=2";
@@ -16,7 +16,7 @@ in {
     network = [{
       model = "virtio";
       bridge = "vmbr0";
-      tag = 5;
+      tag = 20;
       firewall = false;
     }];
 
@@ -26,13 +26,5 @@ in {
       size = "50G";
       discard = true;
     }];
-  };
-
-  module."${hostname}_deploy_nixos".keys = {
-    age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
-  };
-
-  resource.proxmox_vm_qemu.${hostname} = {
-    # args = lib.mkForce "";
   };
 }

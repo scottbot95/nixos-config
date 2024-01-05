@@ -69,7 +69,7 @@ with lib;
     }];
 
     # Disable login of root account
-    users.users.root.hashedPassword = "!";
+    users.users.root.initialPassword = "";
 
     # Enable sending logs to loki by default
     services.promtail.enable = true;

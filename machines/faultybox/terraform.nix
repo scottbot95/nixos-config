@@ -5,6 +5,7 @@ in {
   proxmox.qemu.${hostname} = {
     enable = true;
     vmid = 500;
+    clone = "nixos-23.11.20231202.933d7dc";
     domain = "prod.faultymuse.com";
     cores = 8;
     memory = 4 * 1024;

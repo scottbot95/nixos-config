@@ -35,6 +35,12 @@ in
     };
   };
 
+  security.acme.acceptTerms = true;
+  security.acme.defaults = {
+    email = "scott.techau+acme@gmail.com";
+    server = "https://ca.prod.faultymuse.com/acme/acme/directory";
+  };
+
   services.nginx = {
     enable = true;
 
@@ -46,7 +52,7 @@ in
 
     virtualHosts."${config.networking.fqdn}" = {
       forceSSL = true;
-      selfSigned = true;
+      enableACME = true;
 
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";

@@ -3,22 +3,15 @@ let
   otherNodes = builtins.removeAttrs nodes [ name ];
   mkProxy = ({ 
     name,
-    proto ? "http",
-    host ? "${proto}://${name}.prod.faultymuse.com",
-    port ? if proto == "https" then 443 else 80,
+    url ? "https://${name}.prod.faultymuse.com",
     proxyWebsockets ? true
   }: {
     forceSSL = true;
     enableACME = true;
 
-    # serverAliases = [ "${name}.lan.faultymuse.com" ];
-
     locations."/" = {
       inherit proxyWebsockets;
-      proxyPass = "${host}:${toString port}";
-      extraConfig = ''
-        proxy_ssl_verify off;
-      '';
+      proxyPass = url;
     };
     
   });
@@ -56,7 +49,10 @@ in
         prefixLength = 24;
       }];
     };
-    defaultGateway = "10.0.20.1";
+    defaultGateway = {
+      address = "10.0.20.1";
+      interface = "ens18";
+    };
     nameservers = [ "192.168.4.2" "10.0.5.2" ];
   };
 
@@ -107,14 +103,11 @@ in
 
     virtualHosts = lib.mkMerge [
       (mkProxies {
-        games.port = 8443;
-        games.host = "https://faultybox.prod.faultymuse.com";
-
-        nextcloud.proto = "https";
-
-        # teslamate = {};
-
-        vault.proto = "https";
+        games = {
+          url = "https://faultybox.prod.faultymuse.com";
+        };
+        # nextcloud = {};
+        vault = {};
       })
       {
         "_" = {

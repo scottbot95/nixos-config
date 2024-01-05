@@ -5,7 +5,7 @@
 	"key": "/var/lib/step-ca/secrets/intermediate_ca_key",
 	"insecureAddress": "",
 	"dnsNames": [
-		"ca.prod.faultymuse.com"
+		"ca.lan.faultymuse.com"
 	],
 	"logger": {
 		"format": "text"
@@ -17,8 +17,8 @@
 	},
 	"authority": {
 		"claims": {
-			"maxTLSCertDuration": "30d",
-			"defaultTLSCertDuration": "7d"
+			"maxTLSCertDuration": "720h",
+			"defaultTLSCertDuration": "168h"
 		},
 		"provisioners": [
 			{
@@ -26,7 +26,7 @@
 				"name": "acme",
 				"forceCN": true,
 				"caaIdentities": [
-					"ca.prod.faultymuse.com"
+					"ca.lan.faultymuse.com"
 				],
 				"challenges": [
 					"http-01",

@@ -49,7 +49,7 @@ with lib;
     security.acme.acceptTerms = true;
     security.acme.defaults = {
       email = "scott.techau+acme@gmail.com";
-      server = mkDefault "https://ca.prod.faultymuse.com/acme/acme/directory";
+      server = mkDefault "https://ca.lan.faultymuse.com/acme/acme/directory";
     };
 
     # Enable monitoring on VMs

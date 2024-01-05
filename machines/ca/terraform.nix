@@ -7,7 +7,7 @@ in {
     vmid = 210;
     clone = "nixos-23.11.20231202.933d7dc";
     onboot = true;
-    domain = "prod.faultymuse.com";
+    domain = "lan.faultymuse.com";
     cores = 4;
     memory = 4096;
     startup = "order=2";
@@ -16,7 +16,7 @@ in {
     network = [{
       model = "virtio";
       bridge = "vmbr0";
-      tag = 20;
+      tag = 5;
       firewall = false;
     }];
 

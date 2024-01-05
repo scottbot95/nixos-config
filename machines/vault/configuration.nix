@@ -34,12 +34,6 @@ in
     };
   };
 
-  security.acme.acceptTerms = true;
-  security.acme.defaults = {
-    email = "scott.techau+acme@gmail.com";
-    server = "https://ca.prod.faultymuse.com/acme/acme/directory";
-  };
-
   services.nginx = {
     enable = true;
 

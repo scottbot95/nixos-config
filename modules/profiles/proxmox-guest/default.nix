@@ -45,6 +45,13 @@ with lib;
     # Enable sending logs to loki by default
     services.promtail.enable = true;
 
+    # Configure ACME to use local ACME server by default
+    security.acme.acceptTerms = true;
+    security.acme.defaults = {
+      email = "scott.techau+acme@gmail.com";
+      server = mkDefault "https://ca.prod.faultymuse.com/acme/acme/directory";
+    };
+
     # Enable monitoring on VMs
     services.telegraf = mkIf (config.networking.hostName != "monitoring") {
       enable = true;

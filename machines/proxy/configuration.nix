@@ -42,6 +42,9 @@ in
   #   group = config.users.users.nginx.group;
   # };
 
+  # Override default from proxmox-guest to use Let's Encrypt for ACME
+  security.acme.defaults.server = null;
+
   networking = {
     interfaces.ens18 = {
       ipv4.addresses = [{

@@ -17,8 +17,8 @@
 	},
 	"authority": {
 		"claims": {
-			"maxTLSCertDuration": "8h",
-			"defaultTLSCertDuration": "2h"
+			"maxTLSCertDuration": "30d",
+			"defaultTLSCertDuration": "7d"
 		},
 		"provisioners": [
 			{

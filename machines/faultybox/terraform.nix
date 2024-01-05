@@ -10,6 +10,7 @@ in {
     cores = 8;
     memory = 4 * 1024;
     startup = "order=5";
+    deployment_user = "ops";
 
     network = [{
       model = "virtio";
@@ -24,9 +25,5 @@ in {
       size = "20G";
       discard = true;
     }];
-  };
-
-  module."${hostname}_deploy_nixos".keys = {
-    age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
   };
 }

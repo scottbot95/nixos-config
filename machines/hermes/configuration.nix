@@ -18,7 +18,6 @@ in
   sops.secrets."pawns/pass" = {};
   
   scott.sops.enable = true;
-  scott.sops.ageKeyFile = "/var/keys/age";
   scott.sops.envFiles.pawns = {
     vars = {
       PAWNS_EMAIL.secret = "pawns/email";

@@ -33,6 +33,5 @@ in {
 
   module."${vm_name}_deploy_nixos" = lib.mkIf enable {
     target_host = lib.mkForce "\${proxmox_vm_qemu.${vm_name}.ssh_host}";
-    keys.age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
   };
 }

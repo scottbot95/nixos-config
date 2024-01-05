@@ -15,7 +15,6 @@ in
   sops.secrets."yubico/secret" = {};
 
   scott.sops.enable = true;
-  scott.sops.ageKeyFile = "/var/keys/age";
   scott.sops.envFiles.vaultwarden = {
     vars = {
       YUBICO_CLIENT_ID.secret = "yubico/client_id";

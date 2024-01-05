@@ -11,7 +11,6 @@ in
   };
 
   scott.sops.enable = true;
-  scott.sops.ageKeyFile = "/var/keys/age";
 
   services.ethereum.erigon.holesky = {
     enable = true;

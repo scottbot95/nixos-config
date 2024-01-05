@@ -31,6 +31,5 @@ in {
 
   module."${hostname}_deploy_nixos" = {
     target_host = lib.mkForce "\${proxmox_vm_qemu.${hostname}.ssh_host}";
-    keys.age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
   };
 }

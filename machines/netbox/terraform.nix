@@ -27,8 +27,4 @@ in
       }
     ];
   };
-
-  module."${hostname}_deploy_nixos".keys = {
-    age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
-  };
 }

@@ -9,7 +9,6 @@
   # };
   
   scott.sops.enable = true;
-  scott.sops.ageKeyFile = "/var/keys/age";
   
   scott.jenkins = {
     enable = true;

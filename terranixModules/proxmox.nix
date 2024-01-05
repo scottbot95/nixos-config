@@ -10,7 +10,7 @@ in
   ];
 
   proxmox = {
-    show_deploy_output = lib.mkDefault false;
+    show_deploy_output = false;
     provider = {
       version = "2.9.14";
       endpoint = "https://pve.lan.faultymuse.com:8006/api2/json";
@@ -31,6 +31,9 @@ in
       os_type = "cloud-init";
       onboot = true;
       balloon = 1024; # minimal VM seems to take ~512 so give some extra
+      keys = {
+        age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
+      };
     };
 
     defaults.lxc = {

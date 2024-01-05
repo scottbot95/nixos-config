@@ -23,7 +23,6 @@ in
 
   sops.defaultSopsFile = ./secrets.yaml;
   scott.sops.enable = true;
-  scott.sops.ageKeyFile = "/var/keys/age";
 
   environment.systemPackages = [
     ethereum-nix.packages.${system}.lighthouse

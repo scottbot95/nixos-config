@@ -22,7 +22,6 @@ in
   sops.secrets.${github_confirmation_channel} = { };
 
   scott.sops.enable = true;
-  scott.sops.ageKeyFile = "/var/keys/age";
   scott.sops.envFiles.faultybot = {
     vars = {
       DISCORD__TOKEN.secret = discord_token_secret;

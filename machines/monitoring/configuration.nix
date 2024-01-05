@@ -37,9 +37,9 @@ in
     imports = [ ./terraform.nix ];
   };
 
-  nixpkgs.pkgs = import nixpkgs-unstable {
-    system = "x86_64-linux";
-  };
+  # nixpkgs.pkgs = import nixpkgs-unstable {
+  #   system = "x86_64-linux";
+  # };
 
   #prometheus config
   services.prometheus = {

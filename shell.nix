@@ -10,6 +10,6 @@ mkShell {
     buildInputs = [
       jq
       sops
-      terraform
+      opentofu
     ];
 }

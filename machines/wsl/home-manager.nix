@@ -33,17 +33,32 @@ in {
     };
 
     initExtra = ''
-      export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
-      if ! ss -a | grep -q "$SSH_AUTH_SOCK"; then
-        rm -f "$SSH_AUTH_SOCK"
-        wsl2_ssh_pageant_bin="$HOME/.ssh/wsl2-ssh-pageant.exe"
-        if test -x "$wsl2_ssh_pageant_bin"; then
-          (setsid nohup socat UNIX-LISTEN:"$SSH_AUTH_SOCK,fork" EXEC:"$wsl2_ssh_pageant_bin" >/dev/null 2>&1 &)
-        else
-          echo >&2 "WARNING: $wsl2_ssh_pageant_bin is not executable."
+      WIN_USER="scott"
+      SSH_DIR="''${HOME}/.ssh" #
+      CONFIG_PATH="C:/Users/''${WIN_USER}/AppData/Local/gnupg"
+      mkdir -p "''${SSH_DIR}"
+      wsl2_ssh_pageant_bin="''${SSH_DIR}/wsl2-ssh-pageant.exe"
+      ln -sf "/mnt/c/Users/''${WIN_USER}/.ssh/wsl2-ssh-pageant.exe" "''${wsl2_ssh_pageant_bin}"
+
+      listen_socket() {
+        sock_path="$1" && shift
+        fork_args="''${sock_path},fork"
+        exec_args="''${wsl2_ssh_pageant_bin} $@"
+
+
+      #  if ss -a | grep -q "''${sock_path}" && [[ ! -f "''${sock_path}" ]]; then
+      #       echo $(pgrep -f "''${sock_path}")
+      #       kill $(pgrep -f "''${sock_path}")
+      #  fi
+        if ! ps x | grep -v grep | grep -q "''${fork_args}"; then
+          rm -f "''${sock_path}"
+          (setsid nohup ${pkgs.socat}/bin/socat "UNIX-LISTEN:''${fork_args}" "EXEC:''${exec_args}" &>/dev/null &)
         fi
-        unset wsl2_ssh_pageant_bin
-      fi
+      }
+
+      # SSH
+      export SSH_AUTH_SOCK="''${SSH_DIR}/agent.sock"
+      listen_socket "''${SSH_AUTH_SOCK}"
     '';
   };
 
@@ -106,6 +121,7 @@ in {
 
     signing = {
       key = gpg_pub_key;
+      gpgPath = "gpg.exe"; # FIXME hack to use windows native GPG
       signByDefault = true;
     };
 

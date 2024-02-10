@@ -34,8 +34,8 @@
     faultybox.url = "github:scottbot95/faultybox";
     # faultybox.inputs.nixpkgs.follows = "nixpkgs";
 
-    # nix-minecraft.url = "github:Infinidoge/nix-minecraft";
-    nix-minecraft.url = "path:///home/scott/workplace/nix-minecraft";
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    # nix-minecraft.url = "path:///home/scott/workplace/nix-minecraft";
 
     steam-servers.url = "github:scottbot95/nix-steam-servers";
     # steam-servers.url = "path:///home/scott/workplace/nix-steam-servers";
@@ -48,6 +48,9 @@
     # terranix-proxmox.url = "path:///home/scott/workplace/terranix-proxmox";
     terranix-proxmox.inputs.nixpkgs.follows = "nixpkgs";
     terranix-proxmox.inputs.terranix.follows = "terranix";
+
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
+    nil.url = "github:oxalica/nil";
   };
 
   outputs =

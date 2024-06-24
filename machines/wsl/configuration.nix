@@ -21,6 +21,8 @@ in
     inherit system;
   };
 
+  nix.settings.auto-optimise-store = true;
+
   wsl.enable = true;
   wsl.defaultUser = "scott";
   wsl.extraBin = with pkgs; [

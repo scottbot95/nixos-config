@@ -74,6 +74,9 @@
     recommendedProxySettings = true;
     virtualHosts."${config.networking.hostName}.prod.faultymuse.com" = {
       http3 = true;
+      forceSSL = true;
+      enableACME = true;
+
       locations = {
         "/grafana" = {
           proxyPass = "http://127.0.0.1:3000";
@@ -87,7 +90,7 @@
     };
   };
   
-  networking.firewall.allowedTCPPorts = [ 80 ];
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
 
   # For some reason this isn't enabled by default when using defaultNetwork.dns_enabled
   # networking.firewall.interfaces.podman0.allowedUDPPorts = [ 53 ];

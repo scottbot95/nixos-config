@@ -148,8 +148,10 @@ with lib; {
       enable = true;
       package = pkgs.nginxQuic;
       recommendedProxySettings = true;
-      virtualHosts."${config.networking.hostName}" = {
+      virtualHosts."${config.networking.fqdn}" = {
         http3 = true;
+        forceSSL = true;
+        enableACME = true;
         listenAddresses = [ "0.0.0.0" ];
 
         locations."/static/" = {

@@ -1,4 +1,4 @@
-{ config, lib, ...}:
+{ pkgs, config, lib, ...}:
 let
   cfg = config.scott.technitium;
 in
@@ -29,7 +29,7 @@ with lib; {
       oci-containers.backend = "podman";
       oci-containers.containers = {
         technitium = {
-          image = "technitium/dns-server:11.5.3";
+          image = "technitium/dns-server:12.2.1";
           # doesnt' work for some reason :(
           # user = "technitium:technitium";
           autoStart = true;
@@ -56,11 +56,28 @@ with lib; {
     systemd.tmpfiles.rules = ["d ${cfg.home} 750 technitium technitium"];
 
     networking.nameservers = [
+      "192.168.4.2"
+      "10.0.5.2"
       "1.1.1.1"
       "1.0.0.1"
     ];
 
-    networking.firewall.allowedTCPPorts = [ 53 5380 53443 ];
+    services.nginx = {
+      enable = true;
+      package = pkgs.nginxQuic;
+      recommendedProxySettings = true;
+      recommendedOptimisation = true;
+      virtualHosts."${cfg.domain}" = {
+        forceSSL = true;
+        enableACME = true;
+
+        locations."/" = {
+          proxyPass = "https://127.0.0.1:53443";
+        };
+      };
+    };
+
+    networking.firewall.allowedTCPPorts = [ 53 80 443 ];
     networking.firewall.allowedUDPPorts = [ 53 ] ++ (if cfg.dhcp then [ 67 ] else []);
   };
 }

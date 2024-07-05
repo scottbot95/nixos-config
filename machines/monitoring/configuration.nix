@@ -196,14 +196,17 @@ in
     };
 
     virtualHosts.${config.services.grafana.settings.server.domain} = {
+      forceSSL = true;
+      enableACME = true;
+
       locations."/" = {
         proxyPass = "http://grafana";
         proxyWebsockets = true;
       };
-      listen = [{
-        addr = "0.0.0.0";
-        port = 80;
-      }];
+      # listen = [{
+      #   addr = "0.0.0.0";
+      #   port = 80;
+      # }];
     };
 
     virtualHosts.loki = {
@@ -237,8 +240,8 @@ in
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 80 8010 8020 8011 8125 ];
-  networking.firewall.allowedUDPPorts = [ 80 8089 ];
+  networking.firewall.allowedTCPPorts = [ 80 443 8010 8020 8011 8125 ];
+  networking.firewall.allowedUDPPorts = [ 8089 ];
 
   system.stateVersion = "23.05";
 }

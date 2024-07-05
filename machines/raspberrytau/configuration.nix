@@ -15,6 +15,7 @@
   imports = [
     nixos-hardware.nixosModules.raspberry-pi-4
     ../../modules/profiles/well-known-users
+    ../../modules/profiles/ca-certs
   ];
 
   users.users.root.openssh.authorizedKeys.keyFiles = [
@@ -34,6 +35,13 @@
       fsType = "ext4";
       options = [ "noatime" ];
     };
+  };
+
+  # Accept ACME ToS so we can get TLS cert for DNS managment site from local CA
+  security.acme.acceptTerms = true;
+  security.acme.defaults = {
+    email = "scott.techau+acme@gmail.com";
+    server = "https://ca.lan.faultymuse.com/acme/acme/directory";
   };
 
   networking = {

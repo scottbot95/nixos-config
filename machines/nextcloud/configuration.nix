@@ -36,7 +36,7 @@
 
   services.nginx.virtualHosts.${config.services.nextcloud.hostName} = {
     forceSSL = true;
-    selfSigned = true;
+    enableACME = true;
   };
  
   # services.vsftpd = {

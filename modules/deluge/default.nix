@@ -34,6 +34,9 @@ in
       recommendedGzipSettings = true;
 
       virtualHosts.${config.networking.fqdn} = {
+        forceSSL = true;
+        enableACME = true;
+
         locations."/" = {
           proxyPass = "http://localhost:8112";
           proxyWebsockets = true;
@@ -51,6 +54,7 @@ in
 
       allowedTCPPorts = [
         80
+        443
         config.services.deluge.config.daemon_port
       ];
     };

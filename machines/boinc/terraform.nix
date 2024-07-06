@@ -11,6 +11,7 @@ in {
     memory = 32 * 1024;
     balloon = 8 * 1024;
     startup = "order=5";
+    deployment_user = "ops";
 
     network = [{
       model = "virtio";

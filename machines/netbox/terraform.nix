@@ -10,6 +10,7 @@ in
     cores = 4;
     memory = 4096;
     startup = "order=4";
+    deployment_user = "ops";
 
     network = [{
       model = "virtio";

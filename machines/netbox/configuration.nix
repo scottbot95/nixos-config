@@ -1,6 +1,6 @@
-{ config, pkgs, lib, modulesPath, ... }: {
+{ config, pkgs, ... }: {
   imports = [
-    ../../modules/profiles/proxmox-guest
+    ../../modules/profiles/proxmox-guest/v2.nix
   ];
 
   terranix = {

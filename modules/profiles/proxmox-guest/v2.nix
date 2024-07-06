@@ -1,5 +1,4 @@
-{ lib, ... }: 
-with lib;
+{ ... }:
 {
   imports = [
     ./default.nix
@@ -18,6 +17,8 @@ with lib;
   };
 
   systemd.network.enable = true;
+
+  users.mutableUsers = false;
 
   # Disable login of root account
   users.users.root.hashedPassword = "!";

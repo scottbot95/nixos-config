@@ -10,7 +10,8 @@ in {
     cores = 8;
     memory = 8192;
     startup = "order=4";
-
+    deployment_user = "ops";
+    
     network = [{
       model = "virtio";
       bridge = "vmbr0";

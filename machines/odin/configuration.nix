@@ -3,7 +3,7 @@ let
 in
 {
   imports = [
-    ../../modules/profiles/proxmox-guest
+    ../../modules/profiles/proxmox-guest/v2.nix
     ../../modules/profiles/seedbox
   ];
 

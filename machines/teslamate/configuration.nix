@@ -1,7 +1,7 @@
 { config, pkgs, teslamate, ... }:
 {
   imports = [
-    ../../modules/profiles/proxmox-guest
+    ../../modules/profiles/proxmox-guest/v2.nix
     teslamate.nixosModules.default
   ];
 

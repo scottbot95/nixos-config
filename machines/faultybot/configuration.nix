@@ -8,7 +8,7 @@ in
 {
   imports = [
     faultybot.nixosModules.faultybot
-    ../../modules/profiles/proxmox-guest
+    ../../modules/profiles/proxmox-guest/v2.nix
   ];
 
   terranix = {

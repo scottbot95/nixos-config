@@ -10,11 +10,18 @@ in
 {
   services.grafana = {
     enable = true;
-    settings.server = {
-      domain = config.networking.fqdn;
-      http_port = 2342;
-      http_addr = "127.0.0.1";
-      root_url = "http://%(domain)s";
+    settings = {
+      database = {
+        type = "postgres";
+        host = "/run/postgresql";
+        user = "grafana";
+      };
+      server = {
+        domain = config.networking.fqdn;
+        http_port = 2342;
+        http_addr = "127.0.0.1";
+        root_url = "http://%(domain)s";
+      };
     };
 
     provision = {
@@ -31,20 +38,31 @@ in
         }
       ];
 
-      dashboards.settings.providers = [
-        {
-          name = "default";
-          folder = "homelab";
-          allowUiUpdates = true;
-          options.path = ./dashboards;
-        }
-        {
-          name = "lighthouse";
-          folder = "lighthouse";
-          allowUiUpdates = true;
-          options.path = "${lighthouse-metrics}/dashboards";
-        }
-      ];
+      # dashboards.settings.providers = [
+      #   {
+      #     name = "default";
+      #     folder = "homelab";
+      #     allowUiUpdates = true;
+      #     options.path = ./dashboards;
+      #   }
+      #   {
+      #     name = "lighthouse";
+      #     folder = "lighthouse";
+      #     allowUiUpdates = true;
+      #     options.path = "${lighthouse-metrics}/dashboards";
+      #   }
+      # ];
     };
+  };
+
+  # Grafana backend
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql_15;
+    ensureDatabases = [ "grafana" ];
+    ensureUsers = [{
+      name = "grafana";
+      ensureDBOwnership = true;
+    }];
   };
 }

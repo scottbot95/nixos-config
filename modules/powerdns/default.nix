@@ -117,7 +117,7 @@ with lib; {
         api=yes
         api-key=$API_KEY
 
-        slave=${if cfg.slave then "yes" else "no"}
+        secondary=${if cfg.slave then "yes" else "no"}
       '';
     };
 

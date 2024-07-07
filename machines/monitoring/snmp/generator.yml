@@ -1,3 +1,9 @@
+auths:
+  public_v1:
+    version: 1
+  public_v2:
+    version: 2
+
 modules:
 # APC/Schneider UPS Network Management Cards
 #
@@ -15,7 +21,6 @@ modules:
 # Guide: http://www.apc.com/salestools/ASTE-6Z5QEY/ASTE-6Z5QEY_R0_EN.pdf
 # Download site: http://www.apc.com/us/en/tools/download/index.cfm
   apcups:
-    version: 1
     walk:
       - sysUpTime
       - interfaces

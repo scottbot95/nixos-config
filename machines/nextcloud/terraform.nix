@@ -3,7 +3,7 @@ let
   hostname = "nextcloud";
 in {
   proxmox.qemu.${hostname} = {
-    enable = true;
+    enable = false;
     vmid = 503;
     domain = "prod.faultymuse.com";
     cores = 4;

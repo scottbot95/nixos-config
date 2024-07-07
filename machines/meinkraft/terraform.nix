@@ -5,7 +5,7 @@ in {
   proxmox.qemu.${hostname} = {
     enable = true;
     vmid = 600;
-    onboot = true;
+    onboot = false;
     domain = "prod.faultymuse.com";
     cores = 12;
     balloon = 12 * 1024;
@@ -27,4 +27,7 @@ in {
       discard = true;
     }];
   };
+
+  # Disable deploying to this VM
+  module."${hostname}_deploy_nixos" = lib.mkForce null;
 }

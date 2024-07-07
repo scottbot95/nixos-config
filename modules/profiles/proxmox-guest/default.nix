@@ -1,4 +1,4 @@
-{ config, options, lib, modulesPath, ...}:
+{ config, options, lib, modulesPath, pkgs, ...}:
 with lib;
 {
   imports = [
@@ -36,6 +36,11 @@ with lib;
     services.openssh = {
       enable = true;
     };
+
+    environment.systemPackages = [
+      # Needed by terraform-nixos
+      pkgs.jq
+    ];
 
     networking.domain = lib.mkDefault "lan.faultymuse.com";
 

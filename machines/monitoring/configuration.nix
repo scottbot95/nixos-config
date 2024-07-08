@@ -132,9 +132,6 @@ in
       limits_config = {
         reject_old_samples = true;
         reject_old_samples_max_age = "168h";
-
-        # TODO remove this after 2024-07-08
-        allow_structured_metadata = false;
       };
 
       table_manager = {

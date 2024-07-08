@@ -1,17 +1,21 @@
-{ config, pkgs, lib, ... }:
-let
-in
+{ config, lib, ... }:
 {
-  imports = [
-    ../../modules/profiles/proxmox-guest
-  ];
-
   sops.secrets."holesky/jwt" = {
     restartUnits = [ "erigon-holesky.service" "lighthouse-beacon-holesky.service" ];
   };
 
-  scott.sops.enable = true;
+  fileSystems."/var/lib/erigon-holesky/snapshots" = {
+    depends = [ "/mnt/cold-storage" ];
+    device = "/mnt/cold-storage/holesky/snapshots";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
 
+  # Don't auto start validator service but still create it
+  systemd.services.lighthouse-validator-holesky.wantedBy = lib.mkForce [];
+  
   services.ethereum.erigon.holesky = {
     enable = true;
     args = {

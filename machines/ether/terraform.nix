@@ -1,15 +1,15 @@
-{ config, lib, ... }:
+{ ... }:
 let
   hostname = "ether";
 in {
   proxmox.qemu.${hostname} = {
     enable = true;
     vmid = 510;
-    onboot = false;
+    onboot = true;
     domain = "prod.faultymuse.com";
-    cores = 12;
+    cores = 16;
     balloon = 16 * 1024;
-    memory = 96 * 1024;
+    memory = 64 * 1024;
     startup = "order=1"; # Run this bad boy as much as possible
 
     network = [{
@@ -19,14 +19,19 @@ in {
       firewall = false;
     }];
 
-    disk = [{
-      type = "virtio";
-      storage = "nvme";
-      size = "4096G";
-      discard = true;
-    }];
+    disk = [
+      {
+        type = "virtio";
+        storage = "nvme";
+        size = "4096G";
+        discard = true;
+      }
+      {
+        type = "virtio";
+        storage = "LTS";
+        size = "2048G";
+        discard = true;
+      }
+    ];
   };
-
-  # Disable deploying to this VM
-  module."${hostname}_deploy_nixos" = lib.mkForce null;
 }

@@ -1,16 +1,17 @@
-{ config, pkgs, lib, ... }:
-let
-in
+{ config, ... }:
 {
-  imports = [
-    ../../modules/profiles/proxmox-guest
-  ];
-
   sops.secrets."mainnet/jwt" = {
     restartUnits = [ "erigon-mainnet.service" "lighthouse-beacon-mainnet.service" ];
   };
 
-  scott.sops.enable = true;
+  fileSystems."/var/lib/erigon-mainnet/snapshots" = {
+    depends = [ "/mnt/cold-storage" ];
+    device = "/mnt/cold-storage/mainnet/snapshots";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
 
   services.ethereum.erigon.mainnet = {
     enable = true;

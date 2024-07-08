@@ -1,10 +1,4 @@
-{ config, pkgs, lib, ethereum-nix, ... }:
-let
-  system = pkgs.system;
-  unitNames = serviceType: (map 
-      (name: "${serviceType}-${name}.service")
-      (builtins.attrNames config.services.ethereum.${serviceType}));
-in
+{ pkgs, ethereum-nix, ... }:
 {
   imports = [
     ../../modules/profiles/proxmox-guest
@@ -12,6 +6,10 @@ in
     ./mainnet.nix
     ethereum-nix.nixosModules.default
   ];
+
+  fileSystems."/mnt/cold-storage" = {
+    device = "/dev/vdb1";
+  };
 
   nixpkgs.overlays = [
     ethereum-nix.overlays.default
@@ -25,8 +23,8 @@ in
   scott.sops.enable = true;
 
   environment.systemPackages = [
-    ethereum-nix.packages.${system}.lighthouse
-    ethereum-nix.packages.${system}.erigon
+    pkgs.lighthouse
+    pkgs.erigon
   ];
 
   networking.domain = "prod.faultymuse.com";

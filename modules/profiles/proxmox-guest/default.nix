@@ -11,6 +11,8 @@ with lib;
     nixpkgs.system = "x86_64-linux"; # FIXME shouldn't need this but terranix proxmox module currently requires it
     nixpkgs.hostPlatform = lib.systems.examples.gnu64;
 
+    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
     fileSystems."/" = {
       device = "/dev/disk/by-label/nixos";
       autoResize = true;

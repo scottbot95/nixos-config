@@ -6,7 +6,7 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-parts.url = "github:hercules-ci/flake-parts";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
@@ -57,93 +57,74 @@
   };
 
   outputs =
-    { self
-    , nixpkgs
-    , home-manager
-    , nixos-hardware
-    , sops-nix
-    , terranix
-    , terranix-proxmox
-    , ...
+    {
+      self,
+      nixpkgs,
+      flake-parts,
+      ...
     }@inputs:
-    let
-      subDirs = path:
-        let
-          contents = builtins.readDir path;
-        in
-        builtins.filter (p: contents.${p} == "directory") (builtins.attrNames contents);
-      machines = import ./machines inputs;
-    in
-    nixpkgs.lib.recursiveUpdate
-      {
-        inherit (machines) nixosConfigurations vms;
-
-        # Output all modules in ./modules to flake. Module must be in individual
-        # subdirectories and contain a default.nix which contains a standard NixOS module 
-        nixosModules =
-          let
-            validModules = builtins.filter
-              (d: builtins.pathExists ./modules/${d}/default.nix)
-              (subDirs ./modules);
-          in
-          (builtins.listToAttrs (builtins.map (m: { name = m; value = import ./modules/${m}; }) validModules));
-
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        ./packages
+        ./modules
+        ./machines
+      ];
+      flake = {
         packages.x86_64-linux = {
           pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
             system = "x86_64-linux";
-            modules = [
-              ./systems/pve/minimal-installer.nix
-            ];
+            modules = [ ./systems/pve/minimal-installer.nix ];
             format = "install-iso";
           };
         };
-      }
-      (inputs.flake-utils.lib.eachDefaultSystem
-        (system:
-        let
-          pkgs = import nixpkgs {
-            inherit system;
-          };
-          sops = "${pkgs.sops}/bin/sops";
-          terraform = "${pkgs.opentofu}/bin/tofu";
-          terranixApp =
-            { command
-            , name ? command
-            , config ? self.packages.${system}.terraformConfig
-            ,
-            }: {
-              type = "app";
-              program = toString (pkgs.writers.writeBash name ''
-                set -e
-                if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
-                cp ${config} config.tf.json 
-
-                export PATH=${pkgs.jq}/bin:$PATH
-                export TF_TOKEN_app_terraform_io=$(${sops} --extract '["tf_token"]' -d secrets/homelab.yaml)
-
-                ${terraform} init 
-                ${terraform} ${command} "$@"
-              '');
-            };
-        in
+      };
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      perSystem =
+        { self', pkgs, ... }:
         {
           devShells.default = import ./shell.nix {
             inherit pkgs;
             flake = self;
           };
 
-          # nix run ".#apply"
-          apps.apply = terranixApp { command = "apply"; };
-          # nix run ".#destroy"
-          apps.destroy = terranixApp { command = "destroy"; };
-          # nix run ".#plan"
-          apps.plan = terranixApp { command = "plan"; };
+          apps =
+            let
+              sops = "${pkgs.sops}/bin/sops";
+              terraform = "${pkgs.opentofu}/bin/tofu";
+              terranixApp =
+                {
+                  command,
+                  name ? command,
+                  config ? self'.packages.terraformConfig,
+                }:
+                {
+                  type = "app";
+                  program = toString (
+                    pkgs.writers.writeBash name ''
+                      set -e
+                      if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
+                      cp ${config} config.tf.json 
 
-          packages =
-            (builtins.removeAttrs
-              (pkgs.callPackage (import ./packages) { inherit self inputs; })
-              [ "override" "overrideDerivation" ]);
-        }
-        )
-      );
+                      export PATH=${pkgs.jq}/bin:$PATH
+                      export TF_TOKEN_app_terraform_io=$(${sops} --extract '["tf_token"]' -d secrets/homelab.yaml)
+
+                      ${terraform} init 
+                      ${terraform} ${command} "$@"
+                    ''
+                  );
+                };
+            in
+            {
+              # nix run ".#apply"
+              apply = terranixApp { command = "apply"; };
+              # nix run ".#destroy"
+              destroy = terranixApp { command = "destroy"; };
+              # nix run ".#plan"
+              plan = terranixApp { command = "plan"; };
+            };
+        };
+    };
 }

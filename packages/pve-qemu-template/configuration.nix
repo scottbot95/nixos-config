@@ -1,6 +1,5 @@
-{ config, lib, pkgs, modulesPath, ...}:
-let
-in {
+{ ...}:
+{
   imports = [ 
     ../../modules/profiles/proxmox-guest/v2.nix
   ];
@@ -55,5 +54,5 @@ in {
     };
   };
 
-  system.stateVersion = "23.11";
+  system.stateVersion = "24.05";
 }

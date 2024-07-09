@@ -7,6 +7,7 @@ in {
     vmid = 510;
     onboot = true;
     domain = "prod.faultymuse.com";
+    clone = "nixos-24.05.20240704.c0d0be0";
     cores = 16;
     balloon = 16 * 1024;
     memory = 64 * 1024;
@@ -23,13 +24,7 @@ in {
       {
         type = "virtio";
         storage = "nvme";
-        size = "4096G";
-        discard = true;
-      }
-      {
-        type = "virtio";
-        storage = "LTS";
-        size = "2048G";
+        size = "20G";
         discard = true;
       }
     ];

@@ -1,14 +1,17 @@
 { pkgs, ethereum-nix, ... }:
 {
   imports = [
-    ../../modules/profiles/proxmox-guest
+    ../../modules/profiles/proxmox-guest/v2.nix
     ./holesky.nix
     ./mainnet.nix
     ethereum-nix.nixosModules.default
   ];
 
+  fileSystems."/mnt/hot-storage" = {
+    device = "/dev/disk/by-label/hot-storage";
+  };
   fileSystems."/mnt/cold-storage" = {
-    device = "/dev/vdb1";
+    device = "/dev/disk/by-label/cold-storage";
   };
 
   nixpkgs.overlays = [

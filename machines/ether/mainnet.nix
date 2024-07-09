@@ -4,9 +4,25 @@
     restartUnits = [ "erigon-mainnet.service" "lighthouse-beacon-mainnet.service" ];
   };
 
-  fileSystems."/var/lib/erigon-mainnet/snapshots" = {
-    depends = [ "/mnt/cold-storage" ];
+    fileSystems."/var/lib/private/erigon-mainnet" = {
+    device = "/mnt/hot-storage/erigon-mainnet";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
+
+  fileSystems."/var/lib/private/erigon-mainnet/snapshots" = {
+    depends = [ "/mnt/cold-storage" "/var/lib/private/erigon-mainnet" ];
     device = "/mnt/cold-storage/mainnet/snapshots";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
+
+  fileSystems."/var/lib/private/lighthouse-mainnet" = {
+    device = "/mnt/hot-storage/lighthouse-mainnet";
     fsType = "none";
     options = [
       "bind"

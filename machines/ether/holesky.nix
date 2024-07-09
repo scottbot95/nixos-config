@@ -4,9 +4,25 @@
     restartUnits = [ "erigon-holesky.service" "lighthouse-beacon-holesky.service" ];
   };
 
-  fileSystems."/var/lib/erigon-holesky/snapshots" = {
-    depends = [ "/mnt/cold-storage" ];
+  fileSystems."/var/lib/private/erigon-holesky" = {
+    device = "/mnt/hot-storage/erigon-holesky";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
+
+  fileSystems."/var/lib/private/erigon-holesky/snapshots" = {
+    depends = [ "/mnt/cold-storage" "/var/lib/private/erigon-holesky" ];
     device = "/mnt/cold-storage/holesky/snapshots";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
+
+  fileSystems."/var/lib/private/lighthouse-holesky" = {
+    device = "/mnt/hot-storage/lighthouse-holesky";
     fsType = "none";
     options = [
       "bind"

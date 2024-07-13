@@ -27,10 +27,10 @@
 
   environment.systemPackages = [
     pkgs.lighthouse
-    pkgs.erigon
+    pkgs.reth
   ];
 
   networking.domain = "prod.faultymuse.com";
 
-  system.stateVersion = "23.05";
+  system.stateVersion = "24.05";
 }

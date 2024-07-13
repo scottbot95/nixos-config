@@ -23,8 +23,8 @@
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    ethereum-nix.url = "github:nix-community/ethereum.nix";
-    # ethereum-nix.url = "github:scottbot95/ethereum.nix/lighthouse-service";
+    # ethereum-nix.url = "github:nix-community/ethereum.nix";
+    ethereum-nix.url = "github:scottbot95/ethereum.nix";
     # ethereum-nix.url = "path:///home/scott/workplace/ethereum.nix";
     # ethereum-nix.inputs.nixpkgs.follows = "nixpkgs";
 

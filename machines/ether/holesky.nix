@@ -1,20 +1,11 @@
-{ config, lib, ... }:
+{ config, ... }:
 {
   sops.secrets."holesky/jwt" = {
-    restartUnits = [ "erigon-holesky.service" "lighthouse-beacon-holesky.service" ];
+    restartUnits = [ "reth-holesky.service" "lighthouse-beacon-holesky.service" ];
   };
 
-  fileSystems."/var/lib/private/erigon-holesky" = {
-    device = "/mnt/hot-storage/erigon-holesky";
-    fsType = "none";
-    options = [
-      "bind"
-    ];
-  };
-
-  fileSystems."/var/lib/private/erigon-holesky/snapshots" = {
-    depends = [ "/mnt/cold-storage" "/var/lib/private/erigon-holesky" ];
-    device = "/mnt/cold-storage/holesky/snapshots";
+  fileSystems."/var/lib/private/reth-holesky" = {
+    device = "/mnt/hot-storage/reth-holesky";
     fsType = "none";
     options = [
       "bind"
@@ -29,40 +20,37 @@
     ];
   };
 
-  # Don't auto start validator service but still create it
-  systemd.services.lighthouse-validator-holesky.wantedBy = lib.mkForce [];
-  
-  services.ethereum.erigon.holesky = {
+  services.ethereum.reth.holesky = {
     enable = true;
     args = {
-      snapshots = false;
-      port = 40404;
       chain = "holesky";
+      port = 40404;
+      full = true;
       http = {
+        enable = true;
         port = 8645;
-        vhosts = [ config.networking.fqdn ];
         api = [ "net" "web3" "eth" ];
       };
-      authrpc.jwtsecret = "%d/execution-jwt";
-      torrent.port = 42169;
-      authrpc.vhosts = ["*"];  
-      authrpc.port = 8651;
-      metrics.port = 6061;
-      private.api.addr = "127.0.0.1:9190";
-      ws.enable = true;
+      authrpc = {
+        port = 8651;
+        jwtsecret = config.sops.secrets."holesky/jwt".path;
+      };
+      metrics = {
+        enable = true;
+        addr = "0.0.0.0";
+        port = 6062;
+      };
+      log.stdout.filter = "info";
     };
     extraArgs = [
-      "--nat" "none"
+      "--ipcdisable"
+      "--discovery.port=40404"
     ];
-  };
-
-  systemd.services.erigon-holesky.serviceConfig = {
-    LoadCredential = ["execution-jwt:${config.sops.secrets."holesky/jwt".path}"];
   };
 
   services.ethereum.lighthouse-beacon.holesky = {
     enable = true;
-    openFirewall = true;
+    # openFirewall = true;
     args = {
       discovery-port = 9100;
       execution-endpoint = "http://127.0.0.1:8651";
@@ -82,7 +70,7 @@
 
   services.ethereum.lighthouse-validator.holesky = {
     enable = true;
-    openFirewall = true;
+    # openFirewall = true;
     args = {
       suggested-fee-recipient = "0x8cD3E0e42C16CaeDA365C8089D875163b32313d1";
       # http.enable = true;
@@ -95,4 +83,16 @@
     #   "--http-allow-origin" "*"
     # ];
   };
+
+  networking.firewall.allowedTCPPorts = [
+    config.services.ethereum.reth.holesky.args.metrics.port
+    9100
+    40404
+  ];
+
+  networking.firewall.allowedUDPPorts = [
+    9100
+    9101
+    40404
+  ];
 }

@@ -20,13 +20,12 @@ in {
       firewall = false;
     }];
 
-    disk = [
-      {
-        type = "virtio";
-        storage = "nvme";
-        size = "20G";
-        discard = true;
-      }
-    ];
+    scsihw = "virtio-scsi-single";
+    disk = [{
+      type = "virtio";
+      storage = "nvme";
+      size = "20G";
+      discard = true;
+    }];
   };
 }

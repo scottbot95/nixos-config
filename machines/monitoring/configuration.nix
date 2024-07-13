@@ -57,6 +57,15 @@ in
           ];
         }];
       }
+      {
+        job_name = "reth";
+        static_configs = [{
+          targets = [ 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.reth.holesky.args.metrics.port}"
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.reth.mainnet.args.metrics.port}"
+          ];
+        }];
+      }
     ];
   };
 

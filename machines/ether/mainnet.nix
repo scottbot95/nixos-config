@@ -1,20 +1,11 @@
 { config, ... }:
 {
   sops.secrets."mainnet/jwt" = {
-    restartUnits = [ "erigon-mainnet.service" "lighthouse-beacon-mainnet.service" ];
+    restartUnits = [ "reth-mainnet.service" "lighthouse-beacon-mainnet.service" ];
   };
 
-    fileSystems."/var/lib/private/erigon-mainnet" = {
-    device = "/mnt/hot-storage/erigon-mainnet";
-    fsType = "none";
-    options = [
-      "bind"
-    ];
-  };
-
-  fileSystems."/var/lib/private/erigon-mainnet/snapshots" = {
-    depends = [ "/mnt/cold-storage" "/var/lib/private/erigon-mainnet" ];
-    device = "/mnt/cold-storage/mainnet/snapshots";
+  fileSystems."/var/lib/private/reth-mainnet" = {
+    device = "/mnt/hot-storage/reth-mainnet";
     fsType = "none";
     options = [
       "bind"
@@ -29,27 +20,27 @@
     ];
   };
 
-  services.ethereum.erigon.mainnet = {
+  services.ethereum.reth.mainnet = {
     enable = true;
     args = {
       chain = "mainnet";
+      full = true;
       http = {
-        vhosts = [ config.networking.fqdn ];
+        enable = true;
         api = [ "net" "web3" "eth" ];
       };
-      authrpc.jwtsecret = "%d/execution-jwt";
-      # authrpc.vhosts = ["*"];  
-      ws.enable = true;
+      authrpc = {
+        jwtsecret = config.sops.secrets."mainnet/jwt".path;
+      };
+      metrics = {
+        enable = true;
+        addr = "0.0.0.0";
+      };
+      log.stdout.filter = "info";
     };
     extraArgs = [
-      "--nat=none"
-      "--torrent.conns.perfile=25"
-      "--torrent.download.rate=500mb"
+      "--ipcdisable"
     ];
-  };
-
-  systemd.services.erigon-mainnet.serviceConfig = {
-    LoadCredential = ["execution-jwt:${config.sops.secrets."mainnet/jwt".path}"];
   };
 
   services.ethereum.lighthouse-beacon.mainnet = {
@@ -63,7 +54,7 @@
       genesis-state-url = "https://beaconstate-mainnet.chainsafe.io";
     };
     extraArgs = [
-      "--gui"
+      # "--gui"
     ];
   };
 
@@ -72,7 +63,7 @@
     openFirewall = true;
     args = {
       suggested-fee-recipient = "0x8cD3E0e42C16CaeDA365C8089D875163b32313d1";
-      http.enable = true;
+      # http.enable = true;
       # http.address = "0.0.0.0";
     };
     # extraArgs = [
@@ -80,4 +71,16 @@
     #   "--http-allow-origin" "*"
     # ];
   };
+
+  networking.firewall.allowedTCPPorts = [
+    config.services.ethereum.reth.mainnet.args.metrics.port
+    9000
+    30303
+  ];
+
+  networking.firewall.allowedUDPPorts = [
+    9000
+    9001
+    30303
+  ];
 }

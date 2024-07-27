@@ -55,6 +55,7 @@
     };
     extraArgs = [
       # "--gui"
+      "--disable-deposit-contract-sync"
     ];
   };
 

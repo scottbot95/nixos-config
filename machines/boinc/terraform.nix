@@ -20,11 +20,14 @@ in {
       firewall = false;
     }];
 
+    scsihw = "virtio-scsi-single";
     disk = [{
-      type = "virtio";
+      type = "scsi";
       storage = "nvme";
       size = "50G";
       discard = true;
+      iothread = true;
+      ssd = true;
     }];
   };
 }

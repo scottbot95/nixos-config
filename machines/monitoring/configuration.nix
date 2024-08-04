@@ -49,22 +49,35 @@ in
     scrapeConfigs = scrapeConfigs ++ [
       {
         job_name = "ether.prod.faultymuse.com";
+        scrape_interval = "5s";
         static_configs = [{
           targets = [ 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-validator.holesky.args.metrics.port}" 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.holesky.args.metrics.port}" 
+            # "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-validator.gnosis.args.metrics.port}" 
+            # "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.gnosis.args.metrics.port}" 
+            "ether.prod.faultymuse.com:5054" 
             # "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.mainnet.args.metrics.port}" 
           ];
         }];
       }
+      # {
+      #   job_name = "reth";
+      #   static_configs = [{
+      #     targets = [ 
+      #       "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.reth.holesky.args.metrics.port}"
+      #       "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.reth.mainnet.args.metrics.port}"
+      #     ];
+      #   }];
+      # }
       {
-        job_name = "reth";
+        job_name = "erigon";
+        scrape_interval = "10s";
+        scrape_timeout = "3s";
         static_configs = [{
-          targets = [ 
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.reth.holesky.args.metrics.port}"
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.reth.mainnet.args.metrics.port}"
+          targets = [
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.erigon.gnosis.args.metrics.port}" 
           ];
         }];
+        metrics_path = "/debug/metrics/prometheus";
       }
     ];
   };

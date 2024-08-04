@@ -1,7 +1,20 @@
-{ config, ... }:
+{ config, pkgs, ... }:
+let
+  eth2-client-metrics-exporter = pkgs.buildGoModule rec {
+    pname = "eth2-client-metrics-exporter";
+    version = "e54e649b866786428baf2f05e282e4175b372ff0";
+    src = pkgs.fetchFromGitHub {
+      owner = "gobitfly";
+      repo = pname;
+      rev = version;
+      hash = "sha256-+kl+Rwul4juefKJITHGwwSCQ+IVBVbmdLoTf1SjZ4b8=";
+    };
+    vendorHash = "sha256-o3Bn2CTHI6EZ1MUAhPAeua9q0cmCcWUjuS9sOnU20gY=";
+  };
+in
 {
   sops.secrets."gnosis/jwt" = {
-    restartUnits = [ "erigon-gnosis.service" "lighthouse-beacon-gnosis.service" ];
+    restartUnits = [ "erigon-gnosis.service" "nimbus-beacon-gnosis.service" ];
   };
 
   fileSystems."/var/lib/private/erigon-gnosis" = {
@@ -12,8 +25,8 @@
     ];
   };
 
-  fileSystems."/var/lib/private/lighthouse-gnosis" = {
-    device = "/mnt/hot-storage/lighthouse-gnosis";
+  fileSystems."/var/lib/private/nimbus-beacon-gnosis" = {
+    device = "/mnt/hot-storage/nimbus-beacon-gnosis";
     fsType = "none";
     options = [
       "bind"
@@ -54,52 +67,57 @@
     LoadCredential = ["execution-jwt:${config.sops.secrets."gnosis/jwt".path}"];
   };
 
-  services.ethereum.lighthouse-beacon.gnosis = {
+  services.ethereum.nimbus-beacon.gnosis = {
     enable = true;
-    # openFirewall = true;
+    openFirewall = true;
     args = {
-      discovery-port = 9200;
-      execution-endpoint = "http://127.0.0.1:8751";
-      execution-jwt = config.sops.secrets."gnosis/jwt".path;
-      http.address = "0.0.0.0";
-      http.port = 5252;
+      network = "gnosis";
+      tcp-port = 9200;
+      udp-port = 9200;
+
+      nat = "none";
+      enr-auto-update = true;
+
+      el = ["http://127.0.0.1:8751"];
+
+      jwt-secret = config.sops.secrets."gnosis/jwt".path;
+
+      trusted-node-url = "https://checkpoint.gnosischain.com";
+      light-client-data.import-mode = "full";
+
+      metrics.enable = true;
       metrics.address = "0.0.0.0";
-      metrics.port = 5254;
-      checkpoint-sync-url = "https://checkpoint.gnosischain.com";
-      genesis-state-url = "https://checkpoint.gnosischain.com";
     };
     extraArgs = [
-      "--gui"
-      "--port" "9200"
+      "--non-interactive"
+      "--suggested-fee-recipient=0x5610b291236E7cc44D9A1e4f051FA52506444c56"
     ];
   };
 
-  services.ethereum.lighthouse-validator.gnosis = {
-    enable = true;
-    # openFirewall = true;
-    args = {
-      suggested-fee-recipient = "0x5610b291236E7cc44D9A1e4f051FA52506444c56";
-      # http.enable = true;
-      http.port = 5262;
-      metrics.port = 5264;
-      # http.address = "0.0.0.0";
+  systemd.services.nimbus-beacon-gnosis = {
+    serviceConfig = {
+      MemoryDenyWriteExecute = false;
     };
-    # extraArgs = [
-    #   "--unencrypted-http-transport"
-    #   "--http-allow-origin" "*"
-    # ];
+  };
+
+  systemd.services.nimbus-exporter-gnosis = {
+    wantedBy = ["multi-user.target"];
+    after = ["nimbus-beacon-gnosis.service"];
+    script = ''
+      ${eth2-client-metrics-exporter}/bin/eth2-client-metrics-exporter \
+        --server.address='https://beaconcha.in/api/v1/client/metrics?apikey=OHJ1ekQwYjdTMVpuUlFYd1lCMW43bjI2RFNheA' \
+        --beaconnode.type=nimbus \
+        --beaconnode.address=http://localhost:${toString config.services.ethereum.nimbus-beacon.gnosis.args.metrics.port}/metrics \
+    '';
   };
 
   networking.firewall.allowedTCPPorts = [
     config.services.ethereum.erigon.gnosis.args.port
     config.services.ethereum.erigon.gnosis.args.metrics.port
     config.services.ethereum.erigon.gnosis.args.torrent.port
-    config.services.ethereum.lighthouse-beacon.gnosis.args.discovery-port
   ];
 
   networking.firewall.allowedUDPPorts = [
-    config.services.ethereum.lighthouse-beacon.gnosis.args.discovery-port
-    (config.services.ethereum.lighthouse-beacon.gnosis.args.discovery-port + 1)
     config.services.ethereum.erigon.gnosis.args.port
   ];
 }

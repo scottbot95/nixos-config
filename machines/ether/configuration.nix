@@ -2,8 +2,8 @@
 {
   imports = [
     ../../modules/profiles/proxmox-guest/v2.nix
-    ./holesky.nix
-    ./mainnet.nix
+    # ./holesky.nix
+    # ./mainnet.nix
     ./gnosis.nix
     ethereum-nix.nixosModules.default
   ];
@@ -20,6 +20,9 @@
     (final: prev: {
       lighthouse = prev.lighthouse.overrideAttrs (_: prevAttrs: {
         cargoBuildFeatures = prevAttrs.cargoBuildFeatures ++ [ "gnosis" "jemalloc" ];
+      });
+      nimbus = prev.nimbus.overrideAttrs (_: prevAttrs: {
+        NIMFLAGS = "${prevAttrs.NIMFLAGS} -d:gnosisChainBinary -d:const_preset=gnosis";
       });
     })
   ];

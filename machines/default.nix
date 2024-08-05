@@ -57,11 +57,11 @@ in
           '';
         };
         machinePkgs = mapAttrs' (name: pkg: {
-          name = "machines-${name}";
+          inherit name;
           value = pkg;
         }) toplevels;
       in {
-        machines-all = buildAll;
-      } // machinePkgs;
+        machines = buildAll // machinePkgs;
+      };
   };
 }

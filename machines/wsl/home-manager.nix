@@ -3,6 +3,7 @@ let
   gpg_pub_key = "A954416D9ADA8144";
 in {
   home.packages = with pkgs; [
+    direnv
     git
     htop
     vim

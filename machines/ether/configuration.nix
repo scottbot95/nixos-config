@@ -36,7 +36,8 @@
 
   environment.systemPackages = [
     pkgs.lighthouse
-    pkgs.reth
+    # pkgs.reth
+    pkgs.nimbus
   ];
 
   networking.domain = "prod.faultymuse.com";

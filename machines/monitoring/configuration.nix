@@ -16,6 +16,16 @@
   #   system = "x86_64-linux";
   # };
 
+  sops.defaultSopsFile = ./secrets.yaml;
+  sops.secrets."unpoller/pass" = {
+    owner = "unifi-poller";
+    group = "unifi-poller";
+    restartUnits = [ "unifi-poller.nix" ];
+  };
+
+  scott.sops.enable = true;
+  scott.sops.ageKeyFile = "/var/keys/age";
+
   # loki
   services.loki = {
     enable = true;

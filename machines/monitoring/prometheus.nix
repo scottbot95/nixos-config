@@ -1,4 +1,4 @@
-{ lib, self, ... }:
+{ config, lib, self, ... }:
 with lib;
 let
   skippedExporters = [ "unifi-poller" ]; # Skip exporters to avoid warnings
@@ -72,6 +72,33 @@ in
         }];
         metrics_path = "/debug/metrics/prometheus";
       }
+      {
+        job_name = "unpoller";
+        scrape_interval = "30s";
+        scrape_timeout = "3s";
+        static_configs = [{
+          targets = [
+            config.services.unpoller.prometheus.http_listen
+          ];
+        }];
+      }
     ];
+  };
+
+  services.unpoller = {
+    enable = true;
+    unifi.defaults = {
+      url = "https://192.168.4.1";
+      verify_ssl = false; # TODO probably should use a known cert?
+      user = "unifipoller";
+      pass = "/run/secrets/unpoller/pass";
+      save_sites = true;
+      save_ids = false;
+      save_events = false;
+      save_alarms = false;
+      save_dpi = false;
+    };
+    prometheus.http_listen = "127.0.0.1:9130";
+    influxdb.disable = true;
   };
 }

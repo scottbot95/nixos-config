@@ -5,6 +5,7 @@
 , home-manager
 , vscode-server
 , nil
+, nixpkgs-unstable
 , ... }:
 let 
   system = "x86_64-linux";
@@ -40,8 +41,18 @@ in
   programs.nix-ld.enable = true;
   services.vscode-server.enable = true;
   environment.systemPackages = with pkgs;[
+    # Rust
+    clang
+    llvmPackages_12.bintools
+    rustup
+    openssl
+      
+    # Misc
+
+    nodejs_22
     wget
     nil.packages.${system}.nil
+    nixpkgs-unstable.legacyPackages.${system}.fly
   ];
 
   users.users.scott = {
@@ -59,6 +70,55 @@ in
   home-manager.users.scott = import ./home-manager.nix;
 
   networking.hostName = "nixos";
+
+  services.postgresql = {
+    enable = false;
+    initialScript = pkgs.writeText "init-concourse-db" ''
+      CREATE USER "concourse";
+      CREATE DATABASE "atc" OWNER "concourse";
+    '';
+  };
+
+  services.concourse-ci = {
+    web = {
+      enable = false;
+      args = {
+        session.signing-key = "/home/scott/workplace/concourse-test/session_signing_key";
+        tsa.host-key = "/home/scott/workplace/concourse-test/tsa_host_key";
+        tsa.authorized-keys = "/run/concourse/worker_key.pub";
+        postgres.socket = "/run/postgresql";
+        add-local-user = "admin:admin";
+        main-team-local-user = "admin";
+        external-url = "http://localhost:8080";
+      };
+    };
+    worker = {
+      enable = false;
+      args = {
+        tsa.worker-private-key = "/home/scott/workplace/concourse-test/worker_key";
+        tsa.public-key = "/run/concourse/tsa_host_key.pub";
+      };
+    };
+  };
+
+  environment.variables = {
+    # https://github.com/rust-lang/rust-bindgen#environment-variables
+    LIBCLANG_PATH = pkgs.lib.makeLibraryPath [ pkgs.llvmPackages_latest.libclang.lib ];
+
+    # Add glibc, clang, glib, and other headers to bindgen search path
+    BINDGEN_EXTRA_CLANG_ARGS =
+      # Includes normal include path
+      (builtins.map (a: ''-I"${a}/include"'') [
+        # add dev libraries here (e.g. pkgs.libvmi.dev)
+        pkgs.glibc.dev
+      ])
+      # Includes with special directory paths
+      ++ [
+        ''-I"${pkgs.llvmPackages_latest.libclang.lib}/lib/clang/${pkgs.llvmPackages_latest.libclang.version}/include"''
+        ''-I"${pkgs.glib.dev}/include/glib-2.0"''
+        ''-I${pkgs.glib.out}/lib/glib-2.0/include/''
+      ];
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

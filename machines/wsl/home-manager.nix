@@ -2,6 +2,11 @@
 let 
   gpg_pub_key = "A954416D9ADA8144";
 in {
+  home.sessionPath = [
+      "\${CARGO_HOME:-$HOME/.cargo}/bin"
+      "\${RUSTUP_HOME:-$HOME/.rustup}/toolchains/$RUSTC_VERSION-x86_64-unknown-linux-gnu/bin"
+  ];
+
   home.packages = with pkgs; [
     direnv
     git

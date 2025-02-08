@@ -13,6 +13,7 @@ in {
     memory = 64 * 1024;
     startup = "order=1"; # Run this bad boy as much as possible
 
+    ipconfig0 = "ip=dhcp";
     network = [{
       model = "virtio";
       bridge = "vmbr0";
@@ -21,11 +22,29 @@ in {
     }];
 
     scsihw = "virtio-scsi-single";
-    disk = [{
-      type = "virtio";
+    disks.ide.ide2.cloudinit = {
+      storage = "local-lvm";
+    };
+    disks.scsi.scsi0.disk = {
+      storage = "nvme";
+      size = "5T";
+      backup = false;
+      discard = true;
+      emulatessd = true;
+      iothread = true;
+    };
+    disks.scsi.scsi1.disk = {
+      storage = "LTS";
+      size = "2T";
+      backup = false;
+      discard = true;
+      emulatessd = true;
+      iothread = true;
+    };
+    disks.virtio.virtio0.disk = {
       storage = "nvme";
       size = "20G";
       discard = true;
-    }];
+    };
   };
 }

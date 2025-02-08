@@ -10,9 +10,9 @@ in
   ];
 
   proxmox = {
-    show_deploy_output = false;
+    show_deploy_output = true;
     provider = {
-      version = "2.9.14";
+      version = "3.0.1-rc4";
       endpoint = "https://pve.lan.faultymuse.com:8006/api2/json";
       # token_id = extractSecret "pm_api.token_id";
       # token_secret = extractSecret "pm_api.token_secret";
@@ -34,6 +34,10 @@ in
       keys = {
         age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
       };
+
+      # disks.ide.ide2.cloudinit = {
+      #   storage = "local-lvm";
+      # };
     };
 
     defaults.lxc = {

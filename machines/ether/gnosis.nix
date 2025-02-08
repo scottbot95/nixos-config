@@ -18,7 +18,7 @@ in
   };
 
   fileSystems."/var/lib/private/erigon-gnosis" = {
-    device = "/mnt/hot-storage/erigon-gnosis";
+    device = "/mnt/hot-storage/erigon-gnosis-new";
     fsType = "none";
     options = [
       "bind"
@@ -57,8 +57,10 @@ in
       ws.enable = true;
     };
     extraArgs = [
+      "--p2p.allowed-ports=50505,50506"
       "--nat" "none"
       "--prune=htcr"
+      "--prune.r.before=34778550"
       "--torrent.download.rate=96mb"
     ];
   };
@@ -119,7 +121,7 @@ in
             --metrics
           '';
         in
-          "${pkgs.nimbus}/bin/nimbus_validator_client \\\n${scriptArgs}";
+          "${pkgs.nimbus_validator}/bin/nimbus_validator_client \\\n${scriptArgs}";
 
       Restart = "on-failure";
 
@@ -150,8 +152,64 @@ in
     };
   };
 
-  systemd.services.nimbus-exporter-gnosis = {
+  systemd.services.stakewise-operator-gnosis = {
+    after = ["network.target"];
     wantedBy = ["multi-user.target"];
+    description = "Stakewise Operator Node (gnosis)";
+
+    environment = {
+      ENABLE_METRICS = "true";
+      METRICS_HOST = "0.0.0.0";
+      METRICS_PORT = "9100";
+    };
+
+    serviceConfig = {
+      User = "stakewise-operator-gnosis";
+      StateDirectory = "stakewise-operator-gnosis";
+      ExecStart = 
+        let
+          scriptArgs = ''
+            --vault=0x4d802ea4cb83c90b91db4acf3aa1462868405d8c \
+            --consensus-endpoints=http://127.0.0.1:5052 \
+            --execution-endpoints=http://127.0.0.1:8745 \
+            --data-dir=%S/stakewise-operator-gnosis
+          '';
+        in
+          "${pkgs.operatorService}/bin/operator start \\\n${scriptArgs}";
+      Restart = "on-failure";
+
+      DynamicUser = true;
+
+      ProtectClock = true;
+      ProtectProc = "noaccess";
+      ProtectKernelLogs = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      ProtectControlGroups = true;
+      ProtectHostname = true;
+      PrivateDevices = true;
+      RestrictRealtime = true;
+      RestrictNamespaces = true;
+      LockPersonality = true;
+      # Doesn't work with nimbus
+      # MemoryDenyWriteExecute = true; 
+      SystemCallFilter = ["@system-service" "~@privileged"];
+    };
+  };
+
+  # systemd.services.eth-validator-watcher-gnosis = {
+  #   after = ["network.target"];
+  #   wantedBy = ["multi-user.target"];
+  #   description = "Ethereum Validator Watcher (gnosis)";
+  #   serviceConfig = {
+  #     DynamicUser = true;
+  #     Restart = "on-failure";
+  #     ExecStart = "${pkgs.eth-validator-watcher}/bin/eth-validator-watcher --config ${./gnosis-validators.yml}";
+  #   };
+  # };
+
+  systemd.services.nimbus-exporter-gnosis = {
+    # wantedBy = ["multi-user.target"];
     after = ["nimbus-beacon-gnosis.service"];
     script = ''
       ${eth2-client-metrics-exporter}/bin/eth2-client-metrics-exporter \
@@ -164,11 +222,15 @@ in
   };
 
   networking.firewall.allowedTCPPorts = [
-    config.services.ethereum.erigon.gnosis.args.port
+    # config.services.ethereum.erigon.gnosis.args.port
+    50505
+    50506
     config.services.ethereum.erigon.gnosis.args.metrics.port
     config.services.ethereum.erigon.gnosis.args.torrent.port
     config.services.ethereum.nimbus-beacon.gnosis.args.tcp-port
     config.services.ethereum.nimbus-beacon.gnosis.args.metrics.port
+    # 8000 # eth-validator-watcher metrics port
+    9100 # stakewise metrics port
   ];
 
   networking.firewall.allowedUDPPorts = [

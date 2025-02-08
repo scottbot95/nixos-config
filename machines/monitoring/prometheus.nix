@@ -43,6 +43,15 @@ in
           ];
         }];
       }
+      {
+        job_name = "stakewise-operator";
+        scrape_interval = "30s";
+        static_configs = [{
+          targets =[
+            "ether.prod.faultymuse.com:9100"
+          ];
+        }];        
+      }
       # {
       #   job_name = "eth-validator-watcher";
       #   scrape_interval = "20s"; # 4 times per epoch. Prometheus likes 4x for reasons
@@ -67,7 +76,7 @@ in
         scrape_timeout = "3s";
         static_configs = [{
           targets = [
-            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.erigon.gnosis.args.metrics.port}" 
+            "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.erigon.gnosis.args.metrics.port}"
           ];
         }];
         metrics_path = "/debug/metrics/prometheus";

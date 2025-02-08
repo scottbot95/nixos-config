@@ -12,6 +12,7 @@ in {
     startup = "order=5";
     deployment_user = "ops";
 
+    ipconfig0 = "ip=dhcp";
     network = [{
       model = "virtio";
       bridge = "vmbr0";
@@ -19,11 +20,13 @@ in {
       firewall = false;
     }];
 
-    disk = [{
-      type = "virtio";
+    disks.ide.ide2.cloudinit = {
+      storage = "local-lvm";
+    };
+    disks.virtio.virtio0.disk = {
       storage = "nvme";
       size = "20G";
       discard = true;
-    }];
+    };
   };
 }

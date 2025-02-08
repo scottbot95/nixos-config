@@ -1,6 +1,5 @@
-{ config, lib, pkgs, nodes, name, ...}:
+{ self, config, lib, pkgs, ...}:
 let
-  otherNodes = builtins.removeAttrs nodes [ name ];
   mkProxy = ({ 
     name,
     url ? "https://${name}.prod.faultymuse.com",
@@ -109,13 +108,19 @@ in
         games = {
           url = "https://faultybox.prod.faultymuse.com";
         };
-        # nextcloud = {};
+        nextcloud.url = "https://nextcloud.prod.faultymuse.com";
         vault = {};
       })
       {
         "_" = {
           default = true;
           extraConfig = "return 444;";
+        };
+        "nextcloud.faultymuse.com" = {
+          extraConfig = ''
+            client_max_body_size 4g;
+            proxy_buffering off;
+          '';
         };
         # "teslamate.faultymuse.com" = {
         #   locations."/" = {

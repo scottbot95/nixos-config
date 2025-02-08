@@ -9,6 +9,9 @@
 , ... }:
 let 
   system = "x86_64-linux";
+  pkgsUnstable = import nixpkgs-unstable {
+    inherit system;
+  };
 in
 {
   imports = [
@@ -44,7 +47,7 @@ in
     # Rust
     clang
     llvmPackages_12.bintools
-    rustup
+    pkgsUnstable.rustup
     openssl
       
     # Misc
@@ -52,7 +55,7 @@ in
     nodejs_22
     wget
     nil.packages.${system}.nil
-    nixpkgs-unstable.legacyPackages.${system}.fly
+    pkgsUnstable.fly
   ];
 
   users.users.scott = {

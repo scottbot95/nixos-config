@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
@@ -24,18 +24,27 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     # ethereum-nix.url = "github:nix-community/ethereum.nix";
-    ethereum-nix.url = "github:scottbot95/ethereum.nix";
-    # ethereum-nix.url = "path:///home/scott/workplace/ethereum.nix";
+    # ethereum-nix.url = "github:scottbot95/ethereum.nix";
+    ethereum-nix.url = "path:///home/scott/workplace/ethereum.nix";
     # ethereum-nix.inputs.nixpkgs.follows = "nixpkgs";
+    nimbus.url = "git+https://github.com/status-im/nimbus-eth2.git?submodules=1";
+    nimbus.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     faultybot.url = "github:scottbot95/faultybot";
     faultybot.inputs.nixpkgs.follows = "nixpkgs";
 
-    faultybox.url = "github:scottbot95/faultybox";
+    faultybox.url = "github:scottbot95/faultybox/room_api";
     # faultybox.inputs.nixpkgs.follows = "nixpkgs";
+
+    # faulty-trader.url = "github:scottbot95/faulty-trader";
+    faulty-trader.url = "path:///home/scott/workplace/faulty-trader";
+    faulty-trader.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     # nix-minecraft.url = "path:///home/scott/workplace/nix-minecraft";
+
+    poetry2nix.url = "github:nix-community/poetry2nix";
+    poetry2nix.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     # steam-servers.url = "github:scottbot95/nix-steam-servers";
     steam-servers.url = "path:///home/scott/workplace/nix-steam-servers";
@@ -47,8 +56,8 @@
     terranix.url = "github:terranix/terranix";
     terranix.inputs.nixpkgs.follows = "nixpkgs";
 
-    terranix-proxmox.url = "github:scottbot95/terranix-proxmox";
-    # terranix-proxmox.url = "path:///home/scott/workplace/terranix-proxmox";
+    # terranix-proxmox.url = "github:scottbot95/terranix-proxmox";
+    terranix-proxmox.url = "path:///home/scott/workplace/terranix-proxmox";
     terranix-proxmox.inputs.nixpkgs.follows = "nixpkgs";
     terranix-proxmox.inputs.terranix.follows = "terranix";
 

@@ -24,19 +24,24 @@
 
   services.nextcloud = {
     enable = true;
-    package = pkgs.nextcloud26;
+    package = pkgs.nextcloud30;
     hostName = config.networking.fqdn;
     home = "/data/nextcloud";
     https = true;
     configureRedis = true;
     # caching.apcu = false;
     config.adminpassFile = "/run/secrets/nextcloud/adminpass";
-    config.extraTrustedDomains = ["nextcloud.faultymuse.com"];
+    settings.trusted_domains = ["nextcloud.faultymuse.com"];
+    maxUploadSize = "4g";
   };
 
   services.nginx.virtualHosts.${config.services.nextcloud.hostName} = {
     forceSSL = true;
     enableACME = true;
+    extraConfig = ''
+      fastcgi_request_buffering off;
+      proxy_buffering off;
+    '';
   };
  
   # services.vsftpd = {
@@ -61,8 +66,8 @@
   networking.hostName = "nextcloud";
   networking.domain = "prod.faultymuse.com";
 
-  networking.firewall.allowedTCPPorts = [ 80 443];
-  networking.firewall.allowedUDPPorts = [ 80 443];
+  networking.firewall.allowedTCPPorts = [80 443];
+  networking.firewall.allowedUDPPorts = [80 443];
 
-  system.stateVersion = "23.05";
+  system.stateVersion = "24.05";
 }

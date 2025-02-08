@@ -1,21 +1,22 @@
-{ config, lib, ... }:
+{ ... }:
 let
-  hostname = "monitoring";
+  hostname = "faulty-trader";
 in {
   proxmox.qemu.${hostname} = {
     enable = true;
-    vmid = 201;
-    domain = "lan.faultymuse.com";
-    cores = 8;
-    balloon = 8 * 1024;
-    memory = 16 * 1024;
-    startup = "order=2";
+    vmid = 511;
+    domain = "prod.faultymuse.com";
+    clone = "nixos-24.05.20240704.c0d0be0";
+    cores = 4;
+    memory = 4 * 1024;
+    startup = "order=5";
+    deployment_user = "ops";
 
     ipconfig0 = "ip=dhcp";
     network = [{
       model = "virtio";
       bridge = "vmbr0";
-      tag = 5;
+      tag = 20;
       firewall = false;
     }];
 
@@ -24,7 +25,7 @@ in {
     };
     disks.virtio.virtio0.disk = {
       storage = "nvme";
-      size = "100G";
+      size = "20G";
       discard = true;
     };
   };

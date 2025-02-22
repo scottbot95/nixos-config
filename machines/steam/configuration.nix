@@ -3,7 +3,7 @@
   imports = [
     ../../modules/profiles/proxmox-guest/v2.nix
     steam-servers.nixosModules.default
-    ./factorio.nix
+    ./factorio
   ];
 
   terranix = {

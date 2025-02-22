@@ -98,9 +98,6 @@ in
       # Enable XSS protection of the browser.
       # May be unnecessary when CSP is configured properly (see above)
       add_header X-XSS-Protection "1; mode=block";
-
-      # This might create errors
-      proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
     '';
 
     virtualHosts = lib.mkMerge [
@@ -109,6 +106,7 @@ in
           url = "https://faultybox.prod.faultymuse.com";
         };
         nextcloud.url = "https://nextcloud.prod.faultymuse.com";
+        server-status.url = "https://game-status-ui.prod.faultymuse.com";
         vault = {};
       })
       {

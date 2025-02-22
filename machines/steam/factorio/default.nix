@@ -1,5 +1,6 @@
 { config, lib, pkgs, ... }:
 let
+  # mods = import ./mods.nix { inherit pkgs lib; };
   mkService = {
     enable ? true,
     saveName,
@@ -15,7 +16,8 @@ let
     loadLatestSave ? false,
     admins ? ["FaultyMuse"],
     allowedPlayers ? [],
-    ...
+    extraCliArgs ? "",
+    envFile ? null,
   }: 
     let
       stateDir = "/var/lib/${stateDirName}";
@@ -92,12 +94,14 @@ let
           (playerListOption "server-adminlist" admins)
           (playerListOption "server-whitelist" allowedPlayers)
           (lib.optionalString (allowedPlayers != []) "--use-server-whitelist")
+          extraCliArgs
         ];
 
         # Secrets
         LoadCredential = lib.mkIf (secret != null) [
           "server-settings.json:${config.sops.secrets."${secret}".path}"
         ];
+        EnvironmentFile = lib.mkIf (envFile != null) envFile;
 
         # Sandboxing
         NoNewPrivileges = true;
@@ -116,26 +120,86 @@ let
     };
 in
 {
-  sops.secrets."factorio/spaceAge" = {
+  sops.secrets."factorio/spaceAge/server-settings" = {
     restartUnits = ["factorio.service"];
+  };
+  sops.secrets."factorio/spaceAge/rconPass" = {
+    restartUnits = ["factorio.service"];
+  };
+
+  scott.sops.envFiles.factorioSpaceAge = {
+    vars = {
+      RCON_PASS.secret = "factorio/spaceAge/rconPass";
+    };
+    requiredBy = [ "factorio.service" ];
+  };
+
+  sops.secrets."factorio/aa/server-settings" = {
+    restartUnits = ["factorio-aa.service"];
+  };
+  sops.secrets."factorio/aa/rconPass" = {
+    restartUnits = ["factorio-aa.service"];
+  };
+
+  scott.sops.envFiles.factorioAA = {
+    vars = {
+      RCON_PASS.secret = "factorio/aa/rconPass";
+    };
+    requiredBy = [ "factorio-aa.service" ];
   };
 
   systemd.services.factorio = mkService {
     enable = true;
     stateDirName = "factorio";
     package = pkgs.factorio-headless.overrideAttrs (_: _: rec {
-      version = "2.0.23";
+      version = "2.0.35";
       src = pkgs.fetchurl {
         name = "factorio_headless_x64-${version}.tar.xz";
         url = "https://factorio.com/get-download/${version}/headless/linux64";
-        sha256= "e819fc9ad6df061bf9d4bffc91988dd18d0e3982c8b1c22c0525d78bda3ef216";
+        sha256= "31cd58eaf4b06cc0dc5d82640f7adf2366aa9da64133d2c228f1308f1060a990";
       };
     });
 
     saveName = "space-age";
     game-name = "Space Age!";
     port = 34197;
-    secret = "factorio/spaceAge";
+    secret = "factorio/spaceAge/server-settings";
+    extraCliArgs = "--rcon-port 27015 --rcon-password $RCON_PASS";
+    envFile = "/run/secrets/factorioSpaceAge.env";
+  };
+
+  systemd.services.factorio-aa = mkService {
+    enable = true;
+    package = pkgs.factorio-headless.overrideAttrs (_: _: rec {
+      version = "2.0.35";
+      src = pkgs.fetchurl {
+        name = "factorio_headless_x64-${version}.tar.xz";
+        url = "https://factorio.com/get-download/${version}/headless/linux64";
+        sha256= "31cd58eaf4b06cc0dc5d82640f7adf2366aa9da64133d2c228f1308f1060a990";
+      };
+    });
+
+    saveName = "aa";
+    game-name = "Automators Anonymous";
+
+    port = 34297;
+    secret = "factorio/aa/server-settings";
+    extraCliArgs = "--rcon-port 28015 --rcon-password $RCON_PASS";
+    envFile = "/run/secrets/factorioAA.env";
+
+    # mods = with mods; [
+    #   AutoDeconstruct
+    #   DiscoScience
+    #   Honk
+    #   RateCalculator
+    #   Todo-List
+    #   visible-planets
+    #   BottleneckLite
+    #   helmod
+    #   mining-patch-planner
+    #   squeak-through-2
+    #   UltimateResearchQueue2
+    # ];
   };
 
   # systemd.services.factorio-backup = {
@@ -152,5 +216,6 @@ in
   #   };
   # };
 
-  networking.firewall.allowedUDPPorts = [34197];
+  networking.firewall.allowedTCPPorts = [ 27015 28015 ];
+  networking.firewall.allowedUDPPorts = [ 34197 34297 ];
 }

@@ -40,6 +40,9 @@
     faulty-trader.url = "path:///home/scott/workplace/faulty-trader";
     faulty-trader.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
+    homelab-server-manager.url = "github:scottbot95/homelab-server-manager";
+    # homelab-server-manager.url = "path:///home/scott/workplace/homelab-server-manager";
+
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     # nix-minecraft.url = "path:///home/scott/workplace/nix-minecraft";
 

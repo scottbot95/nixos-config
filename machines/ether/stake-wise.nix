@@ -3,11 +3,10 @@
 let
   operatorService = pkgs.stdenv.mkDerivation rec {
     pname = "stakewise-operator-service-v3";
-    version = "3.0.1";
-
+    version = "3.0.3";
     src = pkgs.fetchurl {
       url = "https://github.com/stakewise/v3-operator/releases/download/v${version}/operator-v${version}-linux-amd64.tar.gz";
-      hash = "sha256-A2Q90UKLtsbQOzLLYiZ0mR1v1xKEmbSp6xvhvntoihQ=";
+      hash = "sha256-JJaaXbc9ccmj9vBSq6swkCX5MWR/IDadnSWbaStd83A=";
       # hash = pkgs.lib.fakeHash;
     };
 

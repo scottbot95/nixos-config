@@ -1,7 +1,7 @@
 { config, lib, self, ... }:
 with lib;
 let
-  skippedExporters = [ "unifi-poller" ]; # Skip exporters to avoid warnings
+  skippedExporters = [ "unifi-poller" "minio" "tor" ]; # Skip exporters to avoid warnings
   machineConfigs = mapAttrs (_: value: value.config) self.nixosConfigurations;
   scrapeConfigs = mapAttrsToList
     (machineName: cfg:
@@ -29,6 +29,7 @@ in
   services.prometheus = {
     enable = true;
     port = 9090;
+    retentionTime = "10y";
 
     scrapeConfigs = scrapeConfigs ++ [
       {

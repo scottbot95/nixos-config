@@ -11,6 +11,40 @@ let
     };
     vendorHash = "sha256-o3Bn2CTHI6EZ1MUAhPAeua9q0cmCcWUjuS9sOnU20gY=";
   };
+  erigon-v3 = pkgs.buildGoModule rec {
+    pname = "erigon";
+    version = "3.0.3";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "erigontech";
+      repo = pname;
+      rev = "v${version}";
+      hash = "sha256-gSgkdg7677OBOkAbsEjxX1QttuIbfve2A3luUZoZ5Ik=";
+      # hash = pkgs.lib.fakeHash;
+      fetchSubmodules = true;
+    };
+
+    vendorHash = "sha256-8eyC3JkRcRlFw8CyTK5w1XySur2jAeFGXkEaY/3Oq0k=";
+    proxyVendor = true;
+
+    # Silkworm's .so fails to find libgmp when linking
+    tags = ["nosilkworm"];
+
+    # Build errors in mdbx when format hardening is enabled:
+    #   cc1: error: '-Wformat-security' ignored without '-Wformat' [-Werror=format-security]
+    hardeningDisable = ["format"];
+
+    ldflags = ["-extldflags \"-Wl,--allow-multiple-definition\""];
+    subPackages = ["cmd/erigon" "cmd/evm" "cmd/rpcdaemon" "cmd/rlpdump"];
+
+    meta = {
+      description = "Ethereum node implementation focused on scalability and modularity";
+      homepage = "https://github.com/erigontech/erigon/";
+      mainProgram = "erigon";
+      platforms = ["x86_64-linux"];
+    };
+  };
+  feeRecipient = "0x6e4A57858a881952c0Cf4b9AF4cE551Ff4517CD5";
 in
 {
   sops.secrets."gnosis/jwt" = {
@@ -18,7 +52,23 @@ in
   };
 
   fileSystems."/var/lib/private/erigon-gnosis" = {
-    device = "/mnt/hot-storage/erigon-gnosis-new";
+    device = "/mnt/cold-storage/erigon-gnosis-v3";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
+
+  fileSystems."/var/lib/private/erigon-gnosis/chaindata" = {
+    device = "/mnt/hot-storage/erigon-gnosis-v3/chaindata";
+    fsType = "none";
+    options = [
+      "bind"
+    ];
+  };
+
+  fileSystems."/var/lib/private/erigon-gnosis/snapshots/domain" = {
+    device = "/mnt/hot-storage/erigon-gnosis-v3/snapshots/domain";
     fsType = "none";
     options = [
       "bind"
@@ -35,8 +85,9 @@ in
 
   services.ethereum.erigon.gnosis = {
     enable = true;
+    package = erigon-v3;
     args = {
-      snapshots = true;
+      snapshots = false; # erigon v2 feature
       port = 50505;
       chain = "gnosis";
       http = {
@@ -59,14 +110,18 @@ in
     extraArgs = [
       "--p2p.allowed-ports=50505,50506"
       "--nat" "none"
-      "--prune=htcr"
-      "--prune.r.before=34778550"
+      # "--prune=htcr"
+      "--prune.mode=archive"
+      # "--prune.r.before=34778550"
       "--torrent.download.rate=96mb"
+      "--externalcl"
+      "--maxpeers=64"
     ];
   };
 
   systemd.services.erigon-gnosis.serviceConfig = {
     LoadCredential = ["execution-jwt:${config.sops.secrets."gnosis/jwt".path}"];
+    SystemCallFilter = pkgs.lib.mkForce []; # TODO Limit this somewhat
   };
 
   services.ethereum.nimbus-beacon.gnosis = {
@@ -93,7 +148,7 @@ in
     };
     extraArgs = [
       "--non-interactive"
-      "--suggested-fee-recipient=0x5610b291236E7cc44D9A1e4f051FA52506444c56"
+      "--suggested-fee-recipient=${feeRecipient}"
     ];
   };
 
@@ -115,7 +170,7 @@ in
         let
           scriptArgs = ''
             --non-interactive \
-            --suggested-fee-recipient=0x5610b291236E7cc44D9A1e4f051FA52506444c56 \
+            --suggested-fee-recipient=${feeRecipient} \
             --beacon-node=http://127.0.0.1:${toString config.services.ethereum.nimbus-beacon.gnosis.args.rest.port} \
             --data-dir="%S/nimbus-validator-gnosis" \
             --metrics
@@ -158,9 +213,7 @@ in
     description = "Stakewise Operator Node (gnosis)";
 
     environment = {
-      ENABLE_METRICS = "true";
-      METRICS_HOST = "0.0.0.0";
-      METRICS_PORT = "9100";
+      SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     };
 
     serviceConfig = {
@@ -172,7 +225,10 @@ in
             --vault=0x4d802ea4cb83c90b91db4acf3aa1462868405d8c \
             --consensus-endpoints=http://127.0.0.1:5052 \
             --execution-endpoints=http://127.0.0.1:8745 \
-            --data-dir=%S/stakewise-operator-gnosis
+            --data-dir=%S/stakewise-operator-gnosis \
+            --enable-metrics \
+            --metrics-port=9100 \
+            --metrics-host=0.0.0.0
           '';
         in
           "${pkgs.operatorService}/bin/operator start \\\n${scriptArgs}";
@@ -209,7 +265,7 @@ in
   # };
 
   systemd.services.nimbus-exporter-gnosis = {
-    # wantedBy = ["multi-user.target"];
+    wantedBy = ["multi-user.target"];
     after = ["nimbus-beacon-gnosis.service"];
     script = ''
       ${eth2-client-metrics-exporter}/bin/eth2-client-metrics-exporter \

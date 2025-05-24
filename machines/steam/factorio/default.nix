@@ -152,11 +152,11 @@ in
     enable = true;
     stateDirName = "factorio";
     package = pkgs.factorio-headless.overrideAttrs (_: _: rec {
-      version = "2.0.35";
+      version = "2.0.49";
       src = pkgs.fetchurl {
         name = "factorio_headless_x64-${version}.tar.xz";
         url = "https://factorio.com/get-download/${version}/headless/linux64";
-        sha256= "31cd58eaf4b06cc0dc5d82640f7adf2366aa9da64133d2c228f1308f1060a990";
+        sha256= "ef0648ca1ba44c145a3a3e4c174ccd276eb4a335155a20df1ae0e47156fa34ff";
       };
     });
 
@@ -171,11 +171,11 @@ in
   systemd.services.factorio-aa = mkService {
     enable = true;
     package = pkgs.factorio-headless.overrideAttrs (_: _: rec {
-      version = "2.0.35";
+      version = "2.0.49";
       src = pkgs.fetchurl {
         name = "factorio_headless_x64-${version}.tar.xz";
         url = "https://factorio.com/get-download/${version}/headless/linux64";
-        sha256= "31cd58eaf4b06cc0dc5d82640f7adf2366aa9da64133d2c228f1308f1060a990";
+        sha256= "ef0648ca1ba44c145a3a3e4c174ccd276eb4a335155a20df1ae0e47156fa34ff";
       };
     });
 
@@ -186,6 +186,12 @@ in
     secret = "factorio/aa/server-settings";
     extraCliArgs = "--rcon-port 28015 --rcon-password $RCON_PASS";
     envFile = "/run/secrets/factorioAA.env";
+
+    admins = [
+      "FaultyMuse"
+      "mkorolko"
+      "Gammaraj"
+    ];
 
     # mods = with mods; [
     #   AutoDeconstruct

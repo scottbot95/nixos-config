@@ -3,7 +3,7 @@ let
 in
 {
   imports = [
-    faulty-trader.nixosModules.faulty-trader
+    faulty-trader.nixosModules.default
     ../../modules/profiles/proxmox-guest/v2.nix
   ];
 
@@ -20,6 +20,8 @@ in
   };
 
   networking.domain = "prod.faultymuse.com";
+
+  networking.firewall.allowedTCPPorts = [ 8086 ];
 
   system.stateVersion = "24.05";
 }

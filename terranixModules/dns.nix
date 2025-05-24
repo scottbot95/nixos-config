@@ -31,5 +31,6 @@ in
     };
   };
 
-  config.resource = mkMerge cname_records;
+  # TODO Fix DNS to actually work
+  # config.resource = mkMerge cname_records;
 }

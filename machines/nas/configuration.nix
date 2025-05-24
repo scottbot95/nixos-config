@@ -13,13 +13,15 @@
     manageHostName = true; # true means Nix managed, not proxmox managed
   };
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   nixpkgs.system = "x86_64-linux"; # FIXME shouldn't need this but terranix proxmox module currently requires it
   nixpkgs.hostPlatform = lib.systems.examples.gnu64;
 
   system.activationScripts = {
     createExportDirs.text = ''
       mkdir -p /mnt/nfs_datadir_1/data
-      # chmod -R a+rwx /mnt/nfs_datadir_1/data
+      chmod -R a+rwx /mnt/nfs_datadir_1/data
 
       mkdir -p /mnt/nfs_datadir_1/downloads
       chmod -R a+rwx /mnt/nfs_datadir_1/downloads
@@ -42,22 +44,42 @@
     /export/downloads   10.0.0.0/16(rw,nohide,insecure,no_subtree_check,no_root_squash) 192.168.4.0/24(rw,nohide,insecure,no_subtree_check,no_root_squash)
   '';
 
-  services.samba-wsdd.enable = true; # Enable visibility for windows
+  users.users.samba = {
+    isSystemUser = true;
+    group = "samba";
+  };
+  users.groups.samba = {};
+
+  # Enable visibility for windows
+  services.samba-wsdd = {
+    enable = true; 
+    openFirewall = true;
+  };
   services.samba = {
-    enable =true;
-    extraConfig = ''
-      # note: localhost is the ipv6 localhost ::1
-      hosts allow = 192.168.4. 127.0.0.1 localhost
-      hosts deny = 0.0.0.0/0
-      guest account = nobody
-      map to guest = bad user
-    '';
-    shares = {
+    enable = true;
+    # extraConfig = ''
+    #   # note: localhost is the ipv6 localhost ::1
+    #   hosts allow = 192.168.4. 127.0.0.1 localhost
+    #   hosts deny = 0.0.0.0/0
+    #   guest account = nobody
+    #   map to guest = bad user
+    # '';
+    settings = {
+      global = {
+        "hosts allow" = "192.168.4. 127.0.0.1 localhost";
+        "hosts deny" = "0.0.0.0/0";
+        "guest account" = "nobody";
+        "map to guest" = "bad user";
+      };
       data = {
         path = "/export/data";
         browseable = true;
-        "read only" = true;
+        "read only" = false;
         "guest ok" = true;
+        "create mask" = "0644";
+        "directory mask" = "0755";
+        "force user" = "samba";
+        "force group" = "samba";
       };
       downloads = {
         path = "/export/downloads";

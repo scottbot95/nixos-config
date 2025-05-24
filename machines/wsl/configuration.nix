@@ -35,6 +35,7 @@ in
     { src = "${coreutils}/bin/dirname"; }
     { src = "${coreutils}/bin/readlink"; }
   ];
+  wsl.docker-desktop.enable = true;
 
   nix.extraOptions = ''
     experimental-features = nix-command flakes

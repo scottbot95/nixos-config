@@ -16,6 +16,22 @@
   #   system = "x86_64-linux";
   # };
 
+  fileSystems."/mnt/storage" = {
+    device = "/dev/disk/by-label/storage";
+  };
+
+  fileSystems."/var/lib/prometheus2" = {
+    device = "/mnt/storage/prometheus2";
+    fsType = "none";
+    options = [ "bind" ];
+  };
+
+  fileSystems."/var/lib/loki" = {
+    device = "/mnt/storage/loki";
+    fsType = "none";
+    options = [ "bind" ];
+  };
+
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."unpoller/pass" = {
     owner = "unifi-poller";

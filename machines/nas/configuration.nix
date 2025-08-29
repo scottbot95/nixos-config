@@ -2,7 +2,13 @@
   imports = [
     "${modulesPath}/virtualisation/proxmox-lxc.nix"
     ../../modules/profiles/well-known-users
+    ../../modules/profiles/ca-certs
+    ./minio.nix
   ];
+
+  sops.defaultSopsFile = ./secrets.yaml;
+  scott.sops.enable = true;
+  scott.sops.ageKeyFile = "/var/keys/age";
 
   terranix = {
     imports = [ ./terraform.nix ];
@@ -95,12 +101,20 @@
 
   networking.firewall.allowPing = true;
   networking.firewall.allowedTCPPorts = [
+    80
+    443
     2049 # NFS
     5357 # WSSD
   ];
   networking.firewall.allowedUDPPorts = [
     3702 # WSSD
   ];
+
+  security.acme.acceptTerms = true;
+  security.acme.defaults = {
+    email = "scott.techau+acme@gmail.com";
+    server = "https://ca.lan.faultymuse.com/acme/acme/directory";
+  };
 
   networking.hostName = "nas";
   networking.domain = "lan.faultymuse.com";

@@ -120,6 +120,42 @@ in
             proxy_buffering off;
           '';
         };
+        "s3.us-west-1.faultymuse.com" = {
+          forceSSL = true;
+          enableACME = true;
+
+          locations."/" = {
+            proxyPass = "https://s3.lan.faultymuse.com";
+          };
+          extraConfig = ''
+            # Allow special characters in headers
+            ignore_invalid_headers off;
+            # Allow any size file to be uploaded.
+            # Set to a value such as 1000m; to restrict file size to a specific value
+            client_max_body_size 0;
+            # Disable buffering
+            proxy_buffering off;
+            proxy_request_buffering off;
+          '';
+        };
+        # "console.s3.us-west-1.faultymuse.com" = {
+        #   forceSSL = true;
+        #   enableACME = true;
+
+        #   locations."/" = {
+        #     proxyPass = "https://console.s3.lan.faultymuse.com";
+        #   };
+        #   extraConfig = ''
+        #     # Allow special characters in headers
+        #     ignore_invalid_headers off;
+        #     # Allow any size file to be uploaded.
+        #     # Set to a value such as 1000m; to restrict file size to a specific value
+        #     client_max_body_size 0;
+        #     # Disable buffering
+        #     proxy_buffering off;
+        #     proxy_request_buffering off;
+        #   '';
+        # };
         # "teslamate.faultymuse.com" = {
         #   locations."/" = {
         #     basicAuthFile = "/run/secrets/teslamate/auth_file";

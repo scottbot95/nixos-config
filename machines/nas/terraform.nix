@@ -21,6 +21,11 @@
       size = "2T";
     };
 
+    mountpoint."/mnt/nfs_datadir_2" = {
+      storage = "LTS";
+      size = "2T";
+    };
+
     network.eth0 = {
       bridge = "vmbr0";
       tag = 5;

@@ -5,6 +5,7 @@ in {
   home.sessionPath = [
       "\${CARGO_HOME:-$HOME/.cargo}/bin"
       "\${RUSTUP_HOME:-$HOME/.rustup}/toolchains/$RUSTC_VERSION-x86_64-unknown-linux-gnu/bin"
+      "\${HOME}/.foundry/bin"
   ];
 
   home.packages = with pkgs; [

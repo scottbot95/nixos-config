@@ -171,11 +171,11 @@ in
   systemd.services.factorio-aa = mkService {
     enable = true;
     package = pkgs.factorio-headless.overrideAttrs (_: _: rec {
-      version = "2.0.49";
+      version = "2.0.54";
       src = pkgs.fetchurl {
         name = "factorio_headless_x64-${version}.tar.xz";
         url = "https://factorio.com/get-download/${version}/headless/linux64";
-        sha256= "ef0648ca1ba44c145a3a3e4c174ccd276eb4a335155a20df1ae0e47156fa34ff";
+        sha256= "ad47c541b70763552bcf597202ee84aaac727d0ba158873134dc163a3a0506f0";
       };
     });
 

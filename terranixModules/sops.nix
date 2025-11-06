@@ -13,10 +13,18 @@
     source_file = "secrets/homelab.yaml";
   };
 
-  module = lib.mapAttrs' (name: vm_config: {
-    name = "${name}_deploy_nixos";
-    value = lib.mkIf vm_config.enable {
-      keys.age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
-    };
-  }) config.proxmox.qemu;
+  module = 
+    let 
+      addSopsKeys = type: 
+        lib.mapAttrs' (name: vm_config: {
+          name = "${name}_deploy_nixos";
+          value = lib.mkIf vm_config.enable {
+            keys.age = "\${data.sops_file.secrets.data[\"sops_key\"]}";
+          };
+        }) type;
+    in
+      lib.mkMerge [
+        (addSopsKeys config.proxmox.qemu)
+        (addSopsKeys config.proxmox.lxc)
+      ];
 }

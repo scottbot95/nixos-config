@@ -19,6 +19,7 @@ in
     nixos-wsl.nixosModules.default
     home-manager.nixosModules.home-manager
     vscode-server.nixosModules.default
+    ../../modules/profiles/ca-certs
   ];
 
   nixpkgs.hostPlatform = {

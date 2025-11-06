@@ -39,8 +39,9 @@ in
           targets = [ 
             # "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-validator.gnosis.args.metrics.port}" 
             # "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.gnosis.args.metrics.port}" 
-            "ether.prod.faultymuse.com:5054" 
+            "ether.prod.faultymuse.com:5054"
             # "ether.prod.faultymuse.com:${toString self.nixosConfigurations.ether.config.services.ethereum.lighthouse-beacon.mainnet.args.metrics.port}"
+            "ether.prod.faultymuse.com:8126" # validator-manager-operator
           ];
         }];
       }

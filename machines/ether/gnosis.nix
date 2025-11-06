@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, validator-manager-operator, ... }:
 let
   eth2-client-metrics-exporter = pkgs.buildGoModule rec {
     pname = "eth2-client-metrics-exporter";
@@ -47,8 +47,15 @@ let
   feeRecipient = "0x6e4A57858a881952c0Cf4b9AF4cE551Ff4517CD5";
 in
 {
+  imports = [
+    validator-manager-operator.nixosModules.default
+  ];
+
   sops.secrets."gnosis/jwt" = {
     restartUnits = [ "erigon-gnosis.service" "nimbus-beacon-gnosis.service" ];
+  };
+  sops.secrets."gnosis/validator-manager-operator" = {
+    restartUnits = [ "validator-manager-operator.service" ];
   };
 
   fileSystems."/var/lib/private/erigon-gnosis" = {
@@ -108,6 +115,7 @@ in
       ws.enable = true;
     };
     extraArgs = [
+      "--ws.port=8746"
       "--p2p.allowed-ports=50505,50506"
       "--nat" "none"
       # "--prune=htcr"
@@ -207,62 +215,21 @@ in
     };
   };
 
-  systemd.services.stakewise-operator-gnosis = {
-    after = ["network.target"];
-    wantedBy = ["multi-user.target"];
-    description = "Stakewise Operator Node (gnosis)";
-
-    environment = {
-      SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
-    };
-
-    serviceConfig = {
-      User = "stakewise-operator-gnosis";
-      StateDirectory = "stakewise-operator-gnosis";
-      ExecStart = 
-        let
-          scriptArgs = ''
-            --vault=0x4d802ea4cb83c90b91db4acf3aa1462868405d8c \
-            --consensus-endpoints=http://127.0.0.1:5052 \
-            --execution-endpoints=http://127.0.0.1:8745 \
-            --data-dir=%S/stakewise-operator-gnosis \
-            --enable-metrics \
-            --metrics-port=9100 \
-            --metrics-host=0.0.0.0
-          '';
-        in
-          "${pkgs.operatorService}/bin/operator start \\\n${scriptArgs}";
-      Restart = "on-failure";
-
-      DynamicUser = true;
-
-      ProtectClock = true;
-      ProtectProc = "noaccess";
-      ProtectKernelLogs = true;
-      ProtectKernelModules = true;
-      ProtectKernelTunables = true;
-      ProtectControlGroups = true;
-      ProtectHostname = true;
-      PrivateDevices = true;
-      RestrictRealtime = true;
-      RestrictNamespaces = true;
-      LockPersonality = true;
-      # Doesn't work with nimbus
-      # MemoryDenyWriteExecute = true; 
-      SystemCallFilter = ["@system-service" "~@privileged"];
-    };
+  services.validator-manager-operator = {
+    enable = true;
+    websocketUrl = "ws://127.0.0.1:8746";
+    contracts = [ "0x94F33E6Fe24DA2e8AA9574471912f0a6E0f66cAD" ];
+    walletSecret = "/run/secrets/gnosis/validator-manager-operator";
+    metrics.enable = true;
+    metrics.host = "0.0.0.0";
+    openFirewall = true;
   };
 
-  # systemd.services.eth-validator-watcher-gnosis = {
-  #   after = ["network.target"];
-  #   wantedBy = ["multi-user.target"];
-  #   description = "Ethereum Validator Watcher (gnosis)";
-  #   serviceConfig = {
-  #     DynamicUser = true;
-  #     Restart = "on-failure";
-  #     ExecStart = "${pkgs.eth-validator-watcher}/bin/eth-validator-watcher --config ${./gnosis-validators.yml}";
-  #   };
-  # };
+  systemd.services.validator-manager-operator = {
+    environment = {
+      RUST_LOG = "validator_manager_operator=info";
+    };
+  };
 
   systemd.services.nimbus-exporter-gnosis = {
     wantedBy = ["multi-user.target"];

@@ -21,6 +21,11 @@
     owner = config.users.users.nextcloud.name;
     group = config.users.users.nextcloud.group;
   };
+  sops.secrets."nextcloud/s3/secretKey" = {
+    mode = "0440";
+    owner = config.users.users.nextcloud.name;
+    group = config.users.users.nextcloud.group;
+  };
 
   services.nextcloud = {
     enable = true;
@@ -33,6 +38,18 @@
     config.adminpassFile = "/run/secrets/nextcloud/adminpass";
     settings.trusted_domains = ["nextcloud.faultymuse.com"];
     maxUploadSize = "4g";
+
+    config.objectstore.s3 = {
+      enable = false;
+      autocreate = true;
+      bucket = "nextcloud";
+      key = "F3lj1TRmmhSVjA7gTpbQ";
+      usePathStyle = true;
+      secretFile = "/run/secrets/nextcloud/s3/secretKey";
+      region = "us-west-1";
+      hostname = "s3.lan.faultymuse.com";
+      port = 443;
+    };
   };
 
   services.nginx.virtualHosts.${config.services.nextcloud.hostName} = {

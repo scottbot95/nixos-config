@@ -13,12 +13,14 @@ in
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."yubico/client_id" = {};
   sops.secrets."yubico/secret" = {};
+  sops.secrets."admin/token" = {};
 
   scott.sops.enable = true;
   scott.sops.envFiles.vaultwarden = {
     vars = {
       YUBICO_CLIENT_ID.secret = "yubico/client_id";
       YUBICO_SECRET_KEY.secret = "yubico/secret";
+      ADMIN_TOKEN.secret = "admin/token";
     };
     requiredBy = [ "vaultwarden.service" ];
   };

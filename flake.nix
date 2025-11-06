@@ -64,6 +64,8 @@
     terranix-proxmox.inputs.nixpkgs.follows = "nixpkgs";
     terranix-proxmox.inputs.terranix.follows = "terranix";
 
+    validator-manager-operator.url = "git+ssh://git@github.com/scottbot95/validator-manager-operator.git";
+
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     nil.url = "github:oxalica/nil";
   };

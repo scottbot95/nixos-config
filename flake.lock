@@ -48,6 +48,22 @@
         "type": "github"
       }
     },
+    "advisory-db_4": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1753275806,
+        "narHash": "sha256-E+Cu/AFVGwoQo4KPgcWmFS9zU7fJgXoK0o25EP3j48g=",
+        "owner": "rustsec",
+        "repo": "advisory-db",
+        "rev": "c62e71ad8c5256ffa3cafbb1a8c687db60869e98",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rustsec",
+        "repo": "advisory-db",
+        "type": "github"
+      }
+    },
     "bats-assert": {
       "flake": false,
       "locked": {
@@ -208,6 +224,21 @@
         "type": "github"
       }
     },
+    "crane_5": {
+      "locked": {
+        "lastModified": 1754269165,
+        "narHash": "sha256-0tcS8FHd4QjbCVoxN9jI+PjHgA4vc/IjkUSp+N3zy0U=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "444e81206df3f7d92780680e45858e31d2f07a08",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
     "devenv": {
       "inputs": {
         "cachix": "cachix",
@@ -333,7 +364,7 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1743480343,
+        "lastModified": 1745293810,
         "narHash": "sha256-qVPn64zENeIdE99gh6W2w80iLUORnenG9PRKLYAjwbM=",
         "path": "/home/scott/workplace/ethereum.nix",
         "type": "path"
@@ -665,6 +696,24 @@
         "owner": "hercules-ci",
         "repo": "flake-parts",
         "rev": "205b12d8b7cd4802fbcb8e8ef6a0f1408781a4f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_9": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib_4"
+      },
+      "locked": {
+        "lastModified": 1754091436,
+        "narHash": "sha256-XKqDMN1/Qj1DKivQvscI4vmHfDfvYR2pfuFOJiCeewM=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "67df8c627c2c39c41dbec76a1f201929929ab0bd",
         "type": "github"
       },
       "original": {
@@ -1159,11 +1208,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1746711357,
-        "narHash": "sha256-6hlJ+LlHacZ3n7dKXt7XIDgNA0vRbTmyvwV8xZKxEhI=",
+        "lastModified": 1753947546,
+        "narHash": "sha256-735oZbUSCOlMaXja6BYJg/bii+km0xgRUNDx6KisTxk=",
         "ref": "refs/heads/stable",
-        "rev": "d2f23389ab657608261be9f4dcef1009d67fbc2d",
-        "revCount": 7306,
+        "rev": "92defe0fe6c67255cef3687514c1ba80b197f3b3",
+        "revCount": 7455,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/status-im/nimbus-eth2.git"
@@ -1452,6 +1501,21 @@
         "url": "https://github.com/NixOS/nixpkgs/archive/072a6db25e947df2f31aab9eccd0ab75d5b2da11.tar.gz"
       }
     },
+    "nixpkgs-lib_4": {
+      "locked": {
+        "lastModified": 1753579242,
+        "narHash": "sha256-zvaMGVn14/Zz8hnp4VWT9xVnhc8vuL3TStRqwk22biA=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "0f36c44e01a6129be94e3ade315a5883f0228a6e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1730602179,
@@ -1502,11 +1566,11 @@
     },
     "nixpkgs-unstable_2": {
       "locked": {
-        "lastModified": 1739866667,
-        "narHash": "sha256-EO1ygNKZlsAC9avfcwHkKGMsmipUk1Uc0TbrEZpkn64=",
+        "lastModified": 1753939845,
+        "narHash": "sha256-K2ViRJfdVGE8tpJejs8Qpvvejks1+A4GQej/lBk5y7I=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "73cf49b8ad837ade2de76f87eb53fc85ed5d4680",
+        "rev": "94def634a20494ee057c76998843c015909d6311",
         "type": "github"
       },
       "original": {
@@ -1597,6 +1661,22 @@
       }
     },
     "nixpkgs_15": {
+      "locked": {
+        "lastModified": 1754248685,
+        "narHash": "sha256-IUGNakaPUF8JOBZlO8ISQzIC4ZSpowzZgcCw9Co8eqk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "bf9fa86a9b1005d932f842edf2c38eeecc98eef3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_16": {
       "locked": {
         "lastModified": 1682134069,
         "narHash": "sha256-TnI/ZXSmRxQDt2sjRYK/8j8iha4B4zP2cnQCZZ3vp7k=",
@@ -1810,6 +1890,7 @@
         "terranix": "terranix",
         "terranix-proxmox": "terranix-proxmox",
         "teslamate": "teslamate",
+        "validator-manager-operator": "validator-manager-operator",
         "vscode-server": "vscode-server"
       }
     },
@@ -2363,10 +2444,31 @@
         "type": "github"
       }
     },
+    "validator-manager-operator": {
+      "inputs": {
+        "advisory-db": "advisory-db_4",
+        "crane": "crane_5",
+        "flake-parts": "flake-parts_9",
+        "nixpkgs": "nixpkgs_15"
+      },
+      "locked": {
+        "lastModified": 1755581585,
+        "narHash": "sha256-0x48HgU/7paKBIpUFe1gVm3JoRs1bxqFx5APTSfg3OI=",
+        "ref": "refs/heads/master",
+        "rev": "df84702ab1fbe113a9a25f9f4839a9bc042f12fb",
+        "revCount": 17,
+        "type": "git",
+        "url": "ssh://git@github.com/scottbot95/validator-manager-operator.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/scottbot95/validator-manager-operator.git"
+      }
+    },
     "vscode-server": {
       "inputs": {
         "flake-utils": "flake-utils_12",
-        "nixpkgs": "nixpkgs_15"
+        "nixpkgs": "nixpkgs_16"
       },
       "locked": {
         "lastModified": 1713958148,

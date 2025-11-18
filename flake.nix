@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
@@ -9,7 +9,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -27,8 +27,8 @@
     # ethereum-nix.url = "github:scottbot95/ethereum.nix";
     ethereum-nix.url = "path:///home/scott/workplace/ethereum.nix";
     # ethereum-nix.inputs.nixpkgs.follows = "nixpkgs";
-    nimbus.url = "git+https://github.com/status-im/nimbus-eth2.git?submodules=1";
-    nimbus.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    # nimbus.url = "git+https://github.com/status-im/nimbus-eth2.git?submodules=1";
+    # nimbus.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     faultybot.url = "github:scottbot95/faultybot";
     faultybot.inputs.nixpkgs.follows = "nixpkgs";

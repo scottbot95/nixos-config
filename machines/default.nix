@@ -40,7 +40,7 @@ in
     packages = 
       let
         machines = pkgs.lib.filterAttrs 
-          (_: machine: (machine.pkgs.system == system) && (machine.config.terranix != null)) 
+          (_: machine: (machine.pkgs.stdenv.hostPlatform.system == system) && (machine.config.terranix != null)) 
           nixosConfigurations;
         toplevels = builtins.mapAttrs 
           (name: machine: machine.config.system.build.toplevel) 

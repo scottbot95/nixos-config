@@ -11,7 +11,6 @@ in
     anydesk
 
     jetbrains.idea-ultimate
-    thefuck # needed for zsh plugin
     git
     guake
     htop
@@ -30,7 +29,7 @@ in
     enable = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "thefuck" ];
+      plugins = [ "git"];
       theme = "robbyrussell";
     };
 

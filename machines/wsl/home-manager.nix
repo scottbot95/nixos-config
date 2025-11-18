@@ -13,8 +13,6 @@ in {
     git
     htop
     vim
-
-    thefuck # needed for zsh plugin
   ];
 
   # Let Home Manager install and manage itself.
@@ -24,7 +22,7 @@ in {
     enable = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "thefuck" ];
+      plugins = [ "git" ];
       theme = "robbyrussell";
     };
 
@@ -39,7 +37,7 @@ in {
       gpg = "gpg.exe";
     };
 
-    initExtra = ''
+    initContent = ''
       WIN_USER="scott"
       SSH_DIR="''${HOME}/.ssh" #
       CONFIG_PATH="C:/Users/''${WIN_USER}/AppData/Local/gnupg"
@@ -123,16 +121,18 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "Scott Techau";
-    userEmail = "scott.techau@gmail.com";
 
     signing = {
       key = gpg_pub_key;
-      gpgPath = "gpg.exe"; # FIXME hack to use windows native GPG
+      signer = "gpg.exe"; # FIXME hack to use windows native GPG
       signByDefault = true;
     };
 
-    extraConfig = { github.user = "scottbot95"; };
+    settings = {
+      user.name = "Scott Techau";
+      user.email = "scott.techau@gmail.com";
+      github.user = "scottbot95";
+    };
   };
 
   # This value determines the Home Manager release that your

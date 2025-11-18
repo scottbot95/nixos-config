@@ -21,7 +21,7 @@
             path: _: pkgs.callPackage (import ./${path}) { inherit self inputs; }
           ) packagesToImport;
           platformPackages = filterAttrs (
-            _: p: if p ? meta && p.meta ? platforms then builtins.elem pkgs.system p.meta.platforms else true # Just allow building on everything if no platform meta section
+            _: p: if p ? meta && p.meta ? platforms then builtins.elem pkgs.stdenv.hostPlatform.system p.meta.platforms else true # Just allow building on everything if no platform meta section
           ) importedPackages;
         in
         mapAttrs' (

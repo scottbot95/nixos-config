@@ -5,7 +5,7 @@
   ];
 
   terranix = {
-    imports = [ ./terraform.nix ];
+    # imports = [ ./terraform.nix ];
   };
 
   services.boinc = {

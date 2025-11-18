@@ -24,7 +24,7 @@ in
   ];
 
   terranix = {
-    imports = [ ./terraform.nix ];
+    # imports = [ ./terraform.nix ];
   };
 
   nixpkgs.overlays = [ nix-minecraft.overlay ];

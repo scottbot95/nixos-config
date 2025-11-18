@@ -8,7 +8,7 @@ in
   ];
 
   terranix = {
-    imports = [ ./terraform.nix ];
+    # imports = [ ./terraform.nix ];
   };
 
   sops.defaultSopsFile = ./secrets.yaml;

@@ -8,7 +8,7 @@ in
   ];
 
   terranix = {
-    imports = [ ./terraform.nix ];
+    # imports = [ ./terraform.nix ];
   };
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [

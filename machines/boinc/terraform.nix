@@ -22,12 +22,13 @@ in {
 
     scsihw = "virtio-scsi-single";
     disk = [{
-      type = "scsi";
+      slot = "scsi0";
+      # type = "scsi";
       storage = "nvme";
       size = "50G";
       discard = true;
       iothread = true;
-      ssd = true;
+      emulatessd = true;
     }];
   };
 }

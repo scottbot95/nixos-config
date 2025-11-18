@@ -77,5 +77,20 @@
 
   # hardware.pulseaudio.enable = true;
 
+  # Setup for remote nix builds
+  users.users.nixremote = {
+    isSystemUser = true;
+    group = "nixremote";
+    home = "/home/nixremote";
+    createHome = true;
+    homeMode = "500";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICO/Ne+tuqjjo8nApyYwVMQ8atwaFMKY9ZFCGKYBIn1P"
+    ];
+  };
+  users.groups.nixremote = {};
+
+  nix.settings.trusted-users = [ "nixremote" ];
+
   system.stateVersion = "22.11";
 }

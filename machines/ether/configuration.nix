@@ -1,9 +1,7 @@
-{ pkgs, ethereum-nix, nixpkgs-unstable, poetry2nix, nimbus, ... }:
+{ pkgs, ethereum-nix, nixpkgs-unstable, poetry2nix, ... }:
 {
   imports = [
     ../../modules/profiles/proxmox-guest/v2.nix
-    # ./holesky.nix
-    # ./mainnet.nix
     ./gnosis.nix
     ethereum-nix.nixosModules.default
   ];
@@ -27,24 +25,18 @@
         lighthouse = prev.lighthouse.overrideAttrs (_: prevAttrs: {
           cargoBuildFeatures = prevAttrs.cargoBuildFeatures ++ [ "gnosis" "jemalloc" ];
         });
-        nimbus = nimbus.packages.${final.system}.beacon_node.overrideAttrs (_: prevAttrs: {
-          NIMFLAGS = "${prevAttrs.NIMFLAGS} -d:gnosisChainBinary -d:const_preset=gnosis";
-        });
-        nimbus_validator = nimbus.packages.${final.system}.validator_client.overrideAttrs (_: prevAttrs: {
-          NIMFLAGS = "${prevAttrs.NIMFLAGS} -d:gnosisChainBinary -d:const_preset=gnosis";
-        });
         inherit (stake-wise) operatorService;
-        # erigon = prev.erigon.overrideAttrs (_: _: rec {
-        #   version = "2.60.10";
-        #   src = final.fetchFromGitHub {
-        #     owner = "erigontech";
-        #     repo = "erigon";
-        #     rev = "v${version}";
-        #     hash = "sha256-14s3Dfo1sqQlNZSdjByUCAsYzbv6xjPcCsBxEmoY3pU=";
-        #     fetchSubmodules = true;
-        #   };
-        #   vendorHash = final.lib.fakeHash;
-        # });
+        erigon = prev.erigon.overrideAttrs (_: _: rec {
+          version = "3.2.2";
+          src = final.fetchFromGitHub {
+            owner = "erigontech";
+            repo = "erigon";
+            rev = "v${version}";
+            hash = "sha256-RMid7yfCP3RsiGTbD/+cT9HinEd2+tjlav/70YNRGu0=";
+            fetchSubmodules = true;
+          };
+          vendorHash = "sha256-dAAZTFs4KwjRvQp+RRlLqlfxsD7rxqk0Q7TvcIy0Tgg=";
+        });
         eth-validator-watcher =
             poetry2nixReal.mkPoetryApplication {
               projectDir = pkgs.fetchFromGitHub {
@@ -54,45 +46,7 @@
                 hash = "sha256-Tc/QqPYWkDzXx++VzeqVdu2fogZxLd1ZX3b6DtW2dZY=";
               };
               preferWheels = true;
-              # overrides = poetry2nixReal.defaultPoetryOverrides.extend
-              #   (final: prev: {
-              #     pydantic-yaml = prev.pydantic-yaml.overridePythonAttrs
-              #     (
-              #       old: {
-              #         buildInputs = (old.buildInputs or [ ]) ++ [ prev.setuptools ];
-              #       }
-              #     );
-              #   });
             };
-        # eth-validator-watcher = prev.eth-validator-watcher.overrideAttrs (_: prevAttrs: rec {
-        #   name = "${prevAttrs.pname}-${version}";
-        #   version = "1.0.0-beta.2";
-        #   src = pkgs.fetchFromGitHub {
-        #     owner = "kilnfi";
-        #     repo = prevAttrs.pname;
-        #     rev = "refs/tags/v${version}";
-        #     hash = "sha256-Tc/QqPYWkDzXx++VzeqVdu2fogZxLd1ZX3b6DtW2dZY=";
-        #   };
-
-        #   nativeBuildInputs = prevAttrs.nativeBuildInputs ++ (with pkgs.python3.pkgs; [
-        #     setuptools
-        #     pybind11
-        #   ]);
-
-        #   propagatedBuildInputs = with pkgs.python3.pkgs; [
-        #     more-itertools
-        #     prometheus-client
-        #     pydantic
-        #     requests
-        #     typer
-        #     slack-sdk
-        #     tenacity
-        #     pyyaml
-        #     nixpkgs-unstable.legacyPackages.${pkgs.system}.python3.pkgs.pydantic-yaml
-        #     pydantic-settings
-        #     cachetools
-        #   ];
-        # });
       })
   ];
 

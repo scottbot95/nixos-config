@@ -27,7 +27,7 @@ in {
     };
     disks.scsi.scsi0.disk = {
       storage = "nvme";
-      size = "5T";
+      size = "1T";
       backup = false;
       discard = true;
       emulatessd = true;

@@ -1,4 +1,4 @@
-{ pkgs, ethereum-nix, nixpkgs-unstable, poetry2nix, nimbus, ... }:
+{ pkgs, ethereum-nix, nixpkgs-unstable, poetry2nix, ... }:
 {
   imports = [
     ../../modules/profiles/proxmox-guest/v2.nix
@@ -27,12 +27,12 @@
         lighthouse = prev.lighthouse.overrideAttrs (_: prevAttrs: {
           cargoBuildFeatures = prevAttrs.cargoBuildFeatures ++ [ "gnosis" "jemalloc" ];
         });
-        nimbus = nimbus.packages.${final.system}.beacon_node.overrideAttrs (_: prevAttrs: {
-          NIMFLAGS = "${prevAttrs.NIMFLAGS} -d:gnosisChainBinary -d:const_preset=gnosis";
-        });
-        nimbus_validator = nimbus.packages.${final.system}.validator_client.overrideAttrs (_: prevAttrs: {
-          NIMFLAGS = "${prevAttrs.NIMFLAGS} -d:gnosisChainBinary -d:const_preset=gnosis";
-        });
+        # nimbus = nimbus.packages.${final.system}.beacon_node.overrideAttrs (_: prevAttrs: {
+        #   NIMFLAGS = "${prevAttrs.NIMFLAGS} -d:gnosisChainBinary -d:const_preset=gnosis";
+        # });
+        # nimbus_validator = nimbus.packages.${final.system}.validator_client.overrideAttrs (_: prevAttrs: {
+        #   NIMFLAGS = "${prevAttrs.NIMFLAGS} -d:gnosisChainBinary -d:const_preset=gnosis";
+        # });
         inherit (stake-wise) operatorService;
         # erigon = prev.erigon.overrideAttrs (_: _: rec {
         #   version = "2.60.10";

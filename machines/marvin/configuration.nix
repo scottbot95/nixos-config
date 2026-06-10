@@ -1,4 +1,9 @@
-{ config, pkgs, nixos-hardware, lib, ... }:
+{ config, pkgs, nixos-hardware, lib, nixpkgs-unstable, ... }:
+let 
+  pkgsUnstable = import nixpkgs-unstable {
+    inherit (pkgs) system;
+  };
+in 
 {
   imports = [
     # Include the results of the hardware scan.
@@ -54,17 +59,21 @@
   # };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  # services.xserver.enable = true;
 
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     fira-code
     fira-code-symbols
   ];
 
   # Enable the GNOME 3 Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.displayManager.gdm.wayland = false;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.displayManager.gdm.wayland = true;
+  services.desktopManager.gnome.enable = true;
+
+  # Enable the KDE Plasma Desktop Environment.
+  # services.xserver.displayManager.sddm.enable = true;
+  # services.xserver.desktopManager.plasma5.enable = true;
 
 
   # Configure keymap in X11
@@ -75,11 +84,10 @@
   # services.printing.enable = true;
 
   # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  # hardware.pulseaudio.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
-  services.xserver.libinput.enable = true;
+  services.libinput.enable = true;
 
   users.defaultUserShell = pkgs.zsh;
 
@@ -108,21 +116,21 @@
     "anydesk"
     "discord"
     "idea-ultimate"
+    "jetbrains-toolbox"
     "memtest86-efi"
     "steam"
     "steam-run"
     "steam-original"
+    "steam-unwrapped"
     "vscode"
   ];
 
   nix = {
-    package = pkgs.nixUnstable;
+    package = pkgs.nixVersions.latest;
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
   };
-
-  services.python-validity.enable = true;
 
   scott.steam.enable = true;
   scott.yubikey.enable = true;
@@ -159,24 +167,24 @@
   system.stateVersion = "21.11"; # Did you read the comment?
 
   # (Experimental) Switch to doas instead of sudo
-  security.sudo.enable = false;
-  security.doas = {
-    enable = true;
-    wheelNeedsPassword = true;
-    extraRules = [{
-      groups = [ "wheel" ];
-      noPass = false;
-      persist = true;
-      keepEnv = true;
-    }];
-  };
+  # security.sudo.enable = false;
+  # security.doas = {
+  #   enable = true;
+  #   wheelNeedsPassword = true;
+  #   extraRules = [{
+  #     groups = [ "wheel" ];
+  #     noPass = false;
+  #     persist = true;
+  #     keepEnv = true;
+  #   }];
+  # };
 
   # services.python-validity.enable = true;
-  security.pam.services = {
-    doas.fprintAuth = true;
-    login.fprintAuth = true;
-    xscreensaver.fprintAuth = true;
-  };
+  # security.pam.services = {
+  #   sudo.fprintAuth = true;
+  #   login.fprintAuth = true;
+  #   xscreensaver.fprintAuth = true;
+  # };
 
   services.printing = {
     enable = true;
@@ -185,10 +193,14 @@
 
   services.avahi = {
     enable = true;
-    nssmdns = true;
+    nssmdns4 = true;
   };
 
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
+
+  environment.systemPackages = [
+    pkgs.prusa-slicer
+  ];
 
   # Hack pls remove :)
   # networking.firewall.allowedTCPPorts = [ 

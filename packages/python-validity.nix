@@ -11,6 +11,9 @@ python3.pkgs.buildPythonPackage rec {
     sha256 = "sha256-s0o99CRW9gwxCv3AMKrtXh8mrblVAA9r9IIPgy6fv4U=";
   };
 
+  pyproject = true;
+  build-system = [ python3.pkgs.setuptools ];
+
   buildInputs = with python3.pkgs; [ cryptography pyyaml pyusb ];
 
   propagatedBuildInputs = with python3.pkgs; [

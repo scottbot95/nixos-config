@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
@@ -9,7 +9,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      # url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -23,12 +24,12 @@
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    # ethereum-nix.url = "github:nix-community/ethereum.nix";
+    ethereum-nix.url = "github:nix-community/ethereum.nix";
     # ethereum-nix.url = "github:scottbot95/ethereum.nix";
-    ethereum-nix.url = "path:///home/scott/workplace/ethereum.nix";
+    # ethereum-nix.url = "path:///home/scott/workplace/ethereum.nix";
     # ethereum-nix.inputs.nixpkgs.follows = "nixpkgs";
-    nimbus.url = "git+https://github.com/status-im/nimbus-eth2.git?submodules=1";
-    nimbus.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    # nimbus.url = "git+https://github.com/status-im/nimbus-eth2.git?submodules=1";
+    # nimbus.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     faultybot.url = "github:scottbot95/faultybot";
     faultybot.inputs.nixpkgs.follows = "nixpkgs";
@@ -37,8 +38,8 @@
     # faultybox.inputs.nixpkgs.follows = "nixpkgs";
 
     # faulty-trader.url = "github:scottbot95/faulty-trader";
-    faulty-trader.url = "path:///home/scott/workplace/faulty-trader";
-    faulty-trader.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    # faulty-trader.url = "path:///home/scott/workplace/faulty-trader";
+    # faulty-trader.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     homelab-server-manager.url = "github:scottbot95/homelab-server-manager";
     # homelab-server-manager.url = "path:///home/scott/workplace/homelab-server-manager";
@@ -49,8 +50,8 @@
     poetry2nix.url = "github:nix-community/poetry2nix";
     poetry2nix.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
-    # steam-servers.url = "github:scottbot95/nix-steam-servers";
-    steam-servers.url = "path:///home/scott/workplace/nix-steam-servers";
+    steam-servers.url = "github:scottbot95/nix-steam-servers";
+    # steam-servers.url = "path:///home/scott/workplace/nix-steam-servers";
     steam-servers.inputs.nixpkgs.follows = "nixpkgs";
 
     teslamate.url = "github:teslamate-org/teslamate";
@@ -59,8 +60,8 @@
     terranix.url = "github:terranix/terranix";
     terranix.inputs.nixpkgs.follows = "nixpkgs";
 
-    # terranix-proxmox.url = "github:scottbot95/terranix-proxmox";
-    terranix-proxmox.url = "path:///home/scott/workplace/terranix-proxmox";
+    terranix-proxmox.url = "github:scottbot95/terranix-proxmox/proxmox8";
+    # terranix-proxmox.url = "path:///home/scott/workplace/terranix-proxmox";
     terranix-proxmox.inputs.nixpkgs.follows = "nixpkgs";
     terranix-proxmox.inputs.terranix.follows = "terranix";
 
@@ -85,11 +86,11 @@
       ];
       flake = {
         packages.x86_64-linux = {
-          pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
-            system = "x86_64-linux";
-            modules = [ ./systems/pve/minimal-installer.nix ];
-            format = "install-iso";
-          };
+          # pve-minimal-iso = inputs.nixos-generators.nixosGenerate {
+          #   system = "x86_64-linux";
+          #   modules = [ ./systems/pve/minimal-installer.nix ];
+          #   format = "install-iso";
+          # };
         };
       };
       systems = [

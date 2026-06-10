@@ -13,8 +13,8 @@ in
       enable = true;
       package = pkgs.steam.override {
         # Copied from Defualt
-        extraLibraries = pkgs: with config.hardware.opengl;
-            if pkgs.hostPlatform.is64bit
+        extraLibraries = pkgs: with config.hardware.graphics;
+            if pkgs.stdenv.hostPlatform.is64bit
             then [ package ] ++ extraPackages
             else [ package32 ] ++ extraPackages32;
         

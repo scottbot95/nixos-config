@@ -94,7 +94,6 @@ in
     enable = true;
     package = erigon-v3;
     args = {
-      snapshots = false; # erigon v2 feature
       port = 50505;
       chain = "gnosis";
       http = {
@@ -160,60 +159,66 @@ in
     ];
   };
 
-  systemd.services.nimbus-beacon-gnosis = {
-    serviceConfig = {
-      MemoryDenyWriteExecute = false;
-    };
+  services.ethereum.nimbus-validator.gnosis = {
+    enable = true;
+    user = null;
+    extraArgs = [
+      "--non-interactive"
+      "--suggested-fee-recipient=${feeRecipient}"
+      "--beacon-node=http://127.0.0.1:${toString config.services.ethereum.nimbus-beacon.gnosis.args.rest.port}"
+      "--data-dir=\"%S/nimbus-validator-gnosis\""
+      "--metrics"
+    ];
   };
 
-  systemd.services.nimbus-validator-gnosis = {
-    after = ["network.target"];
-    wantedBy = ["multi-user.target"];
-    description = "Nimbus Validator Node (gnosis)";
+  # systemd.services.nimbus-validator-gnosis = {
+  #   after = ["network.target"];
+  #   wantedBy = ["multi-user.target"];
+  #   description = "Nimbus Validator Node (gnosis)";
 
-    serviceConfig = {
-      User = "nimbus-validator-gnosis";
-      StateDirectory = "nimbus-validator-gnosis";
-      ExecStart = 
-        let
-          scriptArgs = ''
-            --non-interactive \
-            --suggested-fee-recipient=${feeRecipient} \
-            --beacon-node=http://127.0.0.1:${toString config.services.ethereum.nimbus-beacon.gnosis.args.rest.port} \
-            --data-dir="%S/nimbus-validator-gnosis" \
-            --metrics
-          '';
-        in
-          "${pkgs.nimbus_validator}/bin/nimbus_validator_client \\\n${scriptArgs}";
+  #   serviceConfig = {
+  #     User = "nimbus-validator-gnosis";
+  #     StateDirectory = "nimbus-validator-gnosis";
+  #     ExecStart = 
+  #       let
+  #         scriptArgs = ''
+  #           --non-interactive \
+  #           --suggested-fee-recipient=${feeRecipient} \
+  #           --beacon-node=http://127.0.0.1:${toString config.services.ethereum.nimbus-beacon.gnosis.args.rest.port} \
+  #           --data-dir="%S/nimbus-validator-gnosis" \
+  #           --metrics
+  #         '';
+  #       in
+  #         "${pkgs.nimbus_validator}/bin/nimbus_validator_client \\\n${scriptArgs}";
 
-      Restart = "on-failure";
+  #     Restart = "on-failure";
 
-      # https://www.freedesktop.org/software/systemd/man/systemd.exec.html#DynamicUser=
-      # Enabling dynamic user implies other options which cannot be changed:
-      #   * RemoveIPC = true
-      #   * PrivateTmp = true
-      #   * NoNewPrivileges = "strict"
-      #   * RestrictSUIDSGID = true
-      #   * ProtectSystem = "strict"
-      #   * ProtectHome = "read-only"
-      DynamicUser = true;
+  #     # https://www.freedesktop.org/software/systemd/man/systemd.exec.html#DynamicUser=
+  #     # Enabling dynamic user implies other options which cannot be changed:
+  #     #   * RemoveIPC = true
+  #     #   * PrivateTmp = true
+  #     #   * NoNewPrivileges = "strict"
+  #     #   * RestrictSUIDSGID = true
+  #     #   * ProtectSystem = "strict"
+  #     #   * ProtectHome = "read-only"
+  #     DynamicUser = true;
 
-      ProtectClock = true;
-      ProtectProc = "noaccess";
-      ProtectKernelLogs = true;
-      ProtectKernelModules = true;
-      ProtectKernelTunables = true;
-      ProtectControlGroups = true;
-      ProtectHostname = true;
-      PrivateDevices = true;
-      RestrictRealtime = true;
-      RestrictNamespaces = true;
-      LockPersonality = true;
-      # Doesn't work with nimbus
-      # MemoryDenyWriteExecute = true; 
-      SystemCallFilter = ["@system-service" "~@privileged"];
-    };
-  };
+  #     ProtectClock = true;
+  #     ProtectProc = "noaccess";
+  #     ProtectKernelLogs = true;
+  #     ProtectKernelModules = true;
+  #     ProtectKernelTunables = true;
+  #     ProtectControlGroups = true;
+  #     ProtectHostname = true;
+  #     PrivateDevices = true;
+  #     RestrictRealtime = true;
+  #     RestrictNamespaces = true;
+  #     LockPersonality = true;
+  #     # Doesn't work with nimbus
+  #     # MemoryDenyWriteExecute = true; 
+  #     SystemCallFilter = ["@system-service" "~@privileged"];
+  #   };
+  # };
 
   services.validator-manager-operator = {
     enable = true;

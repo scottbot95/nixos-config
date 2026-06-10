@@ -7,11 +7,14 @@ in
     # ./wpilib
   ];
 
+  home.sessionPath = [ "$HOME/.cargo/bin" ];
+
   home.packages = with pkgs; [
     anydesk
 
-    jetbrains.idea-ultimate
-    thefuck # needed for zsh plugin
+    nil
+
+    jetbrains-toolbox
     git
     guake
     htop
@@ -21,6 +24,10 @@ in
     vim
 
     discord
+
+    clang
+    # llvmPackages.bintools
+    rustup
   ];
 
   # Let Home Manager install and manage itself.
@@ -30,14 +37,14 @@ in
     enable = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "thefuck" ];
+      plugins = [ "git" ];
       theme = "robbyrussell";
     };
 
     shellAliases = {
-      nixrt = "doas nixos-rebuild test --flake ~/nixos-config";
+      nixrt = "nixos-rebuild test --flake ~/nixos-config --sudo";
       nixrb = "nixos-rebuild build --flake ~/nixos-config";
-      nixrs = "doas nixos-rebuild switch --flake ~/nixos-config";
+      nixrs = "nixos-rebuild switch --flake ~/nixos-config --sudo";
       
       switch-yk = "gpg-connect-agent 'scd serialno' 'learn --force' /bye";
     };
@@ -96,37 +103,41 @@ in
 
   programs.git = {
     enable = true;
-    userName = "Scott Techau";
-    userEmail = "scott.techau@gmail.com";
 
     signing = {
       key = gpg_pub_key;
       signByDefault = true;
     };
 
-    extraConfig = { github.user = "scottbot95"; };
+    settings = { 
+      user.name = "Scott Techau";
+      user.email = "scott.techau@gmail.com";
+      github.user = "scottbot95";
+    };
   };
 
   programs.vscode = {
     enable = true;
-    extensions = with pkgs.vscode-extensions; [
-      jnoortheen.nix-ide
-      eamodio.gitlens
-#      ms-vscode-remote.remote-ssh
-    ];
-    userSettings = {
-      "editor.tabSize" = 2;
-      "editor.fontFamily" = "Fira Code";
-      "editor.fontLigatures" = true;
-      "nix.enableLanguageServer" = true;
-      "files.exclude" = {
-        "**/.classpath" = true;
-        "**/.project" = true;
-        "**/.settings" = true;
-        "**/.factorypath" = true;
+    profiles.default = {
+      extensions = with pkgs.vscode-extensions; [
+        jnoortheen.nix-ide
+        eamodio.gitlens
+  #      ms-vscode-remote.remote-ssh
+      ];
+      userSettings = {
+        "editor.tabSize" = 2;
+        "editor.fontFamily" = "Fira Code";
+        "editor.fontLigatures" = true;
+        "nix.enableLanguageServer" = true;
+        "files.exclude" = {
+          "**/.classpath" = true;
+          "**/.project" = true;
+          "**/.settings" = true;
+          "**/.factorypath" = true;
+        };
+        "remote.SSH.logLevel" =  "trace";
+        "workbench.iconTheme" = "material-icon-theme";
       };
-      "remote.SSH.logLevel" =  "trace";
-      "workbench.iconTheme" = "material-icon-theme";
     };
   };
 
